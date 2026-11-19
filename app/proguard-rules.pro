@@ -1,0 +1,5 @@
+-keep class gpr.greentune.unblock.core.TProxyService { *; }
+-keepclassmembers class gpr.greentune.unblock.core.TProxyService { native <methods>; }
+-dontwarn org.bouncycastle.**
+-dontwarn org.conscrypt.**
+-dontwarn org.openjsse.**

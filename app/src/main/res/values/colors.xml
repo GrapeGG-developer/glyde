@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="gt_green">#FF27B35A</color>
+    <color name="gt_bg">#FFEAF6EE</color>
+    <color name="ic_launcher_background">#FFDDF5E4</color>
+    <color name="gt_bg_dark">#FF07100B</color>
+</resources>
