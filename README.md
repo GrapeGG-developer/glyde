@@ -11,18 +11,18 @@
 
 ---
 
-Glyde (раньше GT Unblock) — самостоятельное приложение с открытым кодом для обхода DPI-блокировок, аналог ByeByeDPI. Оно возвращает более 40 сервисов: Telegram, YouTube, Discord, WhatsApp, Instagram, X, Twitch, Signal, TikTok, GitHub, rutracker и другие. Подключается одной кнопкой, но **это не VPN**: серверов нет, трафик идёт напрямую к сайтам. Glyde меняет только форму пакетов, чтобы фильтр провайдера их не узнал.
+Glyde (раньше GT Unblock) — самостоятельное приложение с открытым кодом для обхода DPI-блокировок. Оно возвращает более 100 сервисов: Telegram, YouTube, Discord, WhatsApp, Instagram, X, Twitch, Signal, TikTok, GitHub, rutracker и другие. Подключается одной кнопкой, но **это не VPN**: серверов нет, трафик идёт напрямую к сайтам. Glyde меняет только форму пакетов, чтобы фильтр провайдера их не узнал.
 
 ## Возможности
 
-- **Одна кнопка, один экран.** Большая стеклянная сфера и шторка снизу. Если потянуть шторку вверх, откроется всё остальное, а сфера уменьшится, но не закроется. Для обычного пользователя настраивать ничего не нужно.
-- **Автоподбор и автопочинка.** Glyde сам проверяет, что заблокировано в вашей сети, подбирает стратегию для каждого сервиса и подбирает заново, если провайдер что-то поменял.
+- **Одна кнопка, один экран.** Объёмная Aqua-кнопка и «Меню»: все разделы открываются в прозрачных окнах Aero с размытием. Для обычного пользователя настраивать ничего не нужно.
+- **Автоподбор маршрутов и автопочинка.** Glyde сам проверяет, что заблокировано в вашей сети, решает, что пускать напрямую, что через обход DPI, а что через прокси, проверяет итоговую схему и подбирает заново, если провайдер что-то поменял. Более 200 стратегий.
 - **Ускорение Telegram.** Встроенный локальный прокси ведёт Telegram через WebSocket. Подключается одной кнопкой.
 - **Звонки и игры.** Обход для UDP и QUIC помогает голосовым каналам Discord и звонкам.
-- **Более 40 сервисов по категориям**, свои сайты и импорт хостлистов.
-- **Проверка сети (аналог blockcheck)**: подмена DNS, блокировка по IP или DPI. Отчётом можно поделиться.
+- **Более 100 сервисов по категориям**, свои сайты и импорт хостлистов.
+- **Проверка сети**: подмена DNS, блокировка по IP или DPI. Отчётом можно поделиться.
 - **Обмен настройкой** через короткий код или QR-код и облачная база стратегий по оператору (ASN).
-- **Экспертный режим** со всеми параметрами ByeByeDPI: конструктор команды, ручной выбор стратегий, свои параметры, журнал движка.
+- **Экспертный режим** со всеми параметрами движка: конструктор команды, ручной выбор стратегий, свои параметры, журнал движка.
 - **Выбор приложений**, режим «только прокси» (SOCKS5 с авторизацией), DNS через HTTPS, блокировка QUIC.
 - **Мгновенные обновления** по постоянному соединению с сервером, зеркала на случай блокировки, поэтапная раскатка (Insider → Beta → Release) и проверка подлинности сборки.
 - **Лёгкий режим** для слабых телефонов включается сам, плюс одна кнопка.
@@ -75,8 +75,6 @@ cd glyde
 
 - [byedpi](https://github.com/hufrea/byedpi) от hufrea (MIT)
 - [hev-socks5-tunnel](https://github.com/heiher/hev-socks5-tunnel) от heiher (MIT)
-- [ByeByeDPI](https://github.com/romanvht/ByeByeDPI) от romanvht (GPL-3.0), подсказавший архитектуру Android-части
-- [zapret](https://github.com/bol-van/zapret) от bol-van (MIT), идеи стратегий
 - [ZXing](https://github.com/zxing/zxing) (Apache-2.0), генерация QR-кодов
 
 ## Лицензия
@@ -87,9 +85,9 @@ cd glyde
 
 ## English
 
-**Glyde** (formerly GT Unblock) by GREENTUNE is an open-source DPI bypass app for Android, an alternative to ByeByeDPI. It brings back 40+ services (Telegram, YouTube, Discord, WhatsApp, Instagram, X, Twitch, Signal, TikTok, GitHub and more) with one tap. **It is not a VPN**: there is no server, traffic goes straight to websites and only the shape of packets changes.
+**Glyde** (formerly GT Unblock) by GREENTUNE is an open-source DPI bypass app for Android. It brings back 100+ services (Telegram, YouTube, Discord, WhatsApp, Instagram, X, Twitch, Signal, TikTok, GitHub and more) with one tap. **It is not a VPN**: there is no server, traffic goes straight to websites and only the shape of packets changes.
 
-Features: a single screen with a glass orb and a pull-up sheet, zero settings for regular users, automatic per-service tuning and auto repair, a Telegram WebSocket boost, UDP/QUIC bypass for calls and games, 40+ services and custom hostlists, a blockcheck-like network check, setup sharing via code or QR, ISP-aware cloud strategies, an expert mode with every ByeByeDPI option and a command builder, split tunneling, SOCKS5 mode with auth, DNS over HTTPS, instant updates over a persistent connection with mirrors and staged rollout (Insider, Beta, Release), build authenticity check, an automatic lite mode, a real-time Aqua Aero design with physics bubbles, the custom Glyde Sans typeface and chord sounds.
+Features: a single screen with a 3D Aqua button and blurred Aero windows, zero settings for regular users, automatic per-service route planning (direct, DPI bypass or proxy) with 200+ strategies and auto repair, a Telegram WebSocket boost, UDP/QUIC bypass for calls and games, 100+ services and custom hostlists, a network check, setup sharing via code or QR, ISP-aware cloud strategies, an expert mode with every engine option and a command builder, split tunneling, SOCKS5 mode with auth, DNS over HTTPS, instant updates over a persistent connection with mirrors and staged rollout (Insider, Beta, Release), build authenticity check, an automatic lite mode, a real-time Aqua Aero design with physics bubbles, the custom Glyde Sans typeface and chord sounds.
 
 Versions are named `Glyde YY.MM <Constellation>`, starting with **Glyde 26.11 Andromeda**.
 

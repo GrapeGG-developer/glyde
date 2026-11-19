@@ -136,8 +136,6 @@ fun AboutScreen(onDonate: () -> Unit, onFeedback: () -> Unit) {
             Column {
                 SettingRow("byedpi", "hufrea · MIT", onClick = { openUrl(context, "https://github.com/hufrea/byedpi") })
                 SettingRow("hev-socks5-tunnel", "heiher · MIT", onClick = { openUrl(context, "https://github.com/heiher/hev-socks5-tunnel") })
-                SettingRow("ByeByeDPI", "romanvht · GPL-3.0", onClick = { openUrl(context, "https://github.com/romanvht/ByeByeDPI") })
-                SettingRow("zapret / zapret2", "bol-van · MIT", onClick = { openUrl(context, "https://github.com/bol-van/zapret") })
             }
         }
         Text(stringResource(R.string.about_disclaimer), fontSize = 12.sp, color = c.subText, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())

@@ -18,6 +18,25 @@ object Fx {
     private val ids = HashMap<Int, Int>()
     private val ready = HashSet<Int>()
     private val pending = HashMap<Int, Float>()
+    @Volatile
+    var visible = false
+    private var lastStatusSound = 0L
+
+    fun status(context: Context, prev: gpr.greentune.unblock.core.EngineStatus, now: gpr.greentune.unblock.core.EngineStatus) {
+        val s = gpr.greentune.unblock.data.SettingsStore.value
+        if (!s.sound || !visible) return
+        val t = SystemClock.elapsedRealtime()
+        val on = gpr.greentune.unblock.core.EngineStatus.On
+        val res = when {
+            now == on && prev != on -> R.raw.chime_on
+            now == gpr.greentune.unblock.core.EngineStatus.Off && prev == on -> R.raw.chime_off
+            now is gpr.greentune.unblock.core.EngineStatus.Error && prev !is gpr.greentune.unblock.core.EngineStatus.Error -> R.raw.error
+            else -> return
+        }
+        if (t - lastStatusSound < 400) return
+        lastStatusSound = t
+        play(context, res, if (res == R.raw.error) 0.8f else 1f)
+    }
 
     @Synchronized
     fun preload(context: Context) {
@@ -25,7 +44,7 @@ object Fx {
         val p = SoundPool.Builder()
             .setMaxStreams(3)
             .setAudioAttributes(
-                AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_ASSISTANCE_SONIFICATION)
+                AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_GAME)
                     .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION).build()
             )
             .build()

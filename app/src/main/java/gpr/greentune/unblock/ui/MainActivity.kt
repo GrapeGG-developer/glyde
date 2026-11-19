@@ -118,6 +118,17 @@ class MainActivity : ComponentActivity() {
         handleIntent(intent)
     }
 
+    override fun onStart() {
+        super.onStart()
+        gpr.greentune.unblock.system.Fx.visible = true
+        gpr.greentune.unblock.system.Fx.preload(this)
+    }
+
+    override fun onStop() {
+        gpr.greentune.unblock.system.Fx.visible = false
+        super.onStop()
+    }
+
     override fun onResume() {
         super.onResume()
         shake?.start()

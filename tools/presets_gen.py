@@ -44,7 +44,6 @@ NEW_SERVICES = [
     ("hackernews", "Hacker News", "#FF6600", "work", ["news.ycombinator.com", "ycombinator.com"], ["https://news.ycombinator.com/"]),
     ("duckduckgo", "DuckDuckGo", "#DE5833", "work", ["duckduckgo.com", "duck.com"], ["https://duckduckgo.com/"]),
     ("startpage", "Startpage", "#6573FF", "work", ["startpage.com"], ["https://www.startpage.com/"]),
-    ("psiphon", "Psiphon", "#2E2E8C", "work", ["psiphon.ca", "psiphon3.com"], ["https://psiphon.ca/"]),
     ("tvrain", "Дождь", "#FF2E8B", "news", ["tvrain.tv", "tvrain.ru"], ["https://tvrain.tv/"]),
     ("mediazona", "Медиазона", "#F5D300", "news", ["zona.media", "mediazona.ca"], ["https://zona.media/"]),
     ("thebell", "The Bell", "#0F0F0F", "news", ["thebell.io"], ["https://thebell.io/"]),

@@ -83,13 +83,10 @@ fun AppRoot(
         lastStatus = status
         if (prev == null) return@LaunchedEffect
         if (status == EngineStatus.On && prev != EngineStatus.On) {
-            if (settings.sound) Fx.chime(context, true)
             if (settings.haptics) Fx.haptic(view, true)
         } else if (status == EngineStatus.Off && prev == EngineStatus.On) {
-            if (settings.sound) Fx.chime(context, false)
             if (settings.haptics) Fx.haptic(view)
         } else if (status is EngineStatus.Error && prev !is EngineStatus.Error) {
-            if (settings.sound) Fx.error(context)
             if (settings.haptics) Fx.haptic(view, true)
         }
     }

@@ -240,7 +240,7 @@ object TgBridge {
         "vwbmtmoi.com", "khgrre.com", "ulihssf.com", "tmhqsdqmfpmk.com", "xwuwoqbm.com",
         "orgcnunpj.com", "zhkuldz.com", "zypoljnslxa.com", "efabnxaowuzs.com", "zaftuzsftqdq.com",
     )
-    private const val CF_URL = "https://raw.githubusercontent.com/Flowseal/tg-ws-proxy/main/.github/cfproxy-domains.txt"
+    private const val CF_URL = "https://grapegg-developer.github.io/glyde/tgcf.txt"
     private const val FRONT_SNI = "sprinthost.ru"
     private val WS_DCS = setOf(2, 4)
 

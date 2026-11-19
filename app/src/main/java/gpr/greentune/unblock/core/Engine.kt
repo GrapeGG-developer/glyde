@@ -30,7 +30,9 @@ object Engine {
 
     fun setStatus(context: Context, status: EngineStatus) {
         if (status == EngineStatus.On && _status.value != EngineStatus.On) _since.value = System.currentTimeMillis()
+        val prev = _status.value
         _status.value = status
+        if (prev != status) gpr.greentune.unblock.system.Fx.status(context, prev, status)
         if (status != EngineStatus.On) gpr.greentune.unblock.net.Live.socksPort = 0
         if (status == EngineStatus.On && SettingsStore.value.tgBridge) gpr.greentune.unblock.tg.TgBridge.start(context)
         if (status == EngineStatus.Off || status is EngineStatus.Error) gpr.greentune.unblock.tg.TgBridge.stop()

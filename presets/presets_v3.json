@@ -1434,21 +1434,6 @@
    ]
   },
   {
-   "id": "psiphon",
-   "name": "Psiphon",
-   "color": "#2E2E8C",
-   "cat": "work",
-   "def": false,
-   "domains": [
-    "psiphon.ca",
-    "psiphon3.com"
-   ],
-   "ipset": [],
-   "tests": [
-    "https://psiphon.ca/"
-   ]
-  },
-  {
    "id": "tvrain",
    "name": "Дождь",
    "color": "#FF2E8B",

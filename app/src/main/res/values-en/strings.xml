@@ -134,7 +134,7 @@
     <string name="whats_new_title">What is new in version %1$s</string>
     <string name="whats_new_ok">Great</string>
     <string name="about_version">Version %1$s</string>
-    <string name="about_text">Glyde is a standalone app that bypasses DPI throttling and blocking on Android. It is not a VPN: traffic goes straight to websites without third-party servers. Glyde only changes the shape of packets so the ISP filter cannot recognize them. An alternative to ByeByeDPI with auto tuning, auto repair, Telegram boost and a live Aqua design.</string>
+    <string name="about_text">Glyde is a standalone app that bypasses DPI throttling and blocking on Android. It is not a VPN: traffic goes straight to websites without third-party servers. Glyde only changes the shape of packets so the ISP filter cannot recognize them. Automatic route planning, auto repair, Telegram boost and the GGV7 glass design.</string>
     <string name="about_dev">Developer: GREENTUNE</string>
     <string name="about_links">Links</string>
     <string name="about_source">Source code</string>

@@ -137,7 +137,7 @@ S = {
 "whats_new_title": ("Что нового в версии %1$s", "What is new in version %1$s"),
 "whats_new_ok": ("Отлично", "Great"),
 "about_version": ("Версия %1$s", "Version %1$s"),
-"about_text": ("Glyde — самостоятельное приложение для обхода DPI-замедлений и блокировок на Android. Это не VPN: трафик идёт напрямую к сайтам, без чужих серверов. Glyde меняет только форму пакетов, чтобы фильтр провайдера их не узнал. Аналог ByeByeDPI с автоподбором, автопочинкой, ускорением Telegram и живым Aqua-дизайном.", "Glyde is a standalone app that bypasses DPI throttling and blocking on Android. It is not a VPN: traffic goes straight to websites without third-party servers. Glyde only changes the shape of packets so the ISP filter cannot recognize them. An alternative to ByeByeDPI with auto tuning, auto repair, Telegram boost and a live Aqua design."),
+"about_text": ("Glyde — самостоятельное приложение для обхода DPI-замедлений и блокировок на Android. Это не VPN: трафик идёт напрямую к сайтам, без чужих серверов. Glyde меняет только форму пакетов, чтобы фильтр провайдера их не узнал. Автоподбор маршрутов, автопочинка, ускорение Telegram и стеклянный дизайн GGV7.", "Glyde is a standalone app that bypasses DPI throttling and blocking on Android. It is not a VPN: traffic goes straight to websites without third-party servers. Glyde only changes the shape of packets so the ISP filter cannot recognize them. Automatic route planning, auto repair, Telegram boost and the GGV7 glass design."),
 "about_dev": ("Разработчик: GREENTUNE", "Developer: GREENTUNE"),
 "about_links": ("Ссылки", "Links"),
 "about_source": ("Исходный код", "Source code"),
