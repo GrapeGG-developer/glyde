@@ -1,58 +1,60 @@
-# Политика конфиденциальности GT Unblock
+# Политика конфиденциальности Glyde
 
-_Последнее обновление: 17 ноября 2026 г._
+_Последнее обновление: 19 ноября 2026 г._
 
-GT Unblock разрабатывает GREENTUNE. Это приложение с открытым исходным кодом, поэтому всё, что описано ниже, можно проверить в репозитории.
+Glyde разрабатывает GREENTUNE. У приложения открытый исходный код, поэтому всё, что описано ниже, можно проверить в репозитории.
 
 ## Как работает приложение
 
-GT Unblock использует системный механизм Android VpnService только для того, чтобы обработать трафик **на самом устройстве**. Трафик не отправляется на серверы GREENTUNE или третьих лиц. Приложение не видит и не сохраняет содержимое ваших соединений.
+Glyde — не VPN в привычном смысле. Он использует системный механизм Android VpnService, чтобы обработать трафик **на самом устройстве**. Трафик не отправляется на серверы GREENTUNE или третьих лиц, а приложение не видит и не сохраняет содержимое ваших соединений. Ускорение Telegram работает как локальный прокси на 127.0.0.1 и соединяется напрямую с серверами Telegram.
 
 ## Что отправляется
 
-Отчёты о сбоях и анонимная статистика включены по умолчанию. Отправляется только следующее:
+Отчёты о сбоях и статистика отправляются всегда, отключить их нельзя. Отправляется только следующее:
 
 | Данные | Зачем |
 |---|---|
-| Версия приложения и Android, модель и производитель устройства, архитектура процессора | Найти и исправить сбои на конкретных устройствах |
-| Номер автономной системы оператора (ASN) и страна | Понять, какие стратегии работают у конкретного провайдера |
-| Какие стратегии сработали для каких сервисов, время отклика | Подсказывать другим пользователям того же оператора рабочие стратегии |
-| Режим работы (VPN или прокси), язык интерфейса, включены ли экспертный режим и блокировка QUIC, режим выбора приложений (все, только выбранные, кроме выбранных) | Понять, какими функциями пользуются |
+| Случайный ID устройства, созданный приложением (не связан с IMEI, рекламным ID или аккаунтами) | Поэтапная раскатка обновлений, канал Insider, защита сервера от злоупотреблений |
+| IP-адрес (хранится 30 дней), страна и город по IP | Защита сервера от атак, статистика по регионам |
+| Оператор и номер автономной системы (ASN) | Понять, какие стратегии работают у конкретного провайдера |
+| Модель и производитель устройства, версия Android, архитектура процессора, объём памяти, версия Glyde, канал обновлений, включён ли лёгкий режим | Найти и исправить сбои на конкретных устройствах |
+| Статус обхода (включён, выключен, ошибка) и выбранная стратегия | Видеть, что обход работает |
+| Какие из поддерживаемых Glyde сервисов открываются, а какие нет | Улучшать стратегии |
+| Результат установки обновлений | Чинить проблемы с обновлением |
 | Стектрейс сбоя приложения | Исправить ошибку |
 | Текст сообщения и контакт, если вы сами отправили предложение | Ответить вам и улучшить приложение |
 
 ## Что не собирается
 
-- IP-адрес. Сервер не записывает его в базу данных.
-- Идентификаторы устройства, рекламные идентификаторы, номер телефона, аккаунты.
-- Посещённые сайты, DNS-запросы, содержимое трафика.
+- История посещённых сайтов, DNS-запросы, содержимое трафика.
+- Номер телефона, аккаунты, рекламные идентификаторы, IMEI.
 - Список установленных приложений. Выбор приложений для обхода хранится только на устройстве.
-- Геолокация.
+- Точная геолокация по GPS.
 
 ## Сторонние сервисы
 
 - Для определения оператора приложение обращается к ipinfo.io или ipwho.is. Эти сервисы видят ваш IP-адрес по своим правилам.
-- DNS-запросы отправляются выбранному вами DoH-провайдеру: Cloudflare, Google, Quad9 или AdGuard.
-- «Проверка сети» обращается напрямую к проверяемым сервисам, а тест скорости загружает данные с speed.cloudflare.com. Результаты остаются на устройстве, пока вы сами не отправите отчёт.
-- Обновления загружаются с GitHub или через сервер GT Unblock.
-- Сервер статистики размещён на Render, база данных на Turso.
+- DNS-запросы отправляются выбранному DoH-провайдеру: Cloudflare, Google, Quad9 или AdGuard.
+- «Проверка сети» обращается напрямую к проверяемым сервисам, а тест скорости загружает данные с speed.cloudflare.com.
+- Обновления загружаются с GitHub, через сервер Glyde или его зеркала (GitHub Pages, jsDelivr).
+- Сервер размещён на Render, база данных на Turso.
 
 ## Хранение
 
-Статистика хранится в обезличенном виде и используется только для работы приложения и подбора стратегий. Данные не продаются и не передаются третьим лицам.
+IP-адреса удаляются через 30 дней. Остальная статистика используется только для работы приложения и подбора стратегий. Данные не продаются и не передаются третьим лицам.
 
 ## Контакты
 
-Вопросы можно задать через кнопку «Отправить предложение» в приложении или в [Issues на GitHub](https://github.com/GrapeGG-developer/gt-unblock/issues).
+Вопросы можно задать через кнопку «Отправить предложение» в приложении или в [Issues на GitHub](https://github.com/GrapeGG-developer/glyde/issues).
 
 ---
 
-# GT Unblock Privacy Policy (English)
+# Glyde Privacy Policy (English)
 
-GT Unblock uses Android VpnService only to process traffic **on the device**. Traffic is never routed to GREENTUNE or third-party servers.
+Glyde uses Android VpnService only to process traffic **on the device**. Traffic is never routed to GREENTUNE or third-party servers. The Telegram boost is a local proxy on 127.0.0.1 that connects directly to Telegram.
 
-Crash reports and anonymous statistics are enabled by default. Only the following is sent: app and Android version, device model and maker, CPU ABI; ISP ASN and country; which strategies worked for which services and response times; mode, UI language, expert mode, QUIC blocking and app selection mode; crash stack traces; feedback text and contact if you send it yourself.
+Crash reports and statistics are always sent and cannot be turned off. Only the following is sent: a random app-generated device ID; IP address (kept for 30 days), country and city by IP; ISP and ASN; device model and maker, Android version, CPU ABI, RAM, Glyde version, update channel and lite mode; bypass status and strategy; which supported services open; update install results; crash stack traces; feedback text and contact if you send it yourself.
 
-Not collected: IP addresses (not stored by the server), device or advertising identifiers, browsing history, DNS queries, traffic contents, installed app lists, location.
+Not collected: browsing history, DNS queries, traffic contents, phone number, accounts, advertising IDs, IMEI, installed app lists, GPS location.
 
-Third parties: ipinfo.io or ipwho.is for ISP detection, the DoH provider you select, GitHub for updates, Render and Turso for the statistics server. The network check connects directly to the services being checked, and the speed test downloads data from speed.cloudflare.com; results stay on the device unless you share a report.
+Third parties: ipinfo.io or ipwho.is for ISP detection, the DoH provider you select, GitHub, GitHub Pages and jsDelivr for updates, Render and Turso for the server.

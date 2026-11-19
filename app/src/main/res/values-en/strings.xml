@@ -159,7 +159,7 @@
     <string name="onb_2_text">The app finds a working strategy for your ISP on its own</string>
     <string name="onb_3_title">Flexible settings</string>
     <string name="onb_3_text">40+ services, your own sites, diagnostics, app selection and DNS over HTTPS</string>
-    <string name="onb_telemetry">The app sends anonymous crash reports and strategy statistics. See About for details.</string>
+    <string name="onb_telemetry">Glyde always sends crash reports and statistics: a random ID, IP (30 days), country, ISP, phone model and bypass status. It never collects browsing history or traffic. Details are in About.</string>
     <string name="onb_start">Start</string>
     <string name="nav_services">Services</string>
     <string name="nav_diag">Check</string>

@@ -119,6 +119,9 @@ fun SettingsScreen() {
                 ToggleRow(stringResource(R.string.set_ipv6), stringResource(R.string.set_ipv6_sub), s.ipv6, { v -> change(true) { it.copy(ipv6 = v) } }, enabled = s.mode == "vpn")
                 ToggleRow(stringResource(R.string.set_autostart), stringResource(R.string.set_autostart_sub), s.autostart, { v -> change(false) { it.copy(autostart = v) } })
                 ToggleRow(stringResource(R.string.set_retune), stringResource(R.string.set_retune_sub), s.tuneOnNetworkChange, { v -> change(false) { it.copy(tuneOnNetworkChange = v) } })
+                ToggleRow(stringResource(R.string.auto_repair), stringResource(R.string.auto_repair_sub), s.autoRepair, { v -> change(false) { it.copy(autoRepair = v) } })
+                ToggleRow(stringResource(R.string.udp_bypass), stringResource(R.string.udp_bypass_sub), s.udpBypass, { v -> change(true) { it.copy(udpBypass = v) } })
+                ToggleRow(stringResource(R.string.tg_set), stringResource(R.string.tg_set_sub), s.tgBridge, { v -> change(false) { it.copy(tgBridge = v) } })
                 SettingRow(stringResource(R.string.set_always_on), stringResource(R.string.set_always_on_sub), onClick = {
                     try {
                         context.startActivity(Intent(Settings.ACTION_VPN_SETTINGS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
@@ -162,6 +165,12 @@ fun SettingsScreen() {
                     s.effects3d && AquaFx.supported,
                     { v -> change(false) { it.copy(effects3d = v) } },
                     enabled = AquaFx.supported
+                )
+                ToggleRow(
+                    stringResource(R.string.lite_mode),
+                    if (s.lite == "auto" && gpr.greentune.unblock.system.Perf.weak) stringResource(R.string.lite_auto) else stringResource(R.string.lite_sub),
+                    gpr.greentune.unblock.system.Perf.lite(s),
+                    { v -> change(false) { it.copy(lite = if (v) "on" else "off") } }
                 )
                 ToggleRow(stringResource(R.string.set_tilt), stringResource(R.string.set_tilt_sub), s.tilt, { v -> change(false) { it.copy(tilt = v) } })
                 ToggleRow(stringResource(R.string.set_sound), null, s.sound, { v -> change(false) { it.copy(sound = v) } })

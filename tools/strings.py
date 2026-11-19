@@ -162,7 +162,7 @@ S = {
 "onb_2_text": ("Приложение само подберёт рабочую стратегию для вашего оператора", "The app finds a working strategy for your ISP on its own"),
 "onb_3_title": ("Гибкая настройка", "Flexible settings"),
 "onb_3_text": ("Более 40 сервисов, свои сайты, диагностика, выбор приложений и DNS через HTTPS", "40+ services, your own sites, diagnostics, app selection and DNS over HTTPS"),
-"onb_telemetry": ("Приложение отправляет анонимные отчёты о сбоях и статистику работы стратегий. Подробности в разделе «О приложении».", "The app sends anonymous crash reports and strategy statistics. See About for details."),
+"onb_telemetry": ("Glyde всегда отправляет отчёты о сбоях и статистику: случайный ID, IP (30 дней), страну, оператора, модель телефона и статус обхода. Историю сайтов и трафик не собирает. Подробности в разделе «О приложении».", "Glyde always sends crash reports and statistics: a random ID, IP (30 days), country, ISP, phone model and bypass status. It never collects browsing history or traffic. Details are in About."),
 "onb_start": ("Начать", "Get started"),
 "nav_services": ("Сервисы", "Services"),
 "nav_diag": ("Проверка", "Check"),
