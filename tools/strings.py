@@ -294,6 +294,7 @@ S = {
 "link_off": ("Нет связи с сервером", "No server connection"),
 "privacy_title": ("Какие данные собираются", "What data is collected"),
 "privacy_text": ("Случайный ID устройства, IP-адрес (хранится 30 дней), страна и город по IP, оператор и ASN, модель телефона, версия Android и Glyde, статус обхода, выбранная стратегия, какие сервисы открываются, отчёты о вылетах. Историю сайтов и трафик Glyde не собирает.", "A random device ID, IP address (kept for 30 days), country and city by IP, ISP and ASN, phone model, Android and Glyde versions, bypass status, chosen strategy, which services open, crash reports. Glyde never collects browsing history or traffic."),
+"nav_menu": ("Меню", "Menu"),
 }
 
 def esc(v):

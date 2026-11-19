@@ -3,6 +3,12 @@ package gpr.greentune.unblock.ui.screens
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.animation.scaleOut
+import androidx.compose.animation.scaleIn
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.spring
@@ -123,15 +129,21 @@ fun GlydeHome(onConnect: () -> Unit, onDisconnect: () -> Unit) {
     val c = Aero.colors
     val context = LocalContext.current
     val view = LocalView.current
-    val density = LocalDensity.current
-    val scope = rememberCoroutineScope()
     val status by Engine.status.collectAsStateWithLifecycle()
+    val since by Engine.since.collectAsStateWithLifecycle()
     val tune by Tuner.progress.collectAsStateWithLifecycle()
+    val result by TuneStore.current.collectAsStateWithLifecycle()
+    val presets by Presets.data.collectAsStateWithLifecycle()
     val settings by SettingsStore.state.collectAsStateWithLifecycle()
     var page by rememberSaveable { mutableStateOf<String?>(null) }
     var showHow by remember { mutableStateOf(false) }
-    val prog = remember { Animatable(0f) }
-    var collapsedPx by remember { mutableIntStateOf(0) }
+    var now by remember { mutableLongStateOf(System.currentTimeMillis()) }
+    LaunchedEffect(status) {
+        while (status == EngineStatus.On) {
+            now = System.currentTimeMillis()
+            delay(1000)
+        }
+    }
 
     val orbState = when (status) {
         EngineStatus.On -> if (tune.running) OrbState.Starting else OrbState.On
@@ -139,132 +151,108 @@ fun GlydeHome(onConnect: () -> Unit, onDisconnect: () -> Unit) {
         is EngineStatus.Error -> OrbState.Error
         EngineStatus.Off -> OrbState.Off
     }
+    val choices = result?.choices.orEmpty().associateBy { it.serviceId }
+    val active = Presets.active(presets, settings).services
+    val okCount = active.count { choices[it.id]?.let { ch -> ch.ok || ch.strategyId != null } == true }
+    val title = when {
+        status == EngineStatus.On && tune.running -> stringResource(R.string.status_tuning)
+        status == EngineStatus.On -> stringResource(R.string.status_on)
+        status == EngineStatus.Starting -> stringResource(R.string.status_connecting)
+        status is EngineStatus.Error -> stringResource(R.string.status_error)
+        else -> stringResource(R.string.status_off)
+    }
+    val timer = formatDuration(maxOf(0, now - since))
+    val sub = when {
+        status is EngineStatus.Error -> (status as EngineStatus.Error).message
+        status == EngineStatus.On && tune.running -> stringResource(R.string.sheet_tuning)
+        status == EngineStatus.On && settings.mode == "proxy" -> stringResource(R.string.status_proxy_on, settings.proxyPort) + " · " + timer
+        status == EngineStatus.On && result != null && active.isNotEmpty() -> stringResource(R.string.sheet_on, okCount, active.size) + " · " + timer
+        status == EngineStatus.On -> stringResource(R.string.sheet_on_plain) + " · " + timer
+        status == EngineStatus.Starting -> stringResource(R.string.sheet_starting)
+        else -> stringResource(R.string.tap_to_connect)
+    }
 
-    fun expand(to: String) {
+    BackHandler(enabled = page != null) {
+        page = if (page != Pages.MENU) Pages.MENU else null
+    }
+
+    val open: (String?) -> Unit = { p ->
         if (settings.haptics) Fx.haptic(view)
-        page = to
-        scope.launch { prog.animateTo(1f, spring(0.86f, 420f)) }
+        page = p
     }
-
-    fun collapse() {
-        scope.launch {
-            prog.animateTo(0f, spring(0.9f, 420f))
-            page = null
-        }
-    }
-
-    BackHandler(enabled = page != null || prog.value > 0.01f) {
-        if (page != null && page != Pages.MENU) page = Pages.MENU else collapse()
-    }
-
-    val statusTop = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
-    val navBottom = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
 
     BoxWithConstraints(Modifier.fillMaxSize()) {
-        val fullH = maxHeight
-        val fullW = maxWidth
-        val topBarH = statusTop + 56.dp
-        val collapsedH = if (collapsedPx > 0) with(density) { collapsedPx.toDp() } else 250.dp
-        val smallOrb = 110.dp
-        val expandedH = (fullH - topBarH - smallOrb - 4.dp).coerceAtLeast(collapsedH)
-        val p = prog.value
-        val sheetH = collapsedH + (expandedH - collapsedH) * p
-        val region = (fullH - topBarH - sheetH).coerceAtLeast(60.dp)
-        val bigOrb = minOf(330.dp, fullW * 0.86f, (fullH - topBarH - collapsedH) * 0.96f).coerceAtLeast(130.dp)
-        val orbSize = minOf(Dp(lerp(bigOrb.value, smallOrb.value, p)), region)
-        val orbY = topBarH + (region - orbSize) / 2
-        val rangePx = with(density) { (expandedH - collapsedH).toPx() }.coerceAtLeast(1f)
-
-        TopBar(statusTop, onHow = { showHow = true })
-
-        Box(
-            Modifier
-                .offset { IntOffset(((fullW - orbSize) / 2).roundToPx(), orbY.roundToPx()) }
-                .size(orbSize),
-            contentAlignment = Alignment.Center
+        val orbSize = minOf(maxWidth * 0.62f, maxHeight * 0.36f, 300.dp)
+        Column(
+            Modifier.fillMaxSize().statusBarsPadding().navigationBarsPadding(),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Orb3D(
-                state = orbState,
-                effects = Perf.effects(settings),
-                description = stringResource(R.string.app_name),
-                size = orbSize / 1.35f,
-                onClick = {
-                    if (settings.sound) Fx.tap(context)
-                    if (Engine.isActive()) onDisconnect() else onConnect()
-                }
-            )
-        }
-
-        val dragState = rememberDraggableState { d ->
-            scope.launch { prog.snapTo((prog.value - d / rangePx).coerceIn(0f, 1f)) }
-        }
-        val dragMod = Modifier.draggable(
-            dragState,
-            Orientation.Vertical,
-            onDragStarted = { if (page == null) page = Pages.MENU },
-            onDragStopped = { v ->
-                val up = v < -900f || (v <= 900f && prog.value > 0.5f)
-                if (up) {
-                    if (page == null) page = Pages.MENU
-                    prog.animateTo(1f, spring(0.86f, 420f), -v / rangePx)
-                } else {
-                    prog.animateTo(0f, spring(0.9f, 420f), -v / rangePx)
-                    page = null
-                }
-            }
-        )
-
-        Box(
-            Modifier
-                .offset { IntOffset(0, (fullH - sheetH).roundToPx()) }
-                .fillMaxWidth()
-                .height(sheetH + 48.dp)
-                .glass(c, 30.dp, glossFraction = 0.10f)
-        ) {
-            Column(
-                Modifier
-                    .fillMaxWidth()
-                    .height(sheetH)
-                    .padding(bottom = navBottom),
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                val compact = page != null && page != Pages.MENU && p > 0.5f
-                Column(
-                    Modifier
-                        .widthIn(max = 640.dp)
-                        .fillMaxWidth()
-                        .then(dragMod)
-                        .onSizeChanged { if (!compact && prog.value < 0.01f && !prog.isRunning) collapsedPx = it.height + with(density) { navBottom.roundToPx() } },
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-                    Handle(onClick = { if (prog.value > 0.5f) collapse() else expand(Pages.MENU) })
-                    StatusBlock(compact, onHow = { showHow = true }, onOpen = ::expand)
-                }
-                Box(
-                    Modifier
-                        .weight(1f)
-                        .widthIn(max = 640.dp)
-                        .fillMaxWidth()
-                        .alpha(((p - 0.15f) / 0.85f).coerceIn(0f, 1f))
-                ) {
-                    if (p > 0.02f && page != null) {
-                        AnimatedContent(
-                            targetState = page ?: Pages.MENU,
-                            transitionSpec = {
-                                if (targetState == Pages.MENU) {
-                                    (slideInHorizontally(tween(260)) { -it / 4 } + fadeIn(tween(220))) togetherWith (slideOutHorizontally(tween(260)) { it / 4 } + fadeOut(tween(160)))
-                                } else {
-                                    (slideInHorizontally(tween(260)) { it / 4 } + fadeIn(tween(220))) togetherWith (slideOutHorizontally(tween(260)) { -it / 4 } + fadeOut(tween(160)))
-                                }
-                            },
-                            label = "page"
-                        ) { pg ->
-                            if (pg == Pages.MENU) Menu(onOpen = { page = it }, onHow = { showHow = true })
-                            else SubPage(pg, onBack = { page = Pages.MENU }, onOpen = { page = it })
-                        }
+            TopBar(onHow = { showHow = true })
+            Spacer(Modifier.weight(1f))
+            Box(Modifier.size(orbSize * 1.2f), contentAlignment = Alignment.Center) {
+                Orb3D(
+                    state = orbState,
+                    effects = Perf.effects(settings),
+                    description = title,
+                    size = orbSize / 1.35f * 1.2f,
+                    onClick = {
+                        if (settings.sound) Fx.tap(context)
+                        if (Engine.isActive()) onDisconnect() else onConnect()
                     }
+                )
+            }
+            Spacer(Modifier.height(8.dp))
+            Text(title, fontSize = 32.sp, fontWeight = FontWeight.Light, color = c.text, maxLines = 1)
+            Spacer(Modifier.height(4.dp))
+            Text(
+                sub, fontSize = 15.sp, maxLines = 2, overflow = TextOverflow.Ellipsis, textAlign = TextAlign.Center,
+                color = if (status is EngineStatus.Error) c.danger else c.subText,
+                modifier = Modifier.padding(horizontal = 28.dp)
+            )
+            AnimatedVisibility(tune.running, enter = fadeIn() + expandVertically(), exit = fadeOut() + shrinkVertically()) {
+                Row(
+                    Modifier.widthIn(max = 420.dp).fillMaxWidth().padding(horizontal = 32.dp, vertical = 10.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Box(Modifier.weight(1f)) { AeroProgressBar(tune.fraction) }
+                    Spacer(Modifier.width(10.dp))
+                    AeroButton(stringResource(R.string.cancel), onClick = { Tuner.cancel() })
                 }
             }
+            if (!tune.running && tune.message != null) {
+                Row(
+                    Modifier.widthIn(max = 420.dp).fillMaxWidth().padding(horizontal = 32.dp, vertical = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(tune.message ?: "", fontSize = 13.sp, color = c.text, modifier = Modifier.weight(1f), maxLines = 2, overflow = TextOverflow.Ellipsis)
+                    AeroButton(stringResource(R.string.ok), onClick = { Tuner.clearMessage() })
+                }
+            }
+            Spacer(Modifier.height(10.dp))
+            Row(
+                Modifier
+                    .clip(RoundedCornerShape(14.dp))
+                    .clickable { showHow = true }
+                    .padding(horizontal = 12.dp, vertical = 6.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                StatusDot(c.ok, size = 8.dp)
+                Spacer(Modifier.width(8.dp))
+                Text(stringResource(R.string.not_vpn), fontSize = 13.sp, color = c.subText, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            }
+            Spacer(Modifier.weight(1f))
+            MenuButton(badge = settings.tgBridge && !settings.tgLinked) { open(Pages.MENU) }
+            Spacer(Modifier.height(18.dp))
+        }
+
+        AeroWindowHost(
+            page = page,
+            maxH = maxHeight,
+            onClose = { page = null },
+            onBack = { page = Pages.MENU },
+        ) { pg ->
+            if (pg == Pages.MENU) Menu(onOpen = { page = it })
+            else PageContent(pg, onOpen = { page = it })
         }
     }
 
@@ -272,14 +260,13 @@ fun GlydeHome(onConnect: () -> Unit, onDisconnect: () -> Unit) {
 }
 
 @Composable
-private fun TopBar(statusTop: Dp, onHow: () -> Unit) {
+private fun TopBar(onHow: () -> Unit) {
     val c = Aero.colors
     Row(
         Modifier
             .fillMaxWidth()
-            .padding(top = statusTop)
             .height(56.dp)
-            .padding(horizontal = 14.dp),
+            .padding(horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Image(painterResource(R.drawable.logo_glass), null, Modifier.size(32.dp))
@@ -300,150 +287,215 @@ private fun TopBar(statusTop: Dp, onHow: () -> Unit) {
 }
 
 @Composable
-private fun Handle(onClick: () -> Unit) {
+private fun MenuButton(badge: Boolean, onClick: () -> Unit) {
     val c = Aero.colors
-    Box(
-        Modifier
-            .fillMaxWidth()
-            .height(26.dp)
-            .clickable(interactionSource = remember { MutableInteractionSource() }, indication = null, onClick = onClick),
-        contentAlignment = Alignment.Center
-    ) {
+    Box {
+        Row(
+            Modifier
+                .widthIn(min = 200.dp)
+                .height(56.dp)
+                .glass(c, 28.dp)
+                .clip(RoundedCornerShape(28.dp))
+                .clickable(onClick = onClick)
+                .padding(horizontal = 28.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Canvas(Modifier.size(20.dp)) {
+                val s = size.width
+                val g = s * 0.14f
+                val cell = (s - g) / 2
+                for (ix in 0..1) for (iy in 0..1) {
+                    drawRoundRect(
+                        c.text.copy(alpha = 0.9f),
+                        topLeft = Offset(ix * (cell + g), iy * (cell + g)),
+                        size = androidx.compose.ui.geometry.Size(cell, cell),
+                        cornerRadius = CornerRadius(cell * 0.3f)
+                    )
+                }
+            }
+            Spacer(Modifier.width(12.dp))
+            Text(stringResource(R.string.nav_menu), fontSize = 17.sp, fontWeight = FontWeight.SemiBold, color = c.text)
+        }
+        if (badge) {
+            Box(
+                Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(top = 4.dp, end = 10.dp)
+                    .size(12.dp)
+                    .clip(CircleShape)
+                    .drawBehind { drawRect(c.warn) }
+            )
+        }
+    }
+}
+
+@Composable
+private fun AeroWindowHost(
+    page: String?,
+    maxH: Dp,
+    onClose: () -> Unit,
+    onBack: () -> Unit,
+    content: @Composable (String) -> Unit,
+) {
+    val c = Aero.colors
+    AnimatedVisibility(page != null, enter = fadeIn(tween(180)), exit = fadeOut(tween(180))) {
         Box(
             Modifier
-                .size(44.dp, 5.dp)
-                .clip(RoundedCornerShape(3.dp))
-                .drawBehind { drawRect(c.text.copy(alpha = 0.28f)) }
+                .fillMaxSize()
+                .drawBehind { drawRect(Color.Black.copy(alpha = if (c.dark) 0.45f else 0.28f)) }
+                .clickable(interactionSource = remember { MutableInteractionSource() }, indication = null, onClick = onClose)
         )
     }
-}
-
-@OptIn(ExperimentalLayoutApi::class)
-@Composable
-private fun StatusBlock(compact: Boolean, onHow: () -> Unit, onOpen: (String) -> Unit) {
-    val c = Aero.colors
-    val context = LocalContext.current
-    val view = LocalView.current
-    val status by Engine.status.collectAsStateWithLifecycle()
-    val since by Engine.since.collectAsStateWithLifecycle()
-    val tune by Tuner.progress.collectAsStateWithLifecycle()
-    val result by TuneStore.current.collectAsStateWithLifecycle()
-    val presets by Presets.data.collectAsStateWithLifecycle()
-    val settings by SettingsStore.state.collectAsStateWithLifecycle()
-    val tg by TgBridge.stats.collectAsStateWithLifecycle()
-    var now by remember { mutableLongStateOf(System.currentTimeMillis()) }
-    LaunchedEffect(status) {
-        while (status == EngineStatus.On) {
-            now = System.currentTimeMillis()
-            delay(1000)
-        }
-    }
-
-    val choices = result?.choices.orEmpty().associateBy { it.serviceId }
-    val active = Presets.active(presets, settings).services
-    val okCount = active.count { choices[it.id]?.let { ch -> ch.ok || ch.strategyId != null } == true }
-
-    val title = when {
-        status == EngineStatus.On && tune.running -> stringResource(R.string.status_tuning)
-        status == EngineStatus.On -> stringResource(R.string.status_on)
-        status == EngineStatus.Starting -> stringResource(R.string.status_connecting)
-        status is EngineStatus.Error -> stringResource(R.string.status_error)
-        else -> stringResource(R.string.status_off)
-    }
-    val sub = when {
-        status is EngineStatus.Error -> (status as EngineStatus.Error).message
-        status == EngineStatus.On && tune.running -> stringResource(R.string.sheet_tuning)
-        status == EngineStatus.On && settings.mode == "proxy" -> stringResource(R.string.status_proxy_on, settings.proxyPort) + " · " + formatDuration(maxOf(0, now - since))
-        status == EngineStatus.On && result != null && active.isNotEmpty() -> stringResource(R.string.sheet_on, okCount, active.size) + " · " + formatDuration(maxOf(0, now - since))
-        status == EngineStatus.On -> stringResource(R.string.sheet_on_plain) + " · " + formatDuration(maxOf(0, now - since))
-        status == EngineStatus.Starting -> stringResource(R.string.sheet_starting)
-        else -> stringResource(R.string.tap_to_connect)
-    }
-
-    Column(
-        Modifier.fillMaxWidth().padding(horizontal = 18.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+    var last by remember { mutableStateOf(Pages.MENU) }
+    if (page != null) last = page
+    AnimatedVisibility(
+        page != null,
+        modifier = Modifier.fillMaxSize(),
+        enter = fadeIn(tween(200)) + scaleIn(spring(0.8f, 500f), initialScale = 0.9f),
+        exit = fadeOut(tween(150)) + scaleOut(tween(150), targetScale = 0.94f)
     ) {
-        Text(title, fontSize = if (compact) 18.sp else 26.sp, fontWeight = FontWeight.Light, color = c.text, maxLines = 1)
-        Text(
-            sub, fontSize = 13.5.sp, maxLines = 2, overflow = TextOverflow.Ellipsis, textAlign = TextAlign.Center,
-            color = if (status is EngineStatus.Error) c.danger else c.subText
-        )
-        AnimatedVisibility(!compact, enter = fadeIn() + expandVertically(), exit = fadeOut() + shrinkVertically()) {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Spacer(Modifier.height(6.dp))
-                Row(
+        Box(
+            Modifier.fillMaxSize().statusBarsPadding().navigationBarsPadding().padding(horizontal = 12.dp, vertical = 12.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            val pg = page ?: last
+            val sub = pg != Pages.MENU
+            Column(
+                Modifier
+                    .widthIn(max = 560.dp)
+                    .fillMaxWidth()
+                    .heightIn(max = maxH * 0.88f)
+                    .then(if (sub) Modifier.fillMaxHeight() else Modifier)
+                    .aeroFrame(c)
+                    .clickable(interactionSource = remember { MutableInteractionSource() }, indication = null) {}
+            ) {
+                WindowCaption(
+                    title = pageTitle(pg),
+                    showBack = sub,
+                    onBack = onBack,
+                    onClose = onClose
+                )
+                Box(
                     Modifier
-                        .clip(RoundedCornerShape(12.dp))
-                        .clickable(onClick = onHow)
-                        .padding(horizontal = 10.dp, vertical = 4.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                        .padding(start = 6.dp, end = 6.dp, bottom = 6.dp)
+                        .then(if (sub) Modifier.weight(1f) else Modifier)
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(10.dp))
+                        .drawBehind {
+                            drawRect(if (c.dark) Color(0xFF0B1E28).copy(alpha = 0.92f) else Color(0xFFF4FAFD).copy(alpha = 0.94f))
+                        }
                 ) {
-                    StatusDot(c.ok, size = 7.dp)
-                    Spacer(Modifier.width(6.dp))
-                    Text(stringResource(R.string.not_vpn), fontSize = 12.5.sp, color = c.subText, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                }
-                AnimatedVisibility(tune.running, enter = fadeIn() + expandVertically(), exit = fadeOut() + shrinkVertically()) {
-                    Row(Modifier.fillMaxWidth().padding(top = 8.dp), verticalAlignment = Alignment.CenterVertically) {
-                        Column(Modifier.weight(1f)) {
-                            Text(tune.label, fontSize = 12.5.sp, color = c.text, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                            Spacer(Modifier.height(4.dp))
-                            AeroProgressBar(tune.fraction)
-                        }
-                        Spacer(Modifier.width(10.dp))
-                        AeroButton(stringResource(R.string.cancel), onClick = { Tuner.cancel() })
-                    }
-                }
-                if (!tune.running && tune.message != null) {
-                    Row(Modifier.fillMaxWidth().padding(top = 8.dp), verticalAlignment = Alignment.CenterVertically) {
-                        Text(tune.message ?: "", fontSize = 13.sp, color = c.text, modifier = Modifier.weight(1f), maxLines = 2, overflow = TextOverflow.Ellipsis)
-                        AeroButton(stringResource(R.string.ok), onClick = { Tuner.clearMessage() })
-                    }
-                }
-                if (status == EngineStatus.On && result != null && active.isNotEmpty()) {
-                    Spacer(Modifier.height(8.dp))
-                    val shown = active.take(6)
-                    FlowRow(
-                        horizontalArrangement = Arrangement.spacedBy(6.dp, Alignment.CenterHorizontally),
-                        verticalArrangement = Arrangement.spacedBy(6.dp),
-                        modifier = Modifier.fillMaxWidth().clickable(interactionSource = remember { MutableInteractionSource() }, indication = null) { onOpen(Pages.SERVICES) }
-                    ) {
-                        for (s in shown) {
-                            val ch = choices[s.id]
-                            val col = when {
-                                ch == null -> c.subText
-                                ch.ok -> c.ok
-                                ch.strategyId != null -> c.ok
-                                else -> c.danger
+                    AnimatedContent(
+                        targetState = pg,
+                        transitionSpec = {
+                            if (targetState == Pages.MENU) {
+                                (slideInHorizontally(tween(240)) { -it / 5 } + fadeIn(tween(200))) togetherWith (slideOutHorizontally(tween(240)) { it / 5 } + fadeOut(tween(140)))
+                            } else {
+                                (slideInHorizontally(tween(240)) { it / 5 } + fadeIn(tween(200))) togetherWith (slideOutHorizontally(tween(240)) { -it / 5 } + fadeOut(tween(140)))
                             }
-                            Chip(s.name, col)
-                        }
-                        if (active.size > shown.size) Chip(stringResource(R.string.sheet_more, active.size - shown.size), null)
-                    }
+                        },
+                        label = "win"
+                    ) { p -> content(p) }
                 }
-                Spacer(Modifier.height(12.dp))
-                val lite = Perf.lite(settings)
-                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                    Tile(
-                        R.drawable.ic_v3_retune, stringResource(R.string.retune), Modifier.weight(1f),
-                        enabled = !tune.running,
-                    ) { Tuner.start(context, full = false) }
-                    Tile(
-                        R.drawable.ic_v3_telegram, "Telegram", Modifier.weight(1f),
-                        active = tg.running, badge = settings.tgBridge && !settings.tgLinked,
-                    ) { onOpen(Pages.TELEGRAM) }
-                    Tile(R.drawable.ic_v3_lite, stringResource(R.string.lite_mode), Modifier.weight(1f), active = lite) {
-                        if (settings.haptics) Fx.haptic(view)
-                        SettingsStore.update { it.copy(lite = if (lite) "off" else "on") }
-                    }
-                    Tile(R.drawable.ic_menu_settings, stringResource(R.string.nav_more), Modifier.weight(1f)) { onOpen(Pages.MENU) }
-                }
-                Spacer(Modifier.height(14.dp))
             }
         }
-        if (compact) Spacer(Modifier.height(8.dp))
     }
 }
+
+private fun Modifier.aeroFrame(c: gpr.greentune.unblock.ui.aero.AeroColors): Modifier = this.drawBehind {
+    val r = 16.dp.toPx()
+    val cr = CornerRadius(r, r)
+    drawRoundRect(Color.Black.copy(alpha = 0.35f), topLeft = Offset(0f, 6.dp.toPx()), size = size, cornerRadius = cr)
+    drawRoundRect(
+        Brush.verticalGradient(
+            listOf(
+                lerpC(c.tint, Color.White, if (c.dark) 0.05f else 0.55f).copy(alpha = 0.92f),
+                lerpC(c.tint, Color.Black, if (c.dark) 0.55f else 0.05f).copy(alpha = 0.90f),
+            )
+        ),
+        cornerRadius = cr
+    )
+    drawRoundRect(
+        Brush.verticalGradient(listOf(Color.White.copy(alpha = 0.45f), Color.White.copy(alpha = 0.0f)), 0f, 44.dp.toPx()),
+        size = androidx.compose.ui.geometry.Size(size.width, 44.dp.toPx()),
+        cornerRadius = cr
+    )
+    drawRoundRect(Color.Black.copy(alpha = 0.55f), cornerRadius = cr, style = Stroke(1.dp.toPx()))
+    drawRoundRect(
+        Color.White.copy(alpha = 0.5f),
+        topLeft = Offset(1.dp.toPx(), 1.dp.toPx()),
+        size = androidx.compose.ui.geometry.Size(size.width - 2.dp.toPx(), size.height - 2.dp.toPx()),
+        cornerRadius = CornerRadius(r - 1.dp.toPx()),
+        style = Stroke(1.dp.toPx())
+    )
+}
+
+private fun lerpC(a: Color, b: Color, t: Float) = Color(a.red + (b.red - a.red) * t, a.green + (b.green - a.green) * t, a.blue + (b.blue - a.blue) * t, 1f)
+
+@Composable
+private fun WindowCaption(title: String, showBack: Boolean, onBack: () -> Unit, onClose: () -> Unit) {
+    val c = Aero.colors
+    Row(
+        Modifier.fillMaxWidth().height(48.dp).padding(horizontal = 8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        if (showBack) {
+            Box(
+                Modifier.size(34.dp).glass(c, 17.dp).clip(CircleShape).clickable(onClick = onBack),
+                contentAlignment = Alignment.Center
+            ) {
+                Canvas(Modifier.size(14.dp)) {
+                    val w = size.width
+                    drawLine(Color.White, Offset(w * 0.68f, w * 0.1f), Offset(w * 0.28f, w * 0.5f), 2.4.dp.toPx(), StrokeCap.Round)
+                    drawLine(Color.White, Offset(w * 0.28f, w * 0.5f), Offset(w * 0.68f, w * 0.9f), 2.4.dp.toPx(), StrokeCap.Round)
+                }
+            }
+            Spacer(Modifier.width(10.dp))
+        } else {
+            Image(painterResource(R.drawable.logo_glass), null, Modifier.padding(start = 4.dp).size(24.dp))
+            Spacer(Modifier.width(10.dp))
+        }
+        Text(
+            title, fontSize = 17.sp, color = Color.White, maxLines = 1, overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.weight(1f),
+            style = androidx.compose.ui.text.TextStyle(shadow = androidx.compose.ui.graphics.Shadow(Color.Black.copy(alpha = 0.5f), Offset(0f, 1f), 6f))
+        )
+        Box(
+            Modifier
+                .size(width = 46.dp, height = 26.dp)
+                .clip(RoundedCornerShape(6.dp))
+                .drawBehind {
+                    drawRect(Brush.verticalGradient(listOf(Color(0xFFF0A08C), Color(0xFFD9452B), Color(0xFFB3200A), Color(0xFFE0683A))))
+                    drawRect(Brush.verticalGradient(listOf(Color.White.copy(alpha = 0.45f), Color.Transparent), 0f, size.height * 0.5f), size = androidx.compose.ui.geometry.Size(size.width, size.height * 0.5f))
+                }
+                .clickable(onClick = onClose),
+            contentAlignment = Alignment.Center
+        ) {
+            Canvas(Modifier.size(10.dp)) {
+                val w = size.width
+                drawLine(Color.White, Offset(0f, 0f), Offset(w, w), 2.2.dp.toPx(), StrokeCap.Round)
+                drawLine(Color.White, Offset(w, 0f), Offset(0f, w), 2.2.dp.toPx(), StrokeCap.Round)
+            }
+        }
+    }
+}
+
+@Composable
+private fun pageTitle(page: String): String = stringResource(
+    when (page) {
+        Pages.MENU -> R.string.nav_menu
+        Pages.SERVICES -> R.string.nav_services
+        Pages.TUNE -> R.string.nav_tune
+        Pages.DIAG -> R.string.diag_title
+        Pages.APPS -> R.string.nav_apps
+        Pages.SETTINGS -> R.string.nav_settings
+        Pages.ABOUT -> R.string.nav_about
+        Pages.DONATE -> R.string.donate_title
+        Pages.FEEDBACK -> R.string.nav_feedback
+        else -> R.string.tg_title
+    }
+)
 
 @Composable
 private fun Chip(text: String, dot: Color?) {
@@ -480,12 +532,12 @@ fun Tile(
             .clip(RoundedCornerShape(18.dp))
             .clickable(enabled = enabled, onClick = onClick)
             .alpha(if (enabled) 1f else 0.5f)
-            .padding(vertical = 10.dp, horizontal = 4.dp),
+            .padding(top = 12.dp, bottom = 8.dp, start = 4.dp, end = 4.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Box(Modifier.size(40.dp), contentAlignment = Alignment.Center) {
-            Image(painterResource(icon), null, Modifier.size(38.dp))
+        Box(Modifier.size(54.dp), contentAlignment = Alignment.Center) {
+            Image(painterResource(icon), null, Modifier.size(52.dp))
             if (badge) {
                 Box(
                     Modifier
@@ -497,9 +549,9 @@ fun Tile(
             }
         }
         Spacer(Modifier.height(6.dp))
-        Box(Modifier.height(32.dp).fillMaxWidth(), contentAlignment = Alignment.TopCenter) {
+        Box(Modifier.height(34.dp).fillMaxWidth(), contentAlignment = Alignment.TopCenter) {
             Text(
-                label, fontSize = 11.5.sp, lineHeight = 14.sp, color = c.text, textAlign = TextAlign.Center,
+                label, fontSize = 12.5.sp, lineHeight = 15.sp, color = c.text, textAlign = TextAlign.Center,
                 maxLines = 2, overflow = TextOverflow.Ellipsis
             )
         }
@@ -507,35 +559,39 @@ fun Tile(
 }
 
 @Composable
-private fun Menu(onOpen: (String) -> Unit, onHow: () -> Unit) {
-    val items = listOf(
-        Triple(Pages.SERVICES, R.drawable.ic_menu_services, R.string.nav_services),
-        Triple(Pages.TUNE, R.drawable.ic_menu_tune, R.string.nav_tune),
-        Triple(Pages.DIAG, R.drawable.ic_v3_network, R.string.diag_title),
-        Triple(Pages.TELEGRAM, R.drawable.ic_v3_telegram, R.string.tg_title),
-        Triple(Pages.APPS, R.drawable.ic_menu_apps, R.string.nav_apps),
-        Triple(Pages.SETTINGS, R.drawable.ic_v3_expert, R.string.nav_settings),
-        Triple("how", R.drawable.ic_v3_how, R.string.how_it_works),
-        Triple(Pages.FEEDBACK, R.drawable.ic_menu_feedback, R.string.nav_feedback),
-        Triple(Pages.ABOUT, R.drawable.ic_v3_shield, R.string.nav_about),
-    )
+private fun Menu(onOpen: (String) -> Unit) {
+    val view = LocalView.current
+    val context = LocalContext.current
+    val settings by SettingsStore.state.collectAsStateWithLifecycle()
+    val tune by Tuner.progress.collectAsStateWithLifecycle()
+    val tg by TgBridge.stats.collectAsStateWithLifecycle()
+    val lite = Perf.lite(settings)
     Column(
         Modifier
-            .fillMaxSize()
+            .fillMaxWidth()
             .verticalScroll(rememberScrollState())
-            .padding(horizontal = 18.dp, vertical = 4.dp),
+            .padding(12.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
-        for (row in items.chunked(3)) {
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                for ((id, icon, label) in row) {
-                    Tile(icon, stringResource(label), Modifier.weight(1f)) { if (id == "how") onHow() else onOpen(id) }
-                }
-                repeat(3 - row.size) { Spacer(Modifier.weight(1f)) }
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+            Tile(R.drawable.ic_menu_services, stringResource(R.string.nav_services), Modifier.weight(1f)) { onOpen(Pages.SERVICES) }
+            Tile(R.drawable.ic_v3_telegram, "Telegram", Modifier.weight(1f), active = tg.running, badge = settings.tgBridge && !settings.tgLinked) { onOpen(Pages.TELEGRAM) }
+            Tile(R.drawable.ic_v3_retune, stringResource(R.string.retune), Modifier.weight(1f), enabled = !tune.running) { Tuner.start(context, full = false) }
+        }
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+            Tile(R.drawable.ic_v3_lite, stringResource(R.string.lite_mode), Modifier.weight(1f), active = lite) {
+                if (settings.haptics) Fx.haptic(view)
+                SettingsStore.update { it.copy(lite = if (lite) "off" else "on") }
             }
+            Tile(R.drawable.ic_v3_network, stringResource(R.string.diag_title), Modifier.weight(1f)) { onOpen(Pages.DIAG) }
+            Tile(R.drawable.ic_menu_apps, stringResource(R.string.nav_apps), Modifier.weight(1f)) { onOpen(Pages.APPS) }
+        }
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+            Tile(R.drawable.ic_v3_expert, stringResource(R.string.nav_settings), Modifier.weight(1f)) { onOpen(Pages.SETTINGS) }
+            Tile(R.drawable.ic_menu_feedback, stringResource(R.string.nav_feedback), Modifier.weight(1f)) { onOpen(Pages.FEEDBACK) }
+            Tile(R.drawable.ic_v3_shield, stringResource(R.string.nav_about), Modifier.weight(1f)) { onOpen(Pages.ABOUT) }
         }
         DonateRow { onOpen(Pages.DONATE) }
-        Spacer(Modifier.height(6.dp))
     }
 }
 
@@ -545,13 +601,13 @@ private fun DonateRow(onClick: () -> Unit) {
     Row(
         Modifier
             .fillMaxWidth()
-            .glass(c, 18.dp)
-            .clip(RoundedCornerShape(18.dp))
+            .glass(c, 16.dp)
+            .clip(RoundedCornerShape(16.dp))
             .clickable(onClick = onClick)
             .padding(horizontal = 14.dp, vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Image(painterResource(R.drawable.ic_menu_donate), null, Modifier.size(36.dp))
+        Image(painterResource(R.drawable.ic_menu_donate), null, Modifier.size(40.dp))
         Spacer(Modifier.width(12.dp))
         Column(Modifier.weight(1f)) {
             Text(stringResource(R.string.donate_title), fontWeight = FontWeight.SemiBold, color = c.text, fontSize = 14.5.sp)
@@ -561,54 +617,18 @@ private fun DonateRow(onClick: () -> Unit) {
 }
 
 @Composable
-private fun SubPage(page: String, onBack: () -> Unit, onOpen: (String) -> Unit) {
-    val c = Aero.colors
-    val title = stringResource(
+private fun PageContent(page: String, onOpen: (String) -> Unit) {
+    CompositionLocalProvider(LocalHideTitle provides true) {
         when (page) {
-            Pages.SERVICES -> R.string.nav_services
-            Pages.TUNE -> R.string.nav_tune
-            Pages.DIAG -> R.string.diag_title
-            Pages.APPS -> R.string.nav_apps
-            Pages.SETTINGS -> R.string.nav_settings
-            Pages.ABOUT -> R.string.nav_about
-            Pages.DONATE -> R.string.donate_title
-            Pages.FEEDBACK -> R.string.nav_feedback
-            else -> R.string.tg_title
-        }
-    )
-    Column(Modifier.fillMaxSize()) {
-        Row(
-            Modifier.fillMaxWidth().padding(horizontal = 12.dp).height(44.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Box(
-                Modifier.size(38.dp).glass(c, 19.dp).clip(CircleShape).clickable(onClick = onBack),
-                contentAlignment = Alignment.Center
-            ) {
-                Canvas(Modifier.size(16.dp)) {
-                    val w = size.width
-                    val col = c.text
-                    drawLine(col, Offset(w * 0.68f, w * 0.12f), Offset(w * 0.30f, w * 0.5f), 2.4.dp.toPx(), StrokeCap.Round)
-                    drawLine(col, Offset(w * 0.30f, w * 0.5f), Offset(w * 0.68f, w * 0.88f), 2.4.dp.toPx(), StrokeCap.Round)
-                }
-            }
-            Spacer(Modifier.width(12.dp))
-            Text(title, fontSize = 20.sp, fontWeight = FontWeight.Light, color = c.text, maxLines = 1, overflow = TextOverflow.Ellipsis)
-        }
-        Box(Modifier.weight(1f).fillMaxWidth()) {
-            CompositionLocalProvider(LocalHideTitle provides true) {
-                when (page) {
-                    Pages.SERVICES -> ServicesScreen(onOpenDiag = { onOpen(Pages.DIAG) })
-                    Pages.TUNE -> TuneScreen()
-                    Pages.DIAG -> DiagScreen()
-                    Pages.APPS -> AppsScreen()
-                    Pages.SETTINGS -> SettingsScreen()
-                    Pages.ABOUT -> AboutScreen(onDonate = { onOpen(Pages.DONATE) }, onFeedback = { onOpen(Pages.FEEDBACK) })
-                    Pages.DONATE -> DonateScreen()
-                    Pages.FEEDBACK -> FeedbackScreen()
-                    else -> TelegramScreen()
-                }
-            }
+            Pages.SERVICES -> ServicesScreen(onOpenDiag = { onOpen(Pages.DIAG) })
+            Pages.TUNE -> TuneScreen()
+            Pages.DIAG -> DiagScreen()
+            Pages.APPS -> AppsScreen()
+            Pages.SETTINGS -> SettingsScreen()
+            Pages.ABOUT -> AboutScreen(onDonate = { onOpen(Pages.DONATE) }, onFeedback = { onOpen(Pages.FEEDBACK) })
+            Pages.DONATE -> DonateScreen()
+            Pages.FEEDBACK -> FeedbackScreen()
+            else -> TelegramScreen()
         }
     }
 }

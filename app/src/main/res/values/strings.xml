@@ -291,4 +291,5 @@
     <string name="link_off">Нет связи с сервером</string>
     <string name="privacy_title">Какие данные собираются</string>
     <string name="privacy_text">Случайный ID устройства, IP-адрес (хранится 30 дней), страна и город по IP, оператор и ASN, модель телефона, версия Android и Glyde, статус обхода, выбранная стратегия, какие сервисы открываются, отчёты о вылетах. Историю сайтов и трафик Glyde не собирает.</string>
+    <string name="nav_menu">Меню</string>
 </resources>

@@ -67,7 +67,7 @@ fun Bubbles(energy: Float, lite: Boolean, modifier: Modifier = Modifier) {
     val bubbles = remember { ArrayList<Bubble>() }
     var frame by remember { mutableLongStateOf(0L) }
     var bounds by remember { mutableStateOf(Size.Zero) }
-    val count = if (lite) 9 else 20
+    val count = if (lite) 5 else 10
     val speedTarget = 0.12f + 0.88f * energy.coerceIn(0f, 1f)
     var speed by remember { mutableStateOf(speedTarget) }
     LaunchedEffect(count) {
@@ -85,7 +85,7 @@ fun Bubbles(energy: Float, lite: Boolean, modifier: Modifier = Modifier) {
                 val rnd = Random
                 while (bubbles.size < count) {
                     val depth = 0.35f + 0.65f * rnd.nextFloat()
-                    val r = (6f + 22f * depth * depth + rnd.nextFloat() * 6f) * density
+                    val r = (4f + 13f * depth * depth + rnd.nextFloat() * 4f) * density
                     bubbles.add(Bubble(rnd.nextFloat() * w, if (bubbles.size < count / 2 || frame == 0L) rnd.nextFloat() * h else h + r, 0f, 0f, r, depth, rnd.nextFloat() * 6.28f, 0.6f + rnd.nextFloat() * 0.9f))
                 }
                 while (bubbles.size > count) bubbles.removeAt(bubbles.size - 1)
@@ -97,7 +97,7 @@ fun Bubbles(energy: Float, lite: Boolean, modifier: Modifier = Modifier) {
                 lastBurst = burst
                 val reach = 110f * density
                 for (b in bubbles) {
-                    val rise = (26f + 46f * b.depth) * density * speed
+                    val rise = (18f + 30f * b.depth) * density * speed
                     val targetVy = -rise
                     b.vy += (targetVy - b.vy) * min(1f, dt * 1.8f)
                     val wob = sin(t * b.freq + b.phase) * 14f * density * (0.3f + speed)

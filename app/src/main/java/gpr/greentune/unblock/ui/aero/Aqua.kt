@@ -87,11 +87,7 @@ fun Orb3D(
     modifier: Modifier = Modifier,
     size: Dp = 230.dp,
 ) {
-    if (!effects || !AquaFx.supported || AquaFx.broken) {
-        Orb(state, onClick, description, modifier, size)
-        return
-    }
-    ShaderOrb(state, onClick, description, modifier, size)
+    Orb(state, onClick, description, modifier, size)
 }
 
 @RequiresApi(33)
