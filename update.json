@@ -1,29 +1,29 @@
 {
- "version": "26.11.1",
- "code": 26110199,
+ "version": "26.11.2",
+ "code": 26110299,
  "codename": "Andromeda",
- "display": "Glyde 26.11 Andromeda Patch 1",
+ "display": "Glyde 26.11 Andromeda Patch 2",
  "ring": "stable",
- "changelog": "Новый главный экран: проще и удобнее.\n\n- Кнопка включения теперь глянцевый шар в стиле Windows 7: синий, когда выключено, зелёный с сиянием, когда включено. Значок питания всегда хорошо видно\n- На главном экране только кнопка, статус и одна кнопка «Меню»\n- Все разделы открываются в стеклянных окнах Aero поверх главного экрана, без шторки\n- В меню нет повторов, иконки крупнее\n- Пузырей стало меньше, они мельче и спокойнее",
+ "changelog": "Дизайн-система GGV7 (Glyde Glass Vista‑7), рабочий Telegram и умный подбор маршрутов.\n\n- Настоящее стекло Aero: окна меню и разделов прозрачные, а под рамкой размыт фон с пузырями и кнопкой (Android 12 и новее; на старых телефонах — матовое стекло)\n- Кнопка питания стала объёмной Aqua-конфетой: хромированный ободок, сочный глянец, влажный блик, свечение снизу, пробегающий отблеск, желейное нажатие и волны, когда обход включён\n- Новый главный экран: «Glyde DPI», статус «Отключено» и «Нажмите, чтобы обойти блокировки», под ними версия\n- Пузыри плавают сами по себе, а при подключении разгоняются: шлейфы, свечение, потоки искр и вспышки при прохождении «фильтра» показывают, как трафик обходит блокировки\n- Больше анимаций: плавное появление экрана, окна открываются с пружиной и бликом по стеклу, плитки меню вылетают по очереди, кнопки упруго нажимаются\n- Telegram-прокси исправлен: правильная маршрутизация дата-центров, тестовые DC, запасной путь через Cloudflare и пул готовых соединений\n- Раздел «Приложения» снова показывает все установленные приложения, включая MIUI и HyperOS\n- 102 сервиса и 212 стратегий обхода\n- Подбор сам решает, что открывать напрямую, что через обход DPI, а что через прокси, и проверяет итоговую схему целиком\n- Автопочинка: если сервис перестал открываться, Glyde сам заново подбирает стратегию только для него\n- В «Как это работает» убрано лишнее про значок VPN",
  "assets": {
-  "Glyde-26.11.1-arm64-v8a.apk": "https://github.com/GrapeGG-developer/glyde/releases/download/v26.11.1/Glyde-26.11.1-arm64-v8a.apk",
-  "Glyde-26.11.1-armeabi-v7a.apk": "https://github.com/GrapeGG-developer/glyde/releases/download/v26.11.1/Glyde-26.11.1-armeabi-v7a.apk",
-  "Glyde-26.11.1-universal.apk": "https://github.com/GrapeGG-developer/glyde/releases/download/v26.11.1/Glyde-26.11.1-universal.apk",
-  "Glyde-26.11.1-x86.apk": "https://github.com/GrapeGG-developer/glyde/releases/download/v26.11.1/Glyde-26.11.1-x86.apk",
-  "Glyde-26.11.1-x86_64.apk": "https://github.com/GrapeGG-developer/glyde/releases/download/v26.11.1/Glyde-26.11.1-x86_64.apk"
+  "Glyde-26.11.2-arm64-v8a.apk": "https://github.com/GrapeGG-developer/glyde/releases/download/v26.11.2/Glyde-26.11.2-arm64-v8a.apk",
+  "Glyde-26.11.2-armeabi-v7a.apk": "https://github.com/GrapeGG-developer/glyde/releases/download/v26.11.2/Glyde-26.11.2-armeabi-v7a.apk",
+  "Glyde-26.11.2-universal.apk": "https://github.com/GrapeGG-developer/glyde/releases/download/v26.11.2/Glyde-26.11.2-universal.apk",
+  "Glyde-26.11.2-x86.apk": "https://github.com/GrapeGG-developer/glyde/releases/download/v26.11.2/Glyde-26.11.2-x86.apk",
+  "Glyde-26.11.2-x86_64.apk": "https://github.com/GrapeGG-developer/glyde/releases/download/v26.11.2/Glyde-26.11.2-x86_64.apk"
  },
  "sizes": {
-  "Glyde-26.11.1-arm64-v8a.apk": 4827237,
-  "Glyde-26.11.1-armeabi-v7a.apk": 4803723,
-  "Glyde-26.11.1-universal.apk": 5417981,
-  "Glyde-26.11.1-x86.apk": 4842143,
-  "Glyde-26.11.1-x86_64.apk": 4833976
+  "Glyde-26.11.2-arm64-v8a.apk": 4858761,
+  "Glyde-26.11.2-armeabi-v7a.apk": 4835247,
+  "Glyde-26.11.2-universal.apk": 5449505,
+  "Glyde-26.11.2-x86.apk": 4873667,
+  "Glyde-26.11.2-x86_64.apk": 4865500
  },
  "sums": {
-  "Glyde-26.11.1-arm64-v8a.apk": "acf94ac5c0b13dac6901695ad91ff573f4ab19b2d63d37f092c2466c5417ed04",
-  "Glyde-26.11.1-armeabi-v7a.apk": "c21650c8a93a68738bd99164ae607d439bd0fbfbaff2cb48df9cd0f82f283b74",
-  "Glyde-26.11.1-universal.apk": "aa9768a17cc85c1c58087af362d1447eec3f6989842707754a8799ec4288ad1f",
-  "Glyde-26.11.1-x86.apk": "4bb3a28c4da6c66910567d8dec8acefe995da233a723ec823adad6b68e4976be",
-  "Glyde-26.11.1-x86_64.apk": "7d7de6f2f5e58f32dd890823dada4910627e73f0864a47334e4903b859298031"
+  "Glyde-26.11.2-arm64-v8a.apk": "277fea89b90cc7254fba4108491dd3f951bb09945999e76fb7c7af6a0ea52947",
+  "Glyde-26.11.2-armeabi-v7a.apk": "f2cb1a423fc90bd5a5ff5ce16320b9ab8ee3eec3c7ee2fd747b4ac8e6aa188e4",
+  "Glyde-26.11.2-universal.apk": "0316b38271952ff4c9d61d0166f757dbb5efafe767dcdbe42023fe7b33421b88",
+  "Glyde-26.11.2-x86.apk": "8fd1f0751bb13e0cce4e77e147dcab86a8bd8d13e9ae391435126b08175f61bc",
+  "Glyde-26.11.2-x86_64.apk": "3fe5fc0cdd4af8f28251111c11c5979ee23227264a549837c79e1f9fd6725515"
  }
 }
