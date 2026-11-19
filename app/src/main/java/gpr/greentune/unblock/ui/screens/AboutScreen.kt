@@ -54,7 +54,7 @@ fun AboutScreen(onDonate: () -> Unit, onFeedback: () -> Unit) {
     ScreenColumn(stringResource(R.string.nav_about)) {
         GlassPanel(Modifier.fillMaxWidth()) {
             Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
-                Image(painterResource(R.drawable.logo_glass), null, Modifier.size(120.dp))
+                EggLogo(120)
                 Text(stringResource(R.string.app_name), fontSize = 26.sp, fontWeight = FontWeight.SemiBold, color = c.text)
                 Text(
                     BuildConfig.DISPLAY_NAME,
