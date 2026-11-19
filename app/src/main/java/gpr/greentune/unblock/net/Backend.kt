@@ -37,6 +37,15 @@ object Backend {
         Http.getJson("$base/v1/update?channel=$channel&abi=" + (Build.SUPPORTED_ABIS.firstOrNull() ?: ""))
     }
 
+    suspend fun version(channel: String): String? = withContext(Dispatchers.IO) {
+        val t = Http.pollText("$base/v1/version?channel=$channel") ?: return@withContext null
+        try {
+            JSONObject(t).optString("v").ifBlank { null }
+        } catch (_: Exception) {
+            null
+        }
+    }
+
     suspend fun report(body: JSONObject): Boolean = withContext(Dispatchers.IO) {
         Http.postJson("$base/v1/report", body.put("device", deviceInfo()))
     }

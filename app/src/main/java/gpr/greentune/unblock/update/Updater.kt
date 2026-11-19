@@ -23,6 +23,13 @@ import kotlinx.coroutines.withContext
 import okhttp3.Request
 import org.json.JSONObject
 import java.io.File
+import java.io.FileOutputStream
+import android.os.SystemClock
+import androidx.core.content.FileProvider
+import gpr.greentune.unblock.App
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
 
 data class UpdateInfo(
     val version: String,
@@ -47,32 +54,103 @@ sealed class UpdateState {
 object Updater {
     private val _state = MutableStateFlow<UpdateState>(UpdateState.Idle)
     val state: StateFlow<UpdateState> get() = _state
+    private var downloadJob: Job? = null
+    private val checkLock = Mutex()
+    var pendingInstall: UpdateInfo? = null
 
     fun abiAsset(): String {
         val abi = Build.SUPPORTED_ABIS.firstOrNull { it in listOf("arm64-v8a", "armeabi-v7a", "x86_64", "x86") }
         return if (abi != null) "GT-Unblock-%s-$abi.apk" else "GT-Unblock-%s-universal.apk"
     }
 
-    suspend fun autoCheck(context: Context) {
+    fun current(): UpdateInfo? = when (val s = _state.value) {
+        is UpdateState.Available -> s.info
+        is UpdateState.Downloading -> s.info
+        is UpdateState.ReadyToInstall -> s.info
+        else -> null
+    }
+
+    private var remoteVersion: String? = null
+    private var lastFull = 0L
+    private var lastOk = false
+    private var pollFails = 0
+    var dismissed: String? = null
+    var lastInfo: UpdateInfo? = null
+    private val _confirm = MutableStateFlow<Intent?>(null)
+    val confirm: StateFlow<Intent?> get() = _confirm
+
+    fun requestConfirm(intent: Intent?) {
+        _confirm.value = intent
+    }
+
+    fun pollDelay(): Long = if (pollFails == 0) 200L else minOf(200L * (1L shl minOf(pollFails, 5)), 5_000L)
+
+    suspend fun poll(context: Context): UpdateInfo? {
+        val st = _state.value
+        if (st is UpdateState.Downloading || st is UpdateState.Checking) return current()
+        if (!checkLock.tryLock()) return current()
+        try {
+            val beta = SettingsStore.value.beta
+            val v = Backend.version(if (beta) "beta" else "stable")
+            val now = SystemClock.elapsedRealtime()
+            if (v == null) {
+                pollFails++
+                if (lastFull != 0L && now - lastFull < 60_000L) return current()
+            } else {
+                pollFails = 0
+                if (v == remoteVersion && lastOk) return current()
+                if (compare(v, BuildConfig.VERSION_NAME) <= 0 && !BuildConfig.VERSION_NAME.contains("-dev")) {
+                    remoteVersion = v
+                    lastOk = true
+                    return current()
+                }
+            }
+            lastFull = now
+            lastOk = false
+            val info = check(context, manual = false)
+            if (lastOk && v != null) remoteVersion = v
+            return info
+        } finally {
+            checkLock.unlock()
+        }
+    }
+
+    suspend fun autoCheck(context: Context): UpdateInfo? = poll(context)
+
+    @Volatile
+    var foreground = false
+
+    suspend fun backgroundCheck(context: Context) {
+        if (foreground) return
+        poll(context)
+        val info = current() ?: return
         val s = SettingsStore.value
-        val now = System.currentTimeMillis()
-        if (now - s.lastUpdateCheck < 20 * 3600 * 1000L) return
-        val info = check(context, manual = false) ?: return
-        if (info.version == s.skippedVersion) return
+        if (info.version == s.skippedVersion || info.version == s.notifiedVersion) return
+        SettingsStore.update { it.copy(notifiedVersion = info.version) }
         notifyAvailable(context, info)
     }
 
     suspend fun check(context: Context, manual: Boolean): UpdateInfo? {
+        val now = _state.value
+        if (now is UpdateState.Downloading || (now is UpdateState.ReadyToInstall && downloadJob?.isActive == true)) return current()
         if (manual) _state.value = UpdateState.Checking
         val beta = SettingsStore.value.beta
         val info = withContext(Dispatchers.IO) { fromBackend(beta) ?: fromGithub(beta) }
-        SettingsStore.update { it.copy(lastUpdateCheck = System.currentTimeMillis()) }
         if (info == null) {
             if (manual) _state.value = UpdateState.Failed(context.getString(R.string.update_check_failed))
             return null
         }
+        lastOk = true
+        if (manual) SettingsStore.update { it.copy(lastUpdateCheck = System.currentTimeMillis()) }
         return if (isNewer(info)) {
-            _state.value = UpdateState.Available(info)
+            lastInfo = info
+            val cur = current()
+            val failedRecently = !manual && _state.value is UpdateState.Failed && SystemClock.elapsedRealtime() - failedAt < 15_000L
+            if (cur?.version != info.version && !failedRecently) {
+                _state.value = if (apkFile(context, info).let { it.exists() && valid(context, it, info) }) UpdateState.ReadyToInstall(info) else UpdateState.Available(info)
+            } else if (manual && cur == null) {
+                _state.value = UpdateState.Available(info)
+            }
             info
         } else {
             if (manual) _state.value = UpdateState.UpToDate
@@ -116,7 +194,7 @@ object Updater {
             changelog = o.optString("changelog"),
             url = url,
             mirror = o.optString("mirror").takeIf { it.isNotBlank() },
-            size = o.optLong("size", 0),
+            size = o.optJSONObject("sizes")?.optLong(url.substringAfterLast('/'), 0L) ?: 0L,
             beta = o.optBoolean("beta", false),
         )
     }
@@ -187,37 +265,106 @@ object Updater {
     fun installPermissionIntent(context: Context): Intent =
         Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES, Uri.parse("package:${context.packageName}"))
 
-    suspend fun download(context: Context, info: UpdateInfo) {
-        _state.value = UpdateState.Downloading(info, 0f)
-        val file = File(context.cacheDir, "update.apk")
-        val ok = withContext(Dispatchers.IO) {
-            fetch(info.url, file, info) || (info.mirror != null && fetch(info.mirror, file, info))
+    private fun dir(context: Context): File = File(context.cacheDir, "updates").apply { mkdirs() }
+
+    fun apkFile(context: Context, info: UpdateInfo): File = File(dir(context), "GT-Unblock-${info.version}.apk")
+
+    private fun valid(context: Context, file: File, info: UpdateInfo): Boolean = try {
+        val pi = context.packageManager.getPackageArchiveInfo(file.absolutePath, 0)
+        pi != null && pi.packageName == context.packageName
+    } catch (_: Exception) {
+        false
+    }
+
+    fun startDownload(context: Context, info: UpdateInfo, installAfter: Boolean = true) {
+        val app = context.applicationContext
+        if (downloadJob?.isActive == true) return
+        if (!canInstall(app)) {
+            pendingInstall = info
+            try {
+                context.startActivity(installPermissionIntent(app).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+            } catch (_: Exception) {
+            }
+            return
         }
-        _state.value = if (ok) UpdateState.ReadyToInstall(info) else UpdateState.Failed(context.getString(R.string.update_download_failed))
+        pendingInstall = null
+        downloadJob = App.scope.launch {
+            download(app, info)
+            if (installAfter && _state.value is UpdateState.ReadyToInstall) {
+                withContext(Dispatchers.Main) { install(app) }
+            }
+        }
+    }
+
+    fun resumePending(context: Context) {
+        val info = pendingInstall ?: return
+        if (canInstall(context)) startDownload(context, info)
+    }
+
+    suspend fun download(context: Context, info: UpdateInfo) {
+        val file = apkFile(context, info)
+        if (file.exists() && valid(context, file, info)) {
+            _state.value = UpdateState.ReadyToInstall(info)
+            return
+        }
+        dir(context).listFiles()?.forEach { it.delete() }
+        _state.value = UpdateState.Downloading(info, 0f)
+        val part = File(dir(context), file.name + ".part")
+        val ok = withContext(Dispatchers.IO) {
+            val sources = listOfNotNull(info.url, info.mirror)
+            var good = false
+            for (src in sources) {
+                for (attempt in 0 until 2) {
+                    if (fetch(src, part, info) && part.renameTo(file) && valid(context, file, info)) {
+                        good = true
+                        break
+                    }
+                    file.delete()
+                }
+                if (good) break
+            }
+            good
+        }
+        if (ok) {
+            _state.value = UpdateState.ReadyToInstall(info)
+            notifyReady(context, info)
+        } else {
+            part.delete()
+            file.delete()
+            setFailed(context.getString(R.string.update_download_failed))
+        }
     }
 
     private fun fetch(url: String, file: File, info: UpdateInfo): Boolean = try {
-        val req = Request.Builder().url(url).header("User-Agent", "GTUnblock-Android").build()
-        Http.download.newCall(req).execute().use { resp ->
+        val have = if (file.exists()) file.length() else 0L
+        val rb = Request.Builder().url(url).header("User-Agent", "GTUnblock-Android")
+        if (have > 0) rb.header("Range", "bytes=$have-")
+        Http.download.newCall(rb.build()).execute().use { resp ->
             if (!resp.isSuccessful) return false
             val body = resp.body ?: return false
-            val total = body.contentLength().takeIf { it > 0 } ?: info.size
-            file.outputStream().use { out ->
+            val append = have > 0 && resp.code == 206
+            val start = if (append) have else 0L
+            val total = (body.contentLength().takeIf { it > 0 }?.plus(start)) ?: info.size
+            FileOutputStream(file, append).use { out ->
                 val src = body.byteStream()
                 val buf = ByteArray(65536)
-                var done = 0L
+                var done = start
                 var lastEmit = 0L
                 while (true) {
                     val n = src.read(buf)
                     if (n < 0) break
                     out.write(buf, 0, n)
                     done += n
-                    if (total > 0 && done - lastEmit > 128 * 1024) {
-                        lastEmit = done
-                        _state.value = UpdateState.Downloading(info, (done.toFloat() / total).coerceIn(0f, 1f))
+                    val now = SystemClock.elapsedRealtime()
+                    if (total > 0 && now - lastEmit > 150) {
+                        lastEmit = now
+                        _state.value = UpdateState.Downloading(info, (done.toFloat() / total).coerceIn(0f, 0.99f))
                     }
                 }
+                out.flush()
+                out.fd.sync()
             }
+            if (total > 0) _state.value = UpdateState.Downloading(info, 1f)
             total <= 0 || file.length() >= total
         }
     } catch (_: Exception) {
@@ -225,15 +372,36 @@ object Updater {
     }
 
     fun install(context: Context) {
-        val file = File(context.cacheDir, "update.apk")
-        if (!file.exists()) return
+        val info = current() ?: lastInfo ?: return
+        val file = apkFile(context, info)
+        if (!file.exists()) {
+            _state.value = UpdateState.Available(info)
+            return
+        }
+        if (!canInstall(context)) {
+            pendingInstall = info
+            try {
+                context.startActivity(installPermissionIntent(context).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+            } catch (_: Exception) {
+            }
+            return
+        }
+        try {
+            val uri = FileProvider.getUriForFile(context, context.packageName + ".files", file)
+            val intent = Intent(Intent.ACTION_VIEW)
+                .setDataAndType(uri, "application/vnd.android.package-archive")
+                .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK)
+            context.startActivity(intent)
+        } catch (_: Exception) {
+            installSession(context, file)
+        }
+    }
+
+    private fun installSession(context: Context, file: File) {
         try {
             val installer = context.packageManager.packageInstaller
             val params = PackageInstaller.SessionParams(PackageInstaller.SessionParams.MODE_FULL_INSTALL)
             params.setAppPackageName(context.packageName)
-            if (Build.VERSION.SDK_INT >= 31) {
-                params.setRequireUserAction(PackageInstaller.SessionParams.USER_ACTION_NOT_REQUIRED)
-            }
             val id = installer.createSession(params)
             installer.openSession(id).use { session ->
                 session.openWrite("base.apk", 0, file.length()).use { out ->
@@ -247,11 +415,52 @@ object Updater {
                 session.commit(pi.intentSender)
             }
         } catch (e: Exception) {
-            _state.value = UpdateState.Failed(e.message ?: context.getString(R.string.update_install_failed))
+            setFailed(e.message ?: context.getString(R.string.update_install_failed))
         }
     }
 
+    private fun notifyReady(context: Context, info: UpdateInfo) {
+        val nm = context.getSystemService(NotificationManager::class.java) ?: return
+        val pi = PendingIntent.getActivity(
+            context, 4,
+            Intent(context, MainActivity::class.java).putExtra(MainActivity.EXTRA_UPDATE, true)
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP),
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        )
+        val n = NotificationCompat.Builder(context, Notifications.CHANNEL_INFO)
+            .setSmallIcon(R.drawable.ic_stat_wave)
+            .setContentTitle(context.getString(R.string.update_ready))
+            .setContentText(context.getString(R.string.update_ready_text, info.version))
+            .setAutoCancel(true)
+            .setContentIntent(pi)
+            .build()
+        try {
+            nm.notify(Notifications.ID_UPDATE, n)
+        } catch (_: SecurityException) {
+        }
+    }
+
+    private var failedAt = 0L
+
+    fun restoreReady(context: Context) {
+        val info = current() ?: lastInfo ?: return
+        if (apkFile(context, info).exists()) _state.value = UpdateState.ReadyToInstall(info)
+    }
+
     fun setFailed(message: String) {
+        failedAt = SystemClock.elapsedRealtime()
         _state.value = UpdateState.Failed(message)
+    }
+
+    fun changelogFor(context: Context, version: String): String? = try {
+        val text = context.assets.open("CHANGELOG.md").bufferedReader().use { it.readText() }
+        val lines = text.lines()
+        val start = lines.indexOfFirst { it.trim() == "## $version" }
+        if (start < 0) null else {
+            val end = (start + 1 until lines.size).firstOrNull { lines[it].startsWith("## ") } ?: lines.size
+            lines.subList(start + 1, end).joinToString("\n").trim().ifBlank { null }
+        }
+    } catch (_: Exception) {
+        null
     }
 }

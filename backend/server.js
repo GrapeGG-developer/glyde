@@ -139,7 +139,7 @@ async function releasesFromAtom() {
 }
 
 async function releases() {
-  return cached('releases', 15 * 60 * 1000, async () => {
+  return cached('releases', 60 * 1000, async () => {
     try {
       return await gh('/releases?per_page=20');
     } catch (e) {
@@ -167,6 +167,14 @@ async function handle(req, res) {
     return send(res, 200, text, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'public, max-age=600' });
   }
 
+  if (req.method === 'GET' && p === '/v1/version') {
+    const channel = url.searchParams.get('channel') === 'beta' ? 'beta' : 'stable';
+    const list = (await releases()).filter(r => !r.draft && (channel === 'beta' || !r.prerelease));
+    const rel = list[0];
+    if (!rel) return send(res, 404, { error: 'no release' });
+    return send(res, 200, { v: rel.tag_name.replace(/^v/, '') }, { 'Cache-Control': 'no-store' });
+  }
+
   if (req.method === 'GET' && p === '/v1/update') {
     const channel = url.searchParams.get('channel') === 'beta' ? 'beta' : 'stable';
     const list = (await releases()).filter(r => !r.draft && (channel === 'beta' || !r.prerelease));
@@ -174,11 +182,11 @@ async function handle(req, res) {
     if (!rel) return send(res, 404, { error: 'no release' });
     const version = rel.tag_name.replace(/^v/, '');
     const assets = {};
-    let size = 0;
+    const sizes = {};
     for (const a of rel.assets || []) {
       if (a.name.endsWith('.apk')) {
         assets[a.name] = a.browser_download_url;
-        size = Math.max(size, a.size);
+        if (a.size) sizes[a.name] = a.size;
       }
     }
     const host = req.headers['x-forwarded-host'] || req.headers.host;
@@ -192,7 +200,9 @@ async function handle(req, res) {
       beta: !!rel.prerelease,
       published: rel.published_at,
       assets,
-      size,
+      sizes,
+      asset: pick,
+      size: sizes[pick] || 0,
       mirror: `https://${host}/v1/apk/${encodeURIComponent(rel.tag_name)}/${encodeURIComponent(pick)}`,
     });
   }

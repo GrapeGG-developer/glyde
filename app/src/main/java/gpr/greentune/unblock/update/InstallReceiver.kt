@@ -19,13 +19,11 @@ class InstallReceiver : BroadcastReceiver() {
                 }
                 if (confirm != null) {
                     confirm.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                    try {
-                        context.startActivity(confirm)
-                    } catch (_: Exception) {
-                    }
+                    Updater.requestConfirm(confirm)
                 }
             }
             PackageInstaller.STATUS_SUCCESS -> Unit
+            PackageInstaller.STATUS_FAILURE_ABORTED -> Updater.restoreReady(context)
             else -> {
                 val msg = intent.getStringExtra(PackageInstaller.EXTRA_STATUS_MESSAGE)
                 Updater.setFailed(msg ?: context.getString(R.string.update_install_failed))

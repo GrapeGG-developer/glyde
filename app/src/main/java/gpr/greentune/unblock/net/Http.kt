@@ -22,6 +22,21 @@ object Http {
         client.newBuilder().callTimeout(0, TimeUnit.SECONDS).readTimeout(60, TimeUnit.SECONDS).build()
     }
 
+    val poll: OkHttpClient by lazy {
+        client.newBuilder()
+            .connectTimeout(4, TimeUnit.SECONDS)
+            .readTimeout(4, TimeUnit.SECONDS)
+            .callTimeout(6, TimeUnit.SECONDS)
+            .build()
+    }
+
+    fun pollText(url: String): String? = try {
+        val b = Request.Builder().url(url).header("User-Agent", "GTUnblock-Android").build()
+        poll.newCall(b).execute().use { r -> if (r.isSuccessful) r.body?.string() else null }
+    } catch (_: Exception) {
+        null
+    }
+
     private val json = "application/json; charset=utf-8".toMediaType()
 
     fun getText(url: String, headers: Map<String, String> = emptyMap()): String? = try {

@@ -124,6 +124,11 @@
     <string name="update_check_failed">Could not check for updates</string>
     <string name="update_download_failed">Could not download the update</string>
     <string name="update_install_failed">Could not install the update</string>
+    <string name="update_ready_text">Version %1$s is ready. Tap to install</string>
+    <string name="update_install_perm">Allow GT Unblock to install updates and come back to the app</string>
+    <string name="whats_new">What is new</string>
+    <string name="whats_new_title">What is new in version %1$s</string>
+    <string name="whats_new_ok">Great</string>
     <string name="about_version">Version %1$s</string>
     <string name="about_text">GT Unblock is a standalone app that bypasses DPI blocking on Android. It works like a VPN but without a server: traffic stays on the device, only the way packets are sent changes. An alternative to ByeByeDPI with auto tuning, diagnostics and a live Aqua design.</string>
     <string name="about_dev">Developer: GREENTUNE</string>

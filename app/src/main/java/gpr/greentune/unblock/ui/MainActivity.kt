@@ -23,6 +23,14 @@ import gpr.greentune.unblock.system.ShakeDetector
 import gpr.greentune.unblock.ui.aero.AeroTheme
 import gpr.greentune.unblock.update.Updater
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.awaitCancellation
+import kotlinx.coroutines.isActive
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.repeatOnLifecycle
+import gpr.greentune.unblock.BuildConfig
+import gpr.greentune.unblock.update.UpdateState
+import java.io.File
 
 class MainActivity : ComponentActivity() {
     companion object {
@@ -31,6 +39,7 @@ class MainActivity : ComponentActivity() {
     }
 
     private val showUpdate = mutableStateOf(false)
+    private val whatsNew = mutableStateOf<String?>(null)
     private var shake: ShakeDetector? = null
 
     private val vpnLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { r ->
@@ -51,15 +60,55 @@ class MainActivity : ComponentActivity() {
                     onDisconnect = { Engine.stop(this) },
                     requestNotifications = ::askNotifications,
                     showUpdate = showUpdate.value,
-                    onUpdateShown = { showUpdate.value = false },
+                    onUpdateShown = {
+                        showUpdate.value = false
+                        Updater.dismissed = Updater.current()?.version ?: Updater.lastInfo?.version
+                    },
+                    whatsNew = whatsNew.value,
+                    onWhatsNewShown = {
+                        whatsNew.value = null
+                        SettingsStore.update { it.copy(seenVersion = BuildConfig.VERSION_NAME) }
+                    },
                 )
             }
         }
+        prepareWhatsNew()
         lifecycleScope.launch {
-            Updater.autoCheck(this@MainActivity)
-            if (Updater.state.value is gpr.greentune.unblock.update.UpdateState.Available) {
-                val info = (Updater.state.value as gpr.greentune.unblock.update.UpdateState.Available).info
-                if (info.version != SettingsStore.value.skippedVersion) showUpdate.value = true
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                Updater.foreground = true
+                launch {
+                    try {
+                        awaitCancellation()
+                    } finally {
+                        Updater.foreground = false
+                    }
+                }
+                launch {
+                    while (isActive) {
+                        Updater.poll(applicationContext)
+                        delay(Updater.pollDelay())
+                    }
+                }
+                launch {
+                    Updater.state.collect { st ->
+                        if (st is UpdateState.Available && st.info.version != SettingsStore.value.skippedVersion && st.info.version != Updater.dismissed) {
+                            showUpdate.value = true
+                        }
+                        if (st is UpdateState.ReadyToInstall && st.info.version != Updater.dismissed) showUpdate.value = true
+                    }
+                }
+                launch {
+                    Updater.confirm.collect { i ->
+                        if (i != null) {
+                            Updater.requestConfirm(null)
+                            try {
+                                startActivity(i)
+                            } catch (_: Exception) {
+                                Updater.setFailed(getString(gpr.greentune.unblock.R.string.update_install_failed))
+                            }
+                        }
+                    }
+                }
             }
         }
         shake = ShakeDetector(this) {
@@ -75,11 +124,29 @@ class MainActivity : ComponentActivity() {
     override fun onResume() {
         super.onResume()
         shake?.start()
+        Updater.resumePending(this)
     }
 
     override fun onPause() {
         shake?.stop()
         super.onPause()
+    }
+
+    private fun prepareWhatsNew() {
+        val ver = BuildConfig.VERSION_NAME
+        val s = SettingsStore.value
+        if (s.seenVersion == ver) return
+        val updated = s.seenVersion.isNotBlank() || try {
+            val pi = packageManager.getPackageInfo(packageName, 0)
+            pi.lastUpdateTime - pi.firstInstallTime > 5_000L
+        } catch (_: Exception) {
+            false
+        }
+        File(cacheDir, "updates").deleteRecursively()
+        File(cacheDir, "update.apk").delete()
+        val text = if (updated) Updater.changelogFor(this, ver) else null
+        if (text != null) whatsNew.value = text
+        else SettingsStore.update { it.copy(seenVersion = ver) }
     }
 
     private fun handleIntent(intent: Intent?) {

@@ -31,17 +31,41 @@ import kotlinx.coroutines.launch
 
 object UpdateFlow {
     fun start(context: Context, scope: CoroutineScope, info: UpdateInfo) {
-        if (!Updater.canInstall(context)) {
-            try {
-                context.startActivity(Updater.installPermissionIntent(context).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
-            } catch (_: Exception) {
+        Updater.startDownload(context, info)
+    }
+}
+
+fun cleanChangelog(text: String): String = text.lines()
+    .filterNot { it.trim().startsWith("## ") }
+    .joinToString("\n") { line ->
+        line.replace("**", "").replace("`", "").let { l ->
+            when {
+                l.trimStart().startsWith("### ") -> l.trimStart().removePrefix("### ")
+                l.trimStart().startsWith("- ") -> "• " + l.trimStart().removePrefix("- ")
+                l.trimStart().startsWith("* ") -> "• " + l.trimStart().removePrefix("* ")
+                else -> l
             }
-            return
         }
-        scope.launch {
-            Updater.download(context, info)
-            if (Updater.state.value is UpdateState.ReadyToInstall) Updater.install(context)
+    }
+    .replace(Regex("\n{3,}"), "\n\n")
+    .trim()
+
+@Composable
+fun WhatsNewDialog(version: String, text: String, onDismiss: () -> Unit) {
+    val c = Aero.colors
+    AeroDialog(
+        title = stringResource(R.string.whats_new_title, version),
+        onDismiss = onDismiss,
+        buttons = {
+            AeroButton(stringResource(R.string.whats_new_ok), primary = true, onClick = onDismiss)
         }
+    ) {
+        Text(
+            cleanChangelog(text).ifBlank { "—" },
+            fontSize = 14.sp,
+            color = c.text,
+            modifier = Modifier.fillMaxWidth().heightIn(max = 360.dp).verticalScroll(rememberScrollState())
+        )
     }
 }
 
@@ -60,6 +84,7 @@ fun UpdateDialog(onDismiss: () -> Unit) {
         is UpdateState.Available -> s.info
         is UpdateState.Downloading -> s.info
         is UpdateState.ReadyToInstall -> s.info
+        is UpdateState.Failed -> Updater.lastInfo
         else -> null
     }
     AeroDialog(
@@ -72,11 +97,21 @@ fun UpdateDialog(onDismiss: () -> Unit) {
                         Updater.skip(s.info)
                         onDismiss()
                     })
-                    AeroButton(stringResource(R.string.update_install), primary = true, onClick = { UpdateFlow.start(context, scope, s.info) })
+                    AeroButton(stringResource(R.string.update_install), primary = true, onClick = { Updater.startDownload(context, s.info) })
                 }
                 is UpdateState.ReadyToInstall -> {
                     AeroButton(stringResource(R.string.later), onClick = onDismiss)
                     AeroButton(stringResource(R.string.update_install), primary = true, onClick = { Updater.install(context) })
+                }
+                is UpdateState.Downloading -> AeroButton(stringResource(R.string.later), onClick = onDismiss)
+                is UpdateState.Failed -> {
+                    AeroButton(stringResource(R.string.close), onClick = onDismiss)
+                    val retry = Updater.lastInfo
+                    if (retry != null) {
+                        AeroButton(stringResource(R.string.update_install), primary = true, onClick = { Updater.startDownload(context, retry) })
+                    } else {
+                        AeroButton(stringResource(R.string.update_check), primary = true, onClick = { scope.launch { Updater.check(context, manual = true) } })
+                    }
                 }
                 else -> AeroButton(stringResource(R.string.close), onClick = onDismiss)
             }
@@ -91,12 +126,19 @@ fun UpdateDialog(onDismiss: () -> Unit) {
                     Text(stringResource(R.string.update_downloading, (s.progress * 100).toInt()), color = c.text)
                     AeroProgressBar(s.progress)
                 }
+                is UpdateState.ReadyToInstall -> {
+                    Text(stringResource(R.string.update_ready), color = c.text)
+                    if (!Updater.canInstall(context)) Text(stringResource(R.string.update_install_perm), fontSize = 13.sp, color = c.subText)
+                }
+                is UpdateState.Available -> {
+                    if (!Updater.canInstall(context)) Text(stringResource(R.string.update_install_perm), fontSize = 13.sp, color = c.subText)
+                }
                 else -> Unit
             }
             if (info != null) {
                 Text(stringResource(R.string.update_changelog), fontSize = 13.sp, color = c.subText)
                 Text(
-                    info.changelog.ifBlank { "—" },
+                    cleanChangelog(info.changelog).ifBlank { "—" },
                     fontSize = 14.sp,
                     color = c.text,
                     modifier = Modifier.fillMaxWidth().heightIn(max = 280.dp).verticalScroll(rememberScrollState())

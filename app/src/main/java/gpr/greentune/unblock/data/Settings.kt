@@ -35,6 +35,8 @@ data class AppSettings(
     val customDomains: List<String> = emptyList(),
     val tilt: Boolean = true,
     val effects3d: Boolean = true,
+    val notifiedVersion: String = "",
+    val seenVersion: String = "",
 )
 
 object SettingsStore {
@@ -87,6 +89,8 @@ object SettingsStore {
             customDomains = (sp.getString("customDomains", "") ?: "").split('\n').filter { it.isNotBlank() },
             tilt = sp.getBoolean("tilt", d.tilt),
             effects3d = sp.getBoolean("effects3d", d.effects3d),
+            notifiedVersion = sp.getString("notifiedVersion", "") ?: "",
+            seenVersion = sp.getString("seenVersion", "") ?: "",
         )
     }
 
@@ -122,6 +126,8 @@ object SettingsStore {
             .putString("customDomains", s.customDomains.joinToString("\n"))
             .putBoolean("tilt", s.tilt)
             .putBoolean("effects3d", s.effects3d)
+            .putString("notifiedVersion", s.notifiedVersion)
+            .putString("seenVersion", s.seenVersion)
             .apply()
     }
 }

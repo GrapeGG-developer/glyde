@@ -12,6 +12,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.delay
+import gpr.greentune.unblock.update.Updater
 
 class App : Application() {
     override fun onCreate() {
@@ -26,6 +28,12 @@ class App : Application() {
         scope.launch {
             Telemetry.onAppStart(this@App)
             Presets.refresh(this@App)
+        }
+        scope.launch {
+            while (true) {
+                delay(60_000L)
+                Updater.backgroundCheck(this@App)
+            }
         }
     }
 

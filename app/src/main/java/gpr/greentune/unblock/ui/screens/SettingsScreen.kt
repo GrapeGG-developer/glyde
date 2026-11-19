@@ -40,6 +40,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import gpr.greentune.unblock.BuildConfig
 import gpr.greentune.unblock.R
 import gpr.greentune.unblock.core.Engine
 import gpr.greentune.unblock.data.AppSettings
@@ -195,6 +196,12 @@ fun SettingsScreen() {
                     AeroButton(stringResource(R.string.update_install), primary = true, modifier = Modifier.fillMaxWidth(), onClick = {
                         Updater.install(context)
                     })
+                }
+                val news = remember { Updater.changelogFor(context, BuildConfig.VERSION_NAME) }
+                if (news != null) {
+                    var showNews by remember { mutableStateOf(false) }
+                    AeroButton(stringResource(R.string.whats_new), modifier = Modifier.fillMaxWidth(), onClick = { showNews = true })
+                    if (showNews) WhatsNewDialog(BuildConfig.VERSION_NAME, news) { showNews = false }
                 }
             }
         }

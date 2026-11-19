@@ -73,6 +73,7 @@ android {
     sourceSets {
         getByName("main") {
             jniLibs.srcDirs(layout.buildDirectory.dir("ndkLibs"))
+            assets.srcDirs(layout.buildDirectory.dir("genAssets"))
         }
     }
 
@@ -157,4 +158,13 @@ val runNdkBuild by tasks.registering(Exec::class) {
 
 tasks.named("preBuild") {
     dependsOn(runNdkBuild)
+}
+
+val copyChangelog by tasks.registering(Copy::class) {
+    from(rootProject.file("CHANGELOG.md"))
+    into(layout.buildDirectory.dir("genAssets"))
+}
+
+tasks.named("preBuild") {
+    dependsOn(copyChangelog)
 }

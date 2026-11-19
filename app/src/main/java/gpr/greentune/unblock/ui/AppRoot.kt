@@ -77,6 +77,7 @@ import gpr.greentune.unblock.ui.screens.HomeScreen
 import gpr.greentune.unblock.ui.screens.OnboardingScreen
 import gpr.greentune.unblock.ui.screens.SettingsScreen
 import gpr.greentune.unblock.ui.screens.TuneScreen
+import gpr.greentune.unblock.ui.screens.WhatsNewDialog
 import gpr.greentune.unblock.ui.screens.UpdateDialog
 import kotlinx.coroutines.launch
 
@@ -106,6 +107,8 @@ fun AppRoot(
     requestNotifications: () -> Unit,
     showUpdate: Boolean,
     onUpdateShown: () -> Unit,
+    whatsNew: String? = null,
+    onWhatsNewShown: () -> Unit = {},
 ) {
     val c = Aero.colors
     val context = LocalContext.current
@@ -212,7 +215,8 @@ fun AppRoot(
                 )
             }
         }
-        if (showUpdate) UpdateDialog(onDismiss = onUpdateShown)
+        if (whatsNew != null) WhatsNewDialog(gpr.greentune.unblock.BuildConfig.VERSION_NAME, whatsNew, onWhatsNewShown)
+        else if (showUpdate) UpdateDialog(onDismiss = onUpdateShown)
     }
 }
 
