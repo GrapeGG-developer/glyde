@@ -293,6 +293,7 @@ private fun ExpertPanel() {
                 SettingsStore.update { it.copy(customArgsEnabled = v, customArgs = args) }
                 Engine.reload(context)
             })
+            ExpertBuilder(onBuild = { args = it })
             BasicTextField(
                 value = args,
                 onValueChange = { args = it },

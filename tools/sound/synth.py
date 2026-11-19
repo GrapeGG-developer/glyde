@@ -90,24 +90,34 @@ def note(n):
     return 440.0 * 2 ** ((n - 69) / 12)
 
 
-def chime_on():
-    d = 1.8
+def pad(f, d, att=0.06, rel=0.9):
+    t = t_of(d)
+    s = np.zeros_like(t)
+    for det, a in ((-0.0035, 0.5), (0.0, 0.7), (0.0042, 0.5)):
+        ff = f * (1 + det)
+        for k, ak in ((1, 1.0), (2, 0.42), (3, 0.18), (4, 0.08), (5, 0.04)):
+            s += a * ak * np.sin(2 * np.pi * ff * k * t + k * 0.7)
+    e = np.minimum(1.0, t / att) ** 1.5 * np.exp(-np.maximum(0, t - att) / rel)
+    return s * e
+
+
+def chord(notes, d, strum, att, rel, sparkle, name, gain, lp, mix):
     buf = np.zeros(int(SR * d))
-    place(buf, bubble(260, 820, 0.09, 0.9), 0.0)
-    place(buf, bubble(420, 1300, 0.07, 0.5), 0.05)
-    for i, n in enumerate((76, 83, 88, 92)):
-        place(buf, glass(note(n), 1.4, 0.8) * 0.6 + bell(note(n), 1.4, 0.5, 0.7) * 0.4, 0.08 + i * 0.075, 0.9 - i * 0.12)
-    place(buf, glass(note(100), 0.9, 0.35) * 0.18, 0.36)
-    finish(reverb(buf, 0.32, 1.1), "chime_on", 0.78)
+    for i, n in enumerate(notes):
+        f = note(n)
+        sig = pad(f, d - i * strum, att, rel) * 0.55 + glass(f, d - i * strum, rel * 0.7) * 0.35 + bell(f, d - i * strum, 0.3, rel * 0.6) * 0.18
+        place(buf, sig, i * strum, 1.0 - i * 0.07)
+    for k, n in enumerate(sparkle):
+        place(buf, glass(note(n), 0.8, 0.3) * 0.10, 0.10 + k * 0.05)
+    finish(reverb(buf, mix, 1.15), name, gain, lp=lp)
+
+
+def chime_on():
+    chord((60, 67, 72, 76, 79, 83, 86), 2.2, 0.018, 0.035, 0.85, (96, 100, 103), "chime_on", 0.8, 9000, 0.34)
 
 
 def chime_off():
-    d = 1.3
-    buf = np.zeros(int(SR * d))
-    for i, n in enumerate((83, 76, 71)):
-        place(buf, glass(note(n), 1.0, 0.55) * 0.7 + bell(note(n), 1.0, 0.25, 0.5) * 0.3, i * 0.09, 0.85 - i * 0.15)
-    place(buf, bubble(700, 240, 0.12, 0.4), 0.24)
-    finish(reverb(buf, 0.28, 0.9), "chime_off", 0.62, lp=6000)
+    chord((69, 64, 60, 57, 52), 1.6, 0.03, 0.03, 0.5, (), "chime_off", 0.6, 4500, 0.3)
 
 
 def tune_done():
