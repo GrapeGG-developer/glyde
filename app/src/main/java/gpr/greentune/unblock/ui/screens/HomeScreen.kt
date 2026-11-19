@@ -199,7 +199,8 @@ fun GlydeHome(onConnect: () -> Unit, onDisconnect: () -> Unit) {
     val winOpen = page != null
     val homeScale by animateFloatAsState(if (winOpen) 0.93f else 1f, spring(dampingRatio = 0.8f, stiffness = 260f), label = "hs")
     var appeared by remember { mutableStateOf(false) }
-    LaunchedEffect(Unit) { appeared = true }
+    val booted = gpr.greentune.unblock.ui.aero.Boot.done.value
+    LaunchedEffect(booted) { if (booted) appeared = true }
     val intro by animateFloatAsState(if (appeared) 1f else 0f, tween(if (lite) 300 else 1100, easing = FastOutSlowInEasing), label = "in")
 
     BoxWithConstraints(Modifier.fillMaxSize()) {
@@ -211,6 +212,8 @@ fun GlydeHome(onConnect: () -> Unit, onDisconnect: () -> Unit) {
                 .graphicsLayer {
                     scaleX = homeScale
                     scaleY = homeScale
+                    rotationX = (1f - homeScale) / 0.07f * 6f
+                    cameraDistance = 18f * density
                 }
                 .statusBarsPadding()
                 .navigationBarsPadding(),
@@ -327,11 +330,7 @@ fun GlydeHome(onConnect: () -> Unit, onDisconnect: () -> Unit) {
 }
 
 @Composable
-private fun versionCaption(): String {
-    val v = gpr.greentune.unblock.BuildConfig.VERSION_NAME
-    val d = gpr.greentune.unblock.BuildConfig.DISPLAY_NAME
-    return if (d.contains(v)) d else "$d · $v"
-}
+private fun versionCaption(): String = gpr.greentune.unblock.BuildConfig.VERSION_NAME
 
 @Composable
 private fun TopBar(onHow: () -> Unit, modifier: Modifier = Modifier) {
@@ -343,24 +342,17 @@ private fun TopBar(onHow: () -> Unit, modifier: Modifier = Modifier) {
             .padding(horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Image(painterResource(R.drawable.logo_glass), null, Modifier.size(32.dp))
+        Image(painterResource(R.drawable.logo_glass), null, Modifier.size(36.dp))
         Spacer(Modifier.width(8.dp))
-        Text(stringResource(R.string.app_name), fontSize = 21.sp, fontWeight = FontWeight.SemiBold, color = c.text)
-        Spacer(Modifier.width(7.dp))
-        Box(
-            Modifier
-                .clip(RoundedCornerShape(7.dp))
-                .drawBehind {
-                    val cr = CornerRadius(7.dp.toPx())
-                    drawRoundRect(Brush.verticalGradient(listOf(lerpC(c.tint, Color.White, 0.35f), c.tint, lerpC(c.tint, Color.Black, 0.25f))), cornerRadius = cr)
-                    drawRoundRect(Brush.verticalGradient(listOf(Color.White.copy(alpha = 0.6f), Color.White.copy(alpha = 0.05f)), 0f, size.height * 0.55f), size = androidx.compose.ui.geometry.Size(size.width, size.height * 0.55f), cornerRadius = cr)
-                    drawRoundRect(Color.Black.copy(alpha = 0.3f), cornerRadius = cr, style = Stroke(1.dp.toPx()))
-                }
-                .padding(horizontal = 7.dp, vertical = 2.dp)
-        ) {
+        Column(verticalArrangement = Arrangement.Center) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(stringResource(R.string.app_name), fontSize = 21.sp, lineHeight = 22.sp, fontWeight = FontWeight.SemiBold, color = c.text)
+                Spacer(Modifier.width(7.dp))
+                DpiBadge()
+            }
             Text(
-                "DPI", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = Color.White, letterSpacing = 1.sp,
-                style = androidx.compose.ui.text.TextStyle(shadow = androidx.compose.ui.graphics.Shadow(Color.Black.copy(alpha = 0.45f), Offset(0f, 1f), 3f))
+                versionCaption(), fontSize = 10.5.sp, lineHeight = 12.sp, color = c.subText, maxLines = 1,
+                overflow = TextOverflow.Ellipsis, letterSpacing = 0.3.sp
             )
         }
         Spacer(Modifier.weight(1f))
@@ -376,6 +368,29 @@ private fun TopBar(onHow: () -> Unit, modifier: Modifier = Modifier) {
         ) {
             Text("?", fontSize = 19.sp, fontWeight = FontWeight.SemiBold, color = c.text)
         }
+    }
+}
+
+@Composable
+private fun DpiBadge() {
+    Box(
+        Modifier
+            .drawBehind {
+                val cr = CornerRadius(6.dp.toPx())
+                drawRoundRect(Color.Black.copy(alpha = 0.35f), topLeft = Offset(0f, 1.5.dp.toPx()), size = size, cornerRadius = cr)
+                drawRoundRect(Brush.verticalGradient(listOf(Color(0xFFFFE07A), Color(0xFFFFA000), Color(0xFFE65100))), cornerRadius = cr)
+                drawRoundRect(
+                    Brush.verticalGradient(listOf(Color.White.copy(alpha = 0.75f), Color.White.copy(alpha = 0.1f)), 0f, size.height * 0.5f),
+                    size = androidx.compose.ui.geometry.Size(size.width, size.height * 0.5f), cornerRadius = cr
+                )
+                drawRoundRect(Color(0xFF5A2300), cornerRadius = cr, style = Stroke(1.2.dp.toPx()))
+            }
+            .padding(horizontal = 6.dp, vertical = 1.dp)
+    ) {
+        Text(
+            "DPI", fontSize = 12.sp, lineHeight = 14.sp, fontWeight = FontWeight.ExtraBold, color = Color.White, letterSpacing = 1.2.sp,
+            style = androidx.compose.ui.text.TextStyle(shadow = androidx.compose.ui.graphics.Shadow(Color(0xFF6B2A00), Offset(0f, 1.5f), 2f))
+        )
     }
 }
 
@@ -424,6 +439,7 @@ private fun MenuButton(badge: Boolean, onClick: () -> Unit) {
     }
 }
 
+@OptIn(androidx.compose.animation.ExperimentalAnimationApi::class)
 @Composable
 private fun AeroWindowHost(
     page: String?,
@@ -439,7 +455,7 @@ private fun AeroWindowHost(
         Box(
             Modifier
                 .fillMaxSize()
-                .drawBehind { drawRect(Color.Black.copy(alpha = if (c.dark) 0.34f else 0.18f)) }
+                .drawBehind { drawRect(Color.Black.copy(alpha = if (c.dark) 0.2f else 0.08f)) }
                 .clickable(interactionSource = remember { MutableInteractionSource() }, indication = null, onClick = onClose)
         )
     }
@@ -452,18 +468,23 @@ private fun AeroWindowHost(
             slideInVertically(spring(dampingRatio = 0.75f, stiffness = 300f)) { it / 12 },
         exit = fadeOut(tween(160)) + scaleOut(tween(180), targetScale = 0.9f) + slideOutVertically(tween(180)) { it / 16 }
     ) {
+        val open by transition.animateFloat(
+            transitionSpec = { spring(dampingRatio = 0.72f, stiffness = 240f) }, label = "wopen"
+        ) { st -> if (st == androidx.compose.animation.EnterExitState.Visible) 1f else 0f }
         Box(
-            Modifier.fillMaxSize().statusBarsPadding().navigationBarsPadding().padding(horizontal = 12.dp, vertical = 12.dp),
+            Modifier.fillMaxSize().statusBarsPadding().navigationBarsPadding().padding(horizontal = 12.dp, vertical = 12.dp)
+                .graphicsLayer {
+                    if (!lite) {
+                        rotationX = (1f - open) * 22f
+                        rotationY = (1f - open) * -8f
+                        cameraDistance = 16f * density
+                        transformOrigin = androidx.compose.ui.graphics.TransformOrigin(0.5f, 1f)
+                    }
+                },
             contentAlignment = Alignment.Center
         ) {
             val pg = page ?: last
             val sub = pg != Pages.MENU
-            val t = androidx.compose.animation.core.rememberInfiniteTransition(label = "glass")
-            val shine by t.animateFloat(
-                -0.3f, 1.3f,
-                androidx.compose.animation.core.infiniteRepeatable(tween(7000, easing = androidx.compose.animation.core.LinearEasing)),
-                label = "shine"
-            )
             Column(
                 Modifier
                     .widthIn(max = 560.dp)
@@ -472,7 +493,7 @@ private fun AeroWindowHost(
                     .then(if (sub) Modifier.fillMaxHeight() else Modifier)
                     .aeroShadow()
                     .backdropBlur(GGV7.blur, GGV7.windowCorner, blur)
-                    .aeroFrame(c, if (blur) GGV7.glassAlpha else GGV7.glassAlphaFallback, if (lite) -1f else shine)
+                    .aeroFrame(c, if (blur) GGV7.glassAlpha else GGV7.glassAlphaFallback)
                     .clickable(interactionSource = remember { MutableInteractionSource() }, indication = null) {}
             ) {
                 WindowCaption(
@@ -486,27 +507,50 @@ private fun AeroWindowHost(
                         .padding(start = 7.dp, end = 7.dp, bottom = 7.dp)
                         .then(if (sub) Modifier.weight(1f) else Modifier)
                         .fillMaxWidth()
-                        .clip(RoundedCornerShape(10.dp))
                         .drawBehind {
                             val a = if (blur) GGV7.contentAlpha else GGV7.contentAlphaFallback
-                            drawRect(if (c.dark) Color(0xFF0B1E28).copy(alpha = a) else Color(0xFFF4FAFD).copy(alpha = a))
-                            drawRect(Brush.verticalGradient(listOf(Color.White.copy(alpha = if (c.dark) 0.05f else 0.35f), Color.Transparent), 0f, 18.dp.toPx()))
-                            drawRoundRect(Color.Black.copy(alpha = 0.28f), cornerRadius = CornerRadius(10.dp.toPx()), style = Stroke(1.dp.toPx()))
+                            drawRoundRect(if (c.dark) Color(0xFF071620).copy(alpha = a) else Color(0xFFF7FBFE).copy(alpha = a), cornerRadius = CornerRadius(10.dp.toPx()))
+                            drawRoundRect(Color.White.copy(alpha = if (c.dark) 0.18f else 0.6f), cornerRadius = CornerRadius(10.dp.toPx()), style = Stroke(1.dp.toPx()))
                         }
                 ) {
                     AnimatedContent(
                         targetState = pg,
                         transitionSpec = {
-                            if (targetState == Pages.MENU) {
-                                (slideInHorizontally(spring(dampingRatio = 0.85f, stiffness = 380f)) { -it / 4 } + fadeIn(tween(220))) togetherWith
-                                    (slideOutHorizontally(tween(220)) { it / 4 } + fadeOut(tween(140)) + scaleOut(tween(220), targetScale = 0.96f))
+                            if (lite) {
+                                fadeIn(tween(160)) togetherWith fadeOut(tween(120))
                             } else {
-                                (slideInHorizontally(spring(dampingRatio = 0.85f, stiffness = 380f)) { it / 4 } + fadeIn(tween(220)) + scaleIn(tween(260), initialScale = 0.96f)) togetherWith
-                                    (slideOutHorizontally(tween(220)) { -it / 4 } + fadeOut(tween(140)))
+                                (fadeIn(tween(260, 90)) togetherWith fadeOut(tween(200))).using(androidx.compose.animation.SizeTransform(clip = false))
                             }
                         },
                         label = "win"
-                    ) { p -> content(p) }
+                    ) { p ->
+                        val back = pg == Pages.MENU
+                        val k by transition.animateFloat(
+                            transitionSpec = { spring(dampingRatio = 0.8f, stiffness = 200f) }, label = "flip"
+                        ) { st ->
+                            when (st) {
+                                androidx.compose.animation.EnterExitState.PreEnter -> 1f
+                                androidx.compose.animation.EnterExitState.Visible -> 0f
+                                androidx.compose.animation.EnterExitState.PostExit -> -1f
+                            }
+                        }
+                        Box(
+                            Modifier.graphicsLayer {
+                                if (!lite) {
+                                    val dir = if (back) -1f else 1f
+                                    val kk = k * dir
+                                    cameraDistance = 12f * density
+                                    rotationY = -kk * 48f
+                                    translationX = kk * size.width * 0.42f
+                                    translationY = kotlin.math.abs(k) * -size.height * 0.04f
+                                    val sc = 1f - 0.22f * kotlin.math.abs(k)
+                                    scaleX = sc
+                                    scaleY = sc
+                                    transformOrigin = androidx.compose.ui.graphics.TransformOrigin(if (kk > 0) 0f else 1f, 0.5f)
+                                }
+                            }
+                        ) { content(p) }
+                    }
                 }
             }
         }
@@ -532,55 +576,27 @@ private fun Modifier.aeroShadow(): Modifier = this.drawBehind {
     }
 }
 
-private fun Modifier.aeroFrame(c: gpr.greentune.unblock.ui.aero.AeroColors, alpha: Float, shine: Float): Modifier = this.drawBehind {
+private fun Modifier.aeroFrame(c: gpr.greentune.unblock.ui.aero.AeroColors, alpha: Float): Modifier = this.drawBehind {
     val r = GGV7.windowCorner.toPx()
     val cr = CornerRadius(r, r)
     drawRoundRect(
         Brush.verticalGradient(
             listOf(
-                lerpC(c.tint, Color.White, if (c.dark) 0.10f else 0.55f).copy(alpha = alpha),
-                lerpC(c.tint, Color.Black, if (c.dark) 0.45f else 0.0f).copy(alpha = alpha * 0.85f),
-                lerpC(c.tint, Color.Black, if (c.dark) 0.6f else 0.1f).copy(alpha = alpha),
+                lerpC(c.tint, Color.White, if (c.dark) 0.15f else 0.45f).copy(alpha = alpha),
+                lerpC(c.tint, Color.Black, if (c.dark) 0.35f else 0.05f).copy(alpha = alpha * 0.8f),
+                lerpC(c.tint, Color.Black, if (c.dark) 0.5f else 0.15f).copy(alpha = alpha),
             )
         ),
         cornerRadius = cr
     )
-    val path = androidx.compose.ui.graphics.Path().apply {
-        addRoundRect(androidx.compose.ui.geometry.RoundRect(0f, 0f, size.width, size.height, cr))
-    }
-    clipPath(path) {
-        val w = size.width
-        val h = size.height
-        for ((pos, wd, a) in listOf(Triple(0.12f, 0.10f, 0.16f), Triple(0.30f, 0.05f, 0.12f), Triple(0.58f, 0.14f, 0.10f), Triple(0.80f, 0.04f, 0.14f))) {
-            val x = w * pos
-            val streak = androidx.compose.ui.graphics.Path().apply {
-                moveTo(x, 0f)
-                lineTo(x + w * wd, 0f)
-                lineTo(x + w * wd - h * 0.55f, h)
-                lineTo(x - h * 0.55f, h)
-                close()
-            }
-            drawPath(streak, Color.White.copy(alpha = a * 0.7f))
-        }
-        if (shine in 0f..1f) {
-            val x = -w * 0.4f + shine * w * 1.8f
-            val band = androidx.compose.ui.graphics.Path().apply {
-                moveTo(x, 0f)
-                lineTo(x + w * 0.12f, 0f)
-                lineTo(x + w * 0.12f - h * 0.4f, h)
-                lineTo(x - h * 0.4f, h)
-                close()
-            }
-            drawPath(band, Color.White.copy(alpha = 0.10f))
-        }
-        drawRect(
-            Brush.verticalGradient(listOf(Color.White.copy(alpha = 0.5f), Color.White.copy(alpha = 0.08f), Color.Transparent), 0f, 46.dp.toPx()),
-            size = androidx.compose.ui.geometry.Size(w, 46.dp.toPx())
-        )
-    }
-    drawRoundRect(Color.Black.copy(alpha = 0.6f), cornerRadius = cr, style = Stroke(1.dp.toPx()))
     drawRoundRect(
-        Color.White.copy(alpha = 0.55f),
+        Brush.verticalGradient(listOf(Color.White.copy(alpha = 0.22f), Color.White.copy(alpha = 0.04f), Color.Transparent), 0f, 40.dp.toPx()),
+        size = androidx.compose.ui.geometry.Size(size.width, 40.dp.toPx()),
+        cornerRadius = cr
+    )
+    drawRoundRect(Color.Black.copy(alpha = 0.55f), cornerRadius = cr, style = Stroke(1.dp.toPx()))
+    drawRoundRect(
+        Color.White.copy(alpha = 0.5f),
         topLeft = Offset(1.dp.toPx(), 1.dp.toPx()),
         size = androidx.compose.ui.geometry.Size(size.width - 2.dp.toPx(), size.height - 2.dp.toPx()),
         cornerRadius = CornerRadius(r - 1.dp.toPx()),

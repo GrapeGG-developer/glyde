@@ -35,7 +35,7 @@ object Fx {
         }
         if (t - lastStatusSound < 400) return
         lastStatusSound = t
-        play(context, res, if (res == R.raw.error) 0.8f else 1f)
+        play(context, res, if (res == R.raw.error) 0.35f else 0.4f)
     }
 
     @Synchronized
@@ -77,13 +77,13 @@ object Fx {
         }
     }
 
-    fun chime(context: Context, on: Boolean) = play(context, if (on) R.raw.chime_on else R.raw.chime_off)
+    fun chime(context: Context, on: Boolean) = play(context, if (on) R.raw.chime_on else R.raw.chime_off, 0.4f)
 
-    fun done(context: Context) = play(context, R.raw.tune_done, 0.85f)
+    fun done(context: Context) = play(context, R.raw.tune_done, 0.35f)
 
-    fun error(context: Context) = play(context, R.raw.error, 0.8f)
+    fun error(context: Context) = play(context, R.raw.error, 0.35f)
 
-    fun tap(context: Context) = play(context, R.raw.tap, 0.55f)
+    fun tap(context: Context) = play(context, R.raw.tap, 0.2f)
 
     fun haptic(view: View, strong: Boolean = false) {
         view.performHapticFeedback(

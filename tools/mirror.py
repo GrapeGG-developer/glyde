@@ -10,7 +10,7 @@ dist = sys.argv[2]
 info = json.loads(subprocess.check_output([sys.executable, os.path.join(here, "version.py"), version, "json"]).decode())
 notes = subprocess.check_output([sys.executable, os.path.join(here, "version.py"), version, "notes"]).decode().strip()
 repo = os.environ.get("GITHUB_REPOSITORY", "GrapeGG-developer/glyde")
-tag = "v" + version
+tag = version if version.startswith("Y") else "v" + version
 assets, sizes, sums = {}, {}, {}
 for name in sorted(os.listdir(dist)):
     if not name.endswith(".apk"):

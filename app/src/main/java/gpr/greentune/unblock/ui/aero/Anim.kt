@@ -18,10 +18,10 @@ object GGV7 {
     const val NAME = "Glyde Glass Vista-7"
     val windowCorner = 16.dp
     val tileCorner = 18.dp
-    val blur = 24.dp
-    const val glassAlpha = 0.46f
+    val blur = 34.dp
+    const val glassAlpha = 0.30f
     const val glassAlphaFallback = 0.9f
-    const val contentAlpha = 0.80f
+    const val contentAlpha = 0.50f
     const val contentAlphaFallback = 0.95f
     const val staggerMs = 38L
 }

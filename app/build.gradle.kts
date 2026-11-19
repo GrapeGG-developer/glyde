@@ -13,7 +13,7 @@ val appVersionCode = ((findProperty("versionCode") as String?) ?: "1").toInt()
 val serverUrl = (findProperty("serverUrl") as String?) ?: "https://gt-unblock-api.onrender.com"
 val backupUrls = (findProperty("backupUrls") as String?) ?: ""
 val appCodename = (findProperty("codename") as String?) ?: "Andromeda"
-val appDisplay = (findProperty("displayName") as String?) ?: "Glyde 26.11 Andromeda"
+val appDisplay = (findProperty("glydeDisplay") as String?) ?: "Glyde Dev"
 val appRing = (findProperty("ring") as String?) ?: "stable"
 val keystoreFile = System.getenv("GT_KEYSTORE_FILE")
 

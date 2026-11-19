@@ -18,6 +18,7 @@ import androidx.compose.ui.geometry.RoundRect
 import androidx.compose.ui.graphics.BlurEffect
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.TileMode
+import androidx.compose.ui.graphics.asComposeRenderEffect
 import androidx.compose.ui.graphics.drawscope.clipPath
 import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.graphics.layer.GraphicsLayer
@@ -85,7 +86,7 @@ fun Modifier.backdropBlur(radius: Dp, corner: Dp, enabled: Boolean = true): Modi
             if (sources.isEmpty()) return@drawBehind
             val root = sources.first()
             val r = radius.toPx()
-            if (r > 0.5f) blurLayer.renderEffect = BlurEffect(r, r, TileMode.Clamp)
+            if (r > 0.5f && blurLayer.renderEffect == null) blurLayer.renderEffect = vibrantBlur(r)
             val w = sources.maxOf { (it.origin.x - root.origin.x).toInt() + it.size.width }
             val h = sources.maxOf { (it.origin.y - root.origin.y).toInt() + it.size.height }
             if (w <= 0 || h <= 0) return@drawBehind
@@ -104,3 +105,14 @@ fun Modifier.backdropBlur(radius: Dp, corner: Dp, enabled: Boolean = true): Modi
             }
         }
 }
+
+private fun vibrantBlur(r: Float): androidx.compose.ui.graphics.RenderEffect =
+    try {
+        val sat = android.graphics.ColorMatrix().apply { setSaturation(1.5f) }
+        android.graphics.RenderEffect.createChainEffect(
+            android.graphics.RenderEffect.createColorFilterEffect(android.graphics.ColorMatrixColorFilter(sat)),
+            android.graphics.RenderEffect.createBlurEffect(r, r, android.graphics.Shader.TileMode.CLAMP)
+        ).asComposeRenderEffect()
+    } catch (_: Throwable) {
+        BlurEffect(r, r, TileMode.Clamp)
+    }

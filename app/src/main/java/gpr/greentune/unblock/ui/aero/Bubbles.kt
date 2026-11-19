@@ -61,20 +61,18 @@ private class Bubble(
     val freq: Float,
     var flash: Float = 0f,
     var lastBand: Int = -1,
+    var passed: Float = 0f,
 )
-
-private class Spark(var x: Float, var y: Float, var v: Float, var life: Float, val len: Float)
 
 @Composable
 fun Bubbles(energy: Float, lite: Boolean, modifier: Modifier = Modifier) {
     val c = Aero.colors
     val density = LocalDensity.current.density
     val bubbles = remember { ArrayList<Bubble>() }
-    val sparks = remember { ArrayList<Spark>() }
     var frame by remember { mutableLongStateOf(0L) }
     var bounds by remember { mutableStateOf(Size.Zero) }
-    val count = if (lite) 6 else 12
     val e = energy.coerceIn(0f, 1f)
+    val count = if (lite) 7 else if (e > 0.5f) 18 else 13
     val energyNow by rememberUpdatedState(e)
     var flow by remember { mutableStateOf(e) }
     var clock by remember { mutableStateOf(0f) }
@@ -115,7 +113,7 @@ fun Bubbles(energy: Float, lite: Boolean, modifier: Modifier = Modifier) {
                 for (b in bubbles) {
                     val wanderX = (sin(t * b.freq * 0.7f + b.phase) + 0.6f * sin(t * b.freq * 1.9f + b.phase * 2.1f)) * 16f * density
                     val wanderY = (kotlin.math.cos(t * b.freq * 0.5f + b.phase * 1.3f)) * 10f * density
-                    val rise = (90f + 170f * b.depth) * density * flow + 260f * density * kick * b.depth
+                    val rise = (55f + 95f * b.depth) * density * flow + 140f * density * kick * b.depth
                     val targetVx = wanderX * (1f - 0.6f * flow)
                     val targetVy = wanderY * (1f - flow) - rise
                     b.vx += (targetVx - b.vx) * min(1f, dt * 1.4f)
@@ -151,10 +149,12 @@ fun Bubbles(energy: Float, lite: Boolean, modifier: Modifier = Modifier) {
                             if (prevY > by && b.y <= by && b.lastBand != bi) {
                                 b.flash = 1f
                                 b.lastBand = bi
+                                if (bi == 0) b.passed = 1f
                             }
                         }
                     }
-                    b.flash = max(0f, b.flash - dt * 2.2f)
+                    b.flash = max(0f, b.flash - dt * 1.6f)
+                    if (flow < 0.2f) b.passed = max(0f, b.passed - dt * 0.8f)
                     if (b.x < b.r) {
                         b.x = b.r
                         b.vx = kotlin.math.abs(b.vx) * 0.5f
@@ -178,6 +178,7 @@ fun Bubbles(energy: Float, lite: Boolean, modifier: Modifier = Modifier) {
                         b.vx = 0f
                         b.vy = -40f * density * flow
                         b.lastBand = -1
+                        b.passed = 0f
                     }
                 }
                 val gap = 3f * density
@@ -213,16 +214,6 @@ fun Bubbles(energy: Float, lite: Boolean, modifier: Modifier = Modifier) {
                         }
                     }
                 }
-                val sparkMax = if (lite) 0 else (22 * flow).toInt()
-                if (sparks.size < sparkMax && rnd.nextFloat() < dt * 30f) {
-                    sparks.add(Spark(rnd.nextFloat() * w, h + 10f * density, (520f + 600f * rnd.nextFloat()) * density, 1f, (26f + 50f * rnd.nextFloat()) * density))
-                }
-                val iter = sparks.iterator()
-                while (iter.hasNext()) {
-                    val sp = iter.next()
-                    sp.y -= sp.v * dt * (0.4f + 0.6f * flow)
-                    if (sp.y < -sp.len || sparks.size > sparkMax + 4) iter.remove()
-                }
                 frame = now
             }
         }
@@ -231,55 +222,22 @@ fun Bubbles(energy: Float, lite: Boolean, modifier: Modifier = Modifier) {
         bounds = size
         frame
         val rim = if (c.dark) Color(0xFFB8ECFF) else Color.White
-        val body = lerpTint(c.tint, c.ok, flow)
-        if (flow > 0.02f) {
-            for ((k, fy) in floatArrayOf(0.34f, 0.66f).withIndex()) {
-                val y = size.height * fy
-                val shimmer = 0.5f + 0.5f * sin(clock * 2.2f + k * 1.7f)
-                drawRect(
-                    Brush.verticalGradient(
-                        listOf(Color.Transparent, body.copy(alpha = 0.10f * flow * (0.6f + 0.4f * shimmer)), Color.Transparent),
-                        y - 18f * density, y + 18f * density
-                    ),
-                    topLeft = Offset(0f, y - 18f * density), size = Size(size.width, 36f * density)
-                )
-                val dash = 14f * density
-                val off = (clock * 90f * density * flow) % (dash * 2f)
-                var x = -dash * 2f + off
-                while (x < size.width) {
-                    drawLine(rim.copy(alpha = 0.16f * flow), Offset(x, y), Offset(x + dash, y), 1.2f * density)
-                    x += dash * 2f
-                }
-            }
-            for (sp in sparks) {
-                drawLine(
-                    Brush.verticalGradient(listOf(rim.copy(alpha = 0.75f * flow), Color.Transparent), sp.y, sp.y + sp.len),
-                    Offset(sp.x, sp.y), Offset(sp.x, sp.y + sp.len), 1.6f * density, cap = androidx.compose.ui.graphics.StrokeCap.Round
-                )
-                drawCircle(rim.copy(alpha = 0.9f * flow), 1.8f * density, Offset(sp.x, sp.y))
-            }
-        }
+        val body = lerpTint(c.tint, c.ok, flow * 0.35f)
         for (b in bubbles) {
             val center = Offset(b.x, b.y)
             val a = 0.35f + 0.65f * b.depth
-            val speed = sqrt(b.vx * b.vx + b.vy * b.vy)
-            if (flow > 0.05f && speed > 60f * density) {
-                val k = min(1f, speed / (400f * density)) * flow
-                val tail = Offset(b.x - b.vx * 0.22f, b.y - b.vy * 0.22f)
-                drawLine(
-                    Brush.linearGradient(listOf(body.copy(alpha = 0.38f * a * k), Color.Transparent), center, tail),
-                    center, tail, b.r * 1.5f, cap = androidx.compose.ui.graphics.StrokeCap.Round
-                )
+            val col = lerpTint(body, c.ok, b.passed * flow)
+            if (b.passed > 0.01f && flow > 0.05f) {
                 drawCircle(
-                    Brush.radialGradient(listOf(body.copy(alpha = 0.32f * a * k), Color.Transparent), center, b.r * 2.4f),
-                    b.r * 2.4f, center
+                    Brush.radialGradient(listOf(c.ok.copy(alpha = 0.22f * a * b.passed * flow), Color.Transparent), center, b.r * 2.2f),
+                    b.r * 2.2f, center
                 )
             }
             drawCircle(
                 Brush.radialGradient(
-                    0f to body.copy(alpha = 0.03f * a),
-                    0.72f to body.copy(alpha = 0.12f * a),
-                    1f to body.copy(alpha = 0.36f * a),
+                    0f to col.copy(alpha = 0.04f * a),
+                    0.72f to col.copy(alpha = 0.14f * a),
+                    1f to col.copy(alpha = 0.40f * a),
                     center = center,
                     radius = b.r,
                 ),
@@ -301,7 +259,7 @@ fun Bubbles(energy: Float, lite: Boolean, modifier: Modifier = Modifier) {
             )
             if (b.flash > 0.01f) {
                 val fr = b.r * (1.2f + 1.6f * (1f - b.flash))
-                drawCircle(rim.copy(alpha = 0.7f * b.flash), fr, center, style = Stroke(1.6f * density))
+                drawCircle(c.ok.copy(alpha = 0.55f * b.flash), fr, center, style = Stroke(1.4f * density))
             }
         }
     }

@@ -235,7 +235,7 @@ object Diag {
     fun report(context: Context): String {
         val st = _state.value
         val sb = StringBuilder()
-        sb.append("GT Unblock ").append(BuildConfig.VERSION_NAME).append(" · Android ").append(Build.VERSION.RELEASE).append('\n')
+        sb.append("Glyde ").append(BuildConfig.VERSION_NAME).append(" · Android ").append(Build.VERSION.RELEASE).append('\n')
         Geo.last.value?.let { sb.append(it.label).append('\n') }
         if (st.finishedAt > 0) sb.append(DateFormat.getDateTimeInstance().format(Date(st.finishedAt))).append('\n')
         sb.append('\n')

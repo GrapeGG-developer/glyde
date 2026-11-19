@@ -113,8 +113,11 @@ fun AppRoot(
             return@Box
         }
         GlydeHome(onConnect = onConnect, onDisconnect = onDisconnect)
-        if (whatsNew != null) WhatsNewDialog(BuildConfig.VERSION_NAME, whatsNew, onWhatsNewShown)
-        else if (showUpdate) UpdateDialog(onDismiss = onUpdateShown)
+        if (gpr.greentune.unblock.ui.aero.Boot.done.value) {
+            if (whatsNew != null) WhatsNewDialog(BuildConfig.VERSION_NAME, whatsNew, onWhatsNewShown)
+            else if (showUpdate) UpdateDialog(onDismiss = onUpdateShown)
+        }
+        gpr.greentune.unblock.ui.aero.BootIntro(lite)
     }
     }
 }

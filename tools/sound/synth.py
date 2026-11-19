@@ -112,12 +112,28 @@ def chord(notes, d, strum, att, rel, sparkle, name, gain, lp, mix):
     finish(reverb(buf, mix, 1.15), name, gain, lp=lp)
 
 
+def ding(notes, d, decay, name, gain, lp):
+    buf = np.zeros(int(SR * d))
+    for i, n in enumerate(notes):
+        f = note(n)
+        t = t_of(d - i * 0.045)
+        sig = np.sin(2 * np.pi * f * t) * np.exp(-t / decay)
+        sig += 0.22 * np.sin(2 * np.pi * f * 2.76 * t + 1) * np.exp(-t / (decay * 0.45))
+        sig += 0.06 * np.sin(2 * np.pi * f * 5.4 * t + 2) * np.exp(-t / (decay * 0.25))
+        sig *= np.minimum(1, t / 0.004)
+        place(buf, sig, i * 0.045, 1.0 - i * 0.3)
+    x = reverb(buf, 0.18, 0.6)
+    n = int(0.12 * SR)
+    x[-n:] *= np.linspace(1, 0, n) ** 2
+    finish(x, name, gain, lp=lp)
+
+
 def chime_on():
-    chord((60, 67, 72, 76, 79, 83, 86), 2.2, 0.018, 0.035, 0.85, (96, 100, 103), "chime_on", 0.8, 9000, 0.34)
+    ding((88, 95), 0.4, 0.11, "chime_on", 0.38, 6500)
 
 
 def chime_off():
-    chord((69, 64, 60, 57, 52), 1.6, 0.03, 0.03, 0.5, (), "chime_off", 0.6, 4500, 0.3)
+    ding((83, 76), 0.36, 0.09, "chime_off", 0.3, 4500)
 
 
 def tune_done():

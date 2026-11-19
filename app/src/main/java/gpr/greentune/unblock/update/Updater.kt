@@ -190,7 +190,19 @@ object Updater {
         return compare(info.version, BuildConfig.VERSION_NAME) > 0
     }
 
+    private val fresh = Regex("^v?Y(\\d+)\\.M(\\d+)\\.W(\\d+)\\.B(\\d+).*", RegexOption.IGNORE_CASE)
+
+    fun codeOf(v: String): Long? = fresh.matchEntire(v)?.groupValues?.let {
+        it[1].toLong() * 10_000_000 + it[2].toLong() * 100_000 + it[3].toLong() * 10_000 + minOf(it[4].toLong(), 9999)
+    }
+
     fun compare(a: String, b: String): Int {
+        val ca = codeOf(a)
+        val cb = codeOf(b)
+        if (ca != null || cb != null) {
+            val d = (ca ?: 0L) - (cb ?: 0L)
+            return if (d > 0) 1 else if (d < 0) -1 else 0
+        }
         fun parts(v: String) = v.removePrefix("v").split('-')[0].split('.').map { it.toIntOrNull() ?: 0 }
         val pa = parts(a)
         val pb = parts(b)

@@ -3,7 +3,7 @@ name: Build
 on:
   push:
     branches: [main]
-    tags: ['v*']
+    tags: ['v*', 'Y*']
     paths-ignore: ['**.md', 'presets/**', 'backend/**']
   workflow_dispatch:
 
@@ -38,14 +38,13 @@ jobs:
       - name: Version
         id: ver
         run: |
-          if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
+          if [[ "$GITHUB_REF" == refs/tags/* ]]; then
             NAME="${GITHUB_REF_NAME#v}"
           else
-            BASE=$(grep -m1 -oE '^## v?[0-9]+\.[0-9]+\.[0-9]+' CHANGELOG.md | grep -oE '[0-9.]+$')
-            NAME="${BASE}-dev.${GITHUB_RUN_NUMBER}"
+            NAME=$(python3 tools/version.py next dev)
           fi
           python3 tools/version.py "$NAME" >> "$GITHUB_OUTPUT"
-          if [[ "$GITHUB_REF" != refs/tags/v* ]]; then echo "code=$GITHUB_RUN_NUMBER" >> "$GITHUB_OUTPUT"; fi
+          if [[ "$GITHUB_REF" != refs/tags/* ]]; then echo "code=$GITHUB_RUN_NUMBER" >> "$GITHUB_OUTPUT"; fi
           python3 tools/version.py "$NAME"
 
       - name: Keystore
@@ -64,7 +63,7 @@ jobs:
           GT_KEY_PASSWORD: ${{ secrets.GT_KEY_PASSWORD }}
         run: |
           chmod +x gradlew
-          ./gradlew --no-daemon --stacktrace assembleRelease -PversionName=${{ steps.ver.outputs.name }} -PversionCode=${{ steps.ver.outputs.code }} "-Pcodename=${{ steps.ver.outputs.codename }}" "-PdisplayName=${{ steps.ver.outputs.display }}" "-Pring=${{ steps.ver.outputs.ring }}"
+          ./gradlew --no-daemon --stacktrace assembleRelease -PversionName=${{ steps.ver.outputs.name }} -PversionCode=${{ steps.ver.outputs.code }} "-Pcodename=${{ steps.ver.outputs.codename }}" "-PglydeDisplay=${{ steps.ver.outputs.display }}" "-Pring=${{ steps.ver.outputs.ring }}"
 
       - name: Collect APKs
         run: |
@@ -86,13 +85,13 @@ jobs:
           path: dist/*
 
       - name: Release notes
-        if: startsWith(github.ref, 'refs/tags/v')
+        if: startsWith(github.ref, 'refs/tags/')
         run: |
           python3 tools/version.py "${{ steps.ver.outputs.name }}" notes > notes.md
           cat notes.md
 
       - uses: softprops/action-gh-release@v2
-        if: startsWith(github.ref, 'refs/tags/v')
+        if: startsWith(github.ref, 'refs/tags/')
         with:
           name: ${{ steps.ver.outputs.display }}
           body_path: notes.md
@@ -102,7 +101,7 @@ jobs:
             dist/SHA256SUMS.txt
 
       - name: Static update mirror
-        if: startsWith(github.ref, 'refs/tags/v') && steps.ver.outputs.pre == 'false'
+        if: startsWith(github.ref, 'refs/tags/') && steps.ver.outputs.pre == 'false'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |

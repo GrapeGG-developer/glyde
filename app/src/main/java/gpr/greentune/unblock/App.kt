@@ -30,6 +30,7 @@ class App : Application() {
         Notifications.createChannels(this)
         NetWatch.start(this)
         Live.start(this)
+        if (SettingsStore.value.tgBridge) gpr.greentune.unblock.tg.TgBridge.start(this)
         reportUpdate()
         scope.launch {
             Telemetry.onAppStart(this@App)

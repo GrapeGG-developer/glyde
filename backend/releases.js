@@ -27,8 +27,19 @@ export function dropCache(key) {
   cache.delete(key);
 }
 
+export function codenameFor(y, m) {
+  return CODENAMES[(((y - 26) * 12 + (m - 11)) % CODENAMES.length + CODENAMES.length) % CODENAMES.length];
+}
+
 export function parseVersion(v) {
   const s = String(v || '').replace(/^v/, '');
+  const n2 = s.match(/^Y(\d+)\.M(\d+)\.W(\d+)\.B(\d+)(?:-([A-Z][a-z]+))?(?:-(Insider|Beta|Dev|RC))?$/i);
+  if (n2) {
+    const y = +n2[1], mo = +n2[2], w = +n2[3], b = +n2[4];
+    let stage = (n2[6] || 'release').toLowerCase();
+    if (stage === 'rc') stage = 'beta';
+    return { fresh: true, major: y, minor: mo, week: w, patch: b, build: b, stage, n: 0, codename: n2[5] || codenameFor(y, mo), code: y * 1e7 + mo * 1e5 + w * 1e4 + Math.min(b, 9999), s };
+  }
   const m = s.match(/^(\d+)\.(\d+)(?:\.(\d+))?(?:-(insider|beta|rc|dev)\.?(\d+)?)?/i);
   if (!m) return null;
   const major = +m[1];
@@ -37,7 +48,7 @@ export function parseVersion(v) {
   const stage = (m[4] || 'release').toLowerCase();
   const n = +(m[5] || 0);
   const stageCode = stage === 'insider' ? 10 + Math.min(n, 29) : stage === 'beta' || stage === 'rc' ? 40 + Math.min(n, 39) : stage === 'dev' ? 1 : 99;
-  return { major, minor, patch, stage, n, code: major * 1e6 + minor * 1e4 + patch * 100 + stageCode, s };
+  return { fresh: false, major, minor, patch, stage, n, code: major * 1e6 + minor * 1e4 + patch * 100 + stageCode, s };
 }
 
 export function ringOfTag(tag) {
@@ -51,6 +62,7 @@ export function ringOfTag(tag) {
 export function displayName(version, codename) {
   const p = parseVersion(version);
   if (!p) return 'Glyde ' + version;
+  if (p.fresh) return 'Glyde ' + p.s;
   if (p.major < 20) return 'GT Unblock ' + p.s;
   let name = `Glyde ${p.major}.${String(p.minor).padStart(2, '0')}`;
   if (codename) name += ' ' + codename;
@@ -95,7 +107,7 @@ async function releasesFromAtom() {
       tag_name: tag,
       name: title,
       draft: false,
-      prerelease: /-/.test(version),
+      prerelease: /^Y/.test(version) ? /-(Insider|Beta|Dev|RC)$/i.test(version) : /-/.test(version),
       body,
       published_at: (e.match(/<updated>([^<]+)<\/updated>/) || [])[1],
       assets: ABIS.map(a => ({
@@ -118,6 +130,8 @@ export async function githubReleases() {
 }
 
 function codenameOf(rel) {
+  const pv = parseVersion(rel.tag_name);
+  if (pv && pv.fresh) return pv.codename;
   const m = String(rel.name || '').match(/Glyde\s+[\d.]+\s+([A-Z][a-z]+)/);
   if (m && CODENAMES.includes(m[1])) return m[1];
   const b = String(rel.body || '').match(/^#?\s*([A-Z][a-z]+)\s*$/m);

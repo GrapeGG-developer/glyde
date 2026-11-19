@@ -88,7 +88,7 @@ fun Orb(state: OrbState, onClick: () -> Unit, description: String, modifier: Mod
         Canvas(Modifier.fillMaxSize()) {
             val r = size.toPx() / 2f
             drawHalo(r, glow, energy * (if (state == OrbState.On) breathe else 1f), onA, ripple)
-            drawShadow(r, squashX)
+            drawShadow(r, squashX, glow, energy)
         }
         Canvas(
             Modifier.fillMaxSize().graphicsLayer {
@@ -112,7 +112,7 @@ fun Orb(state: OrbState, onClick: () -> Unit, description: String, modifier: Mod
 private fun DrawScope.drawHalo(r: Float, glow: Color, energy: Float, onA: Float, ripple: Float) {
     val c = center
     drawCircle(
-        Brush.radialGradient(0.5f to glow.copy(alpha = 0.6f * energy), 0.78f to glow.copy(alpha = 0.16f * energy), 1f to Color.Transparent, center = c, radius = r * 1.5f),
+        Brush.radialGradient(0.62f to glow.copy(alpha = 0.42f * energy), 0.82f to glow.copy(alpha = 0.12f * energy), 1f to Color.Transparent, center = c, radius = r * 1.5f),
         r * 1.5f, c
     )
     if (onA > 0.01f) {
@@ -124,119 +124,133 @@ private fun DrawScope.drawHalo(r: Float, glow: Color, energy: Float, onA: Float,
     }
 }
 
-private fun DrawScope.drawShadow(r: Float, sx: Float) {
-    val c = Offset(center.x, center.y + r * 0.98f)
-    scale(1f * sx, 0.22f, pivot = c) {
-        drawCircle(Brush.radialGradient(listOf(Color.Black.copy(alpha = 0.42f), Color.Transparent), c, r * 0.95f), r * 0.95f, c)
+private fun DrawScope.drawShadow(r: Float, sx: Float, glow: Color = Color.Transparent, energy: Float = 0f) {
+    val c = Offset(center.x, center.y + r * 1.02f)
+    scale(1f * sx, 0.2f, pivot = c) {
+        drawCircle(Brush.radialGradient(listOf(Color.Black.copy(alpha = 0.45f), Color.Black.copy(alpha = 0.15f), Color.Transparent), c, r * 0.9f), r * 0.9f, c)
+    }
+    val k = Offset(center.x, center.y + r * 1.0f)
+    scale(sx * 0.9f, 0.16f, pivot = k) {
+        drawCircle(Brush.radialGradient(listOf(lerpColor(glow, Color.White, 0.4f).copy(alpha = 0.55f * (0.4f + 0.6f * energy)), Color.Transparent), k, r * 0.5f), r * 0.5f, k)
     }
 }
 
 private fun DrawScope.drawOrb(r: Float, top: Color, mid: Color, bottom: Color, glow: Color, energy: Float, spinA: Float, spin: Float, pressed: Boolean, sweep: Float) {
     val c = center
     val tilt = Motion.tilt.value
+    val lx = (-tilt.x * 0.10f).coerceIn(-0.18f, 0.18f)
+    val ly = (tilt.y * 0.05f).coerceIn(-0.1f, 0.1f)
+    val clip = Path().apply { addOval(androidx.compose.ui.geometry.Rect(c, r)) }
     drawCircle(
-        Brush.sweepGradient(
-            listOf(Color(0xFFF4F8FB), Color(0xFF8D99A6), Color(0xFFE9EEF3), Color(0xFF5C6773), Color(0xFFDCE3EA), Color(0xFF7D8894), Color(0xFFF4F8FB)),
-            center = c
+        Brush.radialGradient(
+            0f to lerpColor(bottom, Color.White, 0.35f),
+            0.32f to bottom,
+            0.66f to mid,
+            0.9f to top,
+            1f to lerpColor(top, Color.Black, 0.35f),
+            center = Offset(c.x - lx * r, c.y + r * 0.42f),
+            radius = r * 1.42f
         ),
         r, c
     )
-    drawCircle(
-        Brush.verticalGradient(listOf(Color.White.copy(alpha = 0.55f), Color.Transparent, Color.Black.copy(alpha = 0.35f)), c.y - r, c.y + r),
-        r, c
-    )
-    drawCircle(Color.Black.copy(alpha = 0.55f), r * 0.915f, c, style = Stroke(r * 0.02f))
-    val ri = r * 0.895f
-    val clip = Path().apply { addOval(androidx.compose.ui.geometry.Rect(c, ri)) }
     clipPath(clip) {
         drawCircle(
-            Brush.verticalGradient(0f to top, 0.5f to mid, 1f to bottom, startY = c.y - ri, endY = c.y + ri),
-            ri, c
+            Brush.radialGradient(
+                0f to Color.Transparent,
+                0.6f to Color.Transparent,
+                0.84f to lerpColor(top, Color.Black, 0.4f).copy(alpha = 0.5f),
+                1f to lerpColor(top, Color.Black, 0.65f).copy(alpha = 0.85f),
+                center = Offset(c.x, c.y - r * 0.08f),
+                radius = r * 1.04f
+            ),
+            r, c
         )
-        drawCircle(
-            Brush.radialGradient(0.0f to lerpColor(bottom, Color.White, 0.25f).copy(alpha = 0.55f), 0.55f to Color.Transparent, center = Offset(c.x, c.y + ri * 0.55f), radius = ri * 1.1f),
-            ri, c
-        )
-        drawCircle(
-            Brush.radialGradient(0.62f to Color.Transparent, 0.92f to top.copy(alpha = 0.55f), 1f to Color.Black.copy(alpha = 0.55f), center = c, radius = ri),
-            ri, c
-        )
-        val bc = Offset(c.x, c.y + ri * 0.84f)
-        scale(1f, 0.55f, pivot = bc) {
-            drawCircle(Brush.radialGradient(listOf(glow.copy(alpha = 0.95f), glow.copy(alpha = 0.3f), Color.Transparent), bc, ri * 0.95f), ri * 0.95f, bc)
-            drawCircle(Brush.radialGradient(listOf(Color.White.copy(alpha = 0.55f), Color.Transparent), bc, ri * 0.5f), ri * 0.5f, bc)
+        val caustic = Offset(c.x + lx * r * 0.6f, c.y + r * 0.62f)
+        scale(1.15f, 0.62f, pivot = caustic) {
+            drawCircle(
+                Brush.radialGradient(
+                    listOf(lerpColor(glow, Color.White, 0.55f).copy(alpha = 0.85f * (0.55f + 0.45f * energy)), glow.copy(alpha = 0.35f), Color.Transparent),
+                    caustic, r * 0.62f
+                ),
+                r * 0.62f, caustic
+            )
         }
-        drawArc(
-            Brush.verticalGradient(listOf(Color.Transparent, lerpColor(glow, Color.White, 0.6f).copy(alpha = 0.75f)), c.y, c.y + ri),
-            20f, 140f, false,
-            topLeft = Offset(c.x - ri * 0.94f, c.y - ri * 0.94f), size = Size(ri * 1.88f, ri * 1.88f),
-            style = Stroke(ri * 0.05f, cap = StrokeCap.Round)
+        if (spinA > 0.01f) {
+            rotate(spin, c) {
+                for (i in 0 until 18) {
+                    val a = 1f - i / 18f
+                    drawArc(
+                        lerpColor(glow, Color.White, 0.5f).copy(alpha = 0.55f * a * spinA), -i * 7f, 7.5f, false,
+                        topLeft = Offset(c.x - r * 0.78f, c.y - r * 0.78f), size = Size(r * 1.56f, r * 1.56f),
+                        style = Stroke(r * 0.07f * a + r * 0.01f, cap = StrokeCap.Round)
+                    )
+                }
+            }
+        }
+        drawPower(Offset(c.x - lx * r * 0.25f, c.y + r * 0.04f), r, glow, energy)
+        drawCircle(
+            Brush.radialGradient(
+                0f to Color.Transparent,
+                0.82f to Color.Transparent,
+                0.95f to lerpColor(glow, Color.White, 0.5f).copy(alpha = 0.2f),
+                1f to lerpColor(glow, Color.White, 0.7f).copy(alpha = 0.45f),
+                center = Offset(c.x, c.y + r * 0.04f),
+                radius = r
+            ),
+            r, c
         )
-        if (pressed) drawCircle(Color.Black.copy(alpha = 0.14f), ri, c)
-        drawPower(c, ri, glow, energy)
-        val sx = c.x - ri * 1.6f + sweep * ri * 5.2f
-        if (sx < c.x + ri * 1.6f) {
-            rotate(24f, c) {
+        drawArc(
+            Brush.verticalGradient(listOf(Color.Transparent, lerpColor(glow, Color.White, 0.7f).copy(alpha = 0.9f)), c.y + r * 0.2f, c.y + r),
+            30f, 120f, false,
+            topLeft = Offset(c.x - r * 0.9f, c.y - r * 0.9f), size = Size(r * 1.8f, r * 1.8f),
+            style = Stroke(r * 0.045f, cap = StrokeCap.Round)
+        )
+        val sx = c.x - r * 1.8f + sweep * r * 6f
+        if (sx < c.x + r * 1.8f) {
+            rotate(28f, c) {
                 drawRect(
-                    Brush.horizontalGradient(listOf(Color.Transparent, Color.White.copy(alpha = 0.32f), Color.Transparent), sx - ri * 0.22f, sx + ri * 0.22f),
-                    topLeft = Offset(sx - ri * 0.22f, c.y - ri * 1.5f), size = Size(ri * 0.44f, ri * 3f)
+                    Brush.horizontalGradient(listOf(Color.Transparent, Color.White.copy(alpha = 0.16f), Color.Transparent), sx - r * 0.25f, sx + r * 0.25f),
+                    topLeft = Offset(sx - r * 0.25f, c.y - r * 1.6f), size = Size(r * 0.5f, r * 3.2f)
                 )
             }
         }
-        val gx = -tilt.x * ri * 0.07f
-        val gy = tilt.y * ri * 0.03f
+        if (pressed) drawCircle(Color.Black.copy(alpha = 0.12f), r, c)
+        val hx = c.x + lx * r
+        val hy = c.y + ly * r
         drawOval(
             Brush.verticalGradient(
-                0f to Color.White.copy(alpha = 0.92f), 0.45f to Color.White.copy(alpha = 0.42f), 1f to Color.White.copy(alpha = 0.06f),
-                startY = c.y - ri * 0.95f + gy, endY = c.y - ri * 0.02f + gy
+                0f to Color.White.copy(alpha = 0.95f), 0.35f to Color.White.copy(alpha = 0.55f), 1f to Color.White.copy(alpha = 0f),
+                startY = hy - r * 0.93f, endY = hy - r * 0.05f
             ),
-            topLeft = Offset(c.x - ri * 0.74f + gx, c.y - ri * 0.95f + gy),
-            size = Size(ri * 1.48f, ri * 0.93f)
+            topLeft = Offset(hx - r * 0.66f, hy - r * 0.93f),
+            size = Size(r * 1.32f, r * 0.88f)
         )
         drawOval(
-            Color.White.copy(alpha = 0.95f),
-            topLeft = Offset(c.x - ri * 0.52f + gx, c.y - ri * 0.80f + gy),
-            size = Size(ri * 0.26f, ri * 0.13f)
+            Brush.radialGradient(listOf(Color.White, Color.White.copy(alpha = 0f)), Offset(hx - r * 0.34f, hy - r * 0.62f), r * 0.2f),
+            topLeft = Offset(hx - r * 0.54f, hy - r * 0.74f),
+            size = Size(r * 0.4f, r * 0.24f)
         )
-    }
-    drawArc(
-        Color.White.copy(alpha = 0.75f), 205f, 130f, false,
-        topLeft = Offset(c.x - r * 0.985f, c.y - r * 0.985f), size = Size(r * 1.97f, r * 1.97f),
-        style = Stroke(1.3.dp.toPx(), cap = StrokeCap.Round)
-    )
-    if (spinA > 0.01f) {
-        rotate(spin, c) {
-            val segs = 16
-            for (i in 0 until segs) {
-                val a = (1f - i / segs.toFloat())
-                drawArc(
-                    lerpColor(glow, Color.White, 0.6f).copy(alpha = 0.95f * a * spinA), -i * 8f, 8.5f, false,
-                    topLeft = Offset(c.x - r * 0.955f, c.y - r * 0.955f), size = Size(r * 1.91f, r * 1.91f),
-                    style = Stroke(r * 0.06f, cap = if (i == 0) StrokeCap.Round else StrokeCap.Butt)
-                )
-            }
-        }
+        drawCircle(Color.White.copy(alpha = 0.9f), r * 0.035f, Offset(hx + r * 0.42f, hy - r * 0.5f))
     }
 }
 
-private fun DrawScope.drawPower(c: Offset, ri: Float, glow: Color, energy: Float) {
-    val rr = ri * 0.38f
-    val w = ri * 0.15f
-    fun strokes(color: Color, width: Float) {
+private fun DrawScope.drawPower(c: Offset, r: Float, glow: Color, energy: Float) {
+    val rr = r * 0.33f
+    val w = r * 0.12f
+    fun strokes(color: Color, width: Float, o: Offset = Offset.Zero) {
         drawArc(
-            color, -52f, 284f, false,
-            topLeft = Offset(c.x - rr, c.y - rr), size = Size(rr * 2, rr * 2),
+            color, -50f, 280f, false,
+            topLeft = Offset(c.x - rr + o.x, c.y - rr + o.y), size = Size(rr * 2, rr * 2),
             style = Stroke(width, cap = StrokeCap.Round)
         )
-        drawLine(color, Offset(c.x, c.y - rr * 1.15f), Offset(c.x, c.y - rr * 0.18f), width, StrokeCap.Round)
+        drawLine(color, Offset(c.x + o.x, c.y - rr * 1.12f + o.y), Offset(c.x + o.x, c.y - rr * 0.15f + o.y), width, StrokeCap.Round)
     }
-    val g = lerpColor(glow, Color.White, 0.5f)
-    val k = 0.5f + 0.5f * energy
-    strokes(g.copy(alpha = 0.10f * k), w * 3.4f)
-    strokes(g.copy(alpha = 0.16f * k), w * 2.4f)
-    strokes(g.copy(alpha = 0.28f * k), w * 1.6f)
-    translate(0f, w * 0.35f) { strokes(Color.Black.copy(alpha = 0.28f), w) }
-    strokes(Color.White, w)
+    val g = lerpColor(glow, Color.White, 0.55f)
+    val k = 0.45f + 0.55f * energy
+    drawCircle(Brush.radialGradient(0f to g.copy(alpha = 0.30f * k), 0.6f to g.copy(alpha = 0.12f * k), 1f to Color.Transparent, center = c, radius = rr * 1.7f), rr * 1.7f, c)
+    strokes(Color.Black.copy(alpha = 0.22f), w, Offset(0f, w * 0.45f))
+    strokes(lerpColor(g, Color.White, 0.75f), w)
+    strokes(g.copy(alpha = 0.5f), w * 0.45f, Offset(0f, w * 0.12f))
 }
 
 private fun lerpColor(a: Color, b: Color, t: Float) = Color(
