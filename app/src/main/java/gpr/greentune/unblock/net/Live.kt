@@ -320,6 +320,17 @@ object Live {
         post("/v3/status", b)
     }
 
+    private val busyCount = java.util.concurrent.atomic.AtomicInteger(0)
+
+    suspend fun <T> busy(block: suspend () -> T): T {
+        if (busyCount.incrementAndGet() == 1) setBusy(true)
+        try {
+            return block()
+        } finally {
+            if (busyCount.decrementAndGet() == 0) setBusy(false)
+        }
+    }
+
     fun setBusy(value: Boolean) {
         if (Device.busy == value) return
         Device.busy = value

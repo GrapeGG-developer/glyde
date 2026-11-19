@@ -73,7 +73,7 @@ object Diag {
         val app = context.applicationContext
         job = App.scope.launch {
             try {
-                run(app, only)
+                gpr.greentune.unblock.net.Live.busy { run(app, only) }
             } catch (e: CancellationException) {
                 _state.value = _state.value.copy(running = false)
                 throw e

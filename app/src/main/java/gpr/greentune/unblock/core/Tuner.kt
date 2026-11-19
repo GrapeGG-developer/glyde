@@ -51,7 +51,7 @@ object Tuner {
         val app = context.applicationContext
         job = App.scope.launch {
             try {
-                run(app, full, only)
+                gpr.greentune.unblock.net.Live.busy { run(app, full, only) }
             } catch (e: CancellationException) {
                 _progress.value = TuneProgress(message = app.getString(R.string.tune_cancelled))
                 throw e

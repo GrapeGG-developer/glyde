@@ -31,7 +31,7 @@ object Http {
     }
 
     fun pollText(url: String): String? = try {
-        val b = Request.Builder().url(url).header("User-Agent", "GTUnblock-Android").build()
+        val b = Request.Builder().url(url).header("User-Agent", "Glyde-Android").build()
         poll.newCall(b).execute().use { r -> if (r.isSuccessful) r.body?.string() else null }
     } catch (_: Exception) {
         null
@@ -40,7 +40,7 @@ object Http {
     private val json = "application/json; charset=utf-8".toMediaType()
 
     fun getText(url: String, headers: Map<String, String> = emptyMap()): String? = try {
-        val b = Request.Builder().url(url).header("User-Agent", "GTUnblock-Android")
+        val b = Request.Builder().url(url).header("User-Agent", "Glyde-Android")
         headers.forEach { (k, v) -> b.header(k, v) }
         client.newCall(b.build()).execute().use { r -> if (r.isSuccessful) r.body?.string() else null }
     } catch (_: Exception) {
@@ -52,7 +52,7 @@ object Http {
 
     fun postJson(url: String, body: JSONObject): Boolean = try {
         val req = Request.Builder().url(url)
-            .header("User-Agent", "GTUnblock-Android")
+            .header("User-Agent", "Glyde-Android")
             .post(body.toString().toRequestBody(json))
             .build()
         client.newCall(req).execute().use { it.isSuccessful }

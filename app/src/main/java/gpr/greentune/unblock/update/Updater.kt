@@ -355,7 +355,9 @@ object Updater {
         if (canInstall(context)) startDownload(context, info)
     }
 
-    suspend fun download(context: Context, info: UpdateInfo) {
+    suspend fun download(context: Context, info: UpdateInfo) = gpr.greentune.unblock.net.Live.busy { downloadInner(context, info) }
+
+    private suspend fun downloadInner(context: Context, info: UpdateInfo) {
         val file = apkFile(context, info)
         if (file.exists() && valid(context, file, info)) {
             _state.value = UpdateState.ReadyToInstall(info)
