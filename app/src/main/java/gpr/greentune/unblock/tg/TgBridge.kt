@@ -6,14 +6,6 @@ import gpr.greentune.unblock.net.Http
 import gpr.greentune.unblock.net.Live
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import okhttp3.Dns
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.Response
-import okhttp3.WebSocket
-import okhttp3.WebSocketListener
-import okio.ByteString
-import okio.ByteString.Companion.toByteString
 import java.io.InputStream
 import java.io.OutputStream
 import java.net.InetAddress
@@ -23,9 +15,6 @@ import java.net.ServerSocket
 import java.net.Socket
 import java.security.MessageDigest
 import java.security.SecureRandom
-import java.util.concurrent.CountDownLatch
-import java.util.concurrent.TimeUnit
-import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.atomic.AtomicLong
 import javax.crypto.Cipher
@@ -40,6 +29,7 @@ object TgBridge {
     private const val HANDSHAKE = 64
     private val WS_IP = "149.154.167.220"
     private val DC_IPS = mapOf(1 to "149.154.175.50", 2 to "149.154.167.51", 3 to "149.154.175.100", 4 to "149.154.167.91", 5 to "149.154.171.5", 203 to "91.105.192.100")
+    private val TEST_IPS = mapOf(1 to "149.154.175.10", 2 to "149.154.167.40", 3 to "149.154.175.117")
     private val TAGS = setOf(0xEFEFEFEF.toInt(), 0xEEEEEEEE.toInt(), 0xDDDDDDDD.toInt())
 
     private val _stats = MutableStateFlow(TgStats())
@@ -53,8 +43,6 @@ object TgBridge {
     private val rnd = SecureRandom()
     @Volatile
     private var secret: ByteArray = ByteArray(16)
-    @Volatile
-    private var wsBroken = 0L
     private var appContext: Context? = null
 
     fun secretHex(context: Context): String {
@@ -90,6 +78,7 @@ object TgBridge {
         }
         server = ss
         publish(true)
+        refreshCf()
         thread(name = "tg-accept", isDaemon = true) {
             while (!ss.isClosed) {
                 val c = try {
@@ -109,6 +98,7 @@ object TgBridge {
         } catch (_: Exception) {
         }
         server = null
+        pool.values.forEach { q -> q.forEach { it.ws.close() }; q.clear() }
         publish(false)
     }
 
@@ -125,7 +115,7 @@ object TgBridge {
         return md.digest()
     }
 
-    private class Ctx(val cltDec: Cipher, val cltEnc: Cipher, val tgEnc: Cipher, val tgDec: Cipher, val relayInit: ByteArray, val dc: Int, val media: Boolean, val proto: Int)
+    private class Ctx(val cltDec: Cipher, val cltEnc: Cipher, val tgEnc: Cipher, val tgDec: Cipher, val relayInit: ByteArray, val dc: Int, val media: Boolean, val proto: Int, val test: Boolean = false)
 
     private fun readFully(input: InputStream, n: Int): ByteArray? {
         val b = ByteArray(n)
@@ -148,7 +138,8 @@ object TgBridge {
         val dcIdx = ((plain[60].toInt() and 0xFF) or (plain[61].toInt() shl 8)).toShort().toInt()
         var dc = kotlin.math.abs(dcIdx)
         val media = dcIdx < 0
-        if (dc >= 10000) dc -= 10000
+        val test = dc >= 10000
+        if (test) dc -= 10000
         val rev = prekeyIv.reversedArray()
         val cltEnc = aes(sha256(rev.copyOfRange(0, 32), secret), rev.copyOfRange(32, 48))
         val init = relayInit(plain.copyOfRange(56, 60), if (media) -dc else dc)
@@ -158,7 +149,7 @@ object TgBridge {
         val tgEnc = aes(encKey, encIv)
         val tgDec = aes(rrev.copyOfRange(0, 32), rrev.copyOfRange(32, 48))
         tgEnc.update(ByteArray(64))
-        return Ctx(cltDec, cltEnc, tgEnc, tgDec, init, dc, media, tag)
+        return Ctx(cltDec, cltEnc, tgEnc, tgDec, init, dc, media, tag, test)
     }
 
     private fun relayInit(tag: ByteArray, dcIdx: Int): ByteArray {
@@ -243,21 +234,148 @@ object TgBridge {
         }
     }
 
+    private val CF_ENC = listOf(
+        "virkgj.com", "vmmzovy.com", "mkuosckvso.com", "zaewayzmplad.com", "twdmbzcm.com",
+        "awzwsldi.com", "clngqrflngqin.com", "tjacxbqtj.com", "bxaxtxmrw.com", "dmohrsgmohcrwb.com",
+        "vwbmtmoi.com", "khgrre.com", "ulihssf.com", "tmhqsdqmfpmk.com", "xwuwoqbm.com",
+        "orgcnunpj.com", "zhkuldz.com", "zypoljnslxa.com", "efabnxaowuzs.com", "zaftuzsftqdq.com",
+    )
+    private const val CF_URL = "https://raw.githubusercontent.com/Flowseal/tg-ws-proxy/main/.github/cfproxy-domains.txt"
+    private const val FRONT_SNI = "sprinthost.ru"
+    private val WS_DCS = setOf(2, 4)
+
+    private fun decodeCf(s: String): String {
+        if (!s.endsWith(".com")) return s
+        val p = s.dropLast(4)
+        val n = p.count { it.isLetter() }
+        val tail = String(intArrayOf(46, 99, 111, 46, 117, 107).map { it.toChar() }.toCharArray())
+        return p.map { ch ->
+            if (ch.isLetter()) {
+                val base = if (ch > '`') 97 else 65
+                (((ch.code - base - n) % 26 + 26) % 26 + base).toChar()
+            } else ch
+        }.joinToString("") + tail
+    }
+
+    @Volatile
+    private var cfDomains: List<String> = CF_ENC.map { decodeCf(it) }
+    private val cfPreferred = java.util.concurrent.ConcurrentHashMap<Int, String>()
+    private val routeHint = java.util.concurrent.ConcurrentHashMap<String, Int>()
+
+    private fun refreshCf() {
+        thread(name = "tg-cf", isDaemon = true) {
+            try {
+                val txt = Http.getText(CF_URL + "?" + System.currentTimeMillis()) ?: return@thread
+                val list = txt.lines().map { it.trim() }.filter { it.isNotEmpty() && !it.startsWith("#") }.map { decodeCf(it) }
+                    .filter { it.contains('.') && it.all { ch -> ch.isLetterOrDigit() || ch == '.' || ch == '-' } }.distinct()
+                if (list.size >= 3) cfDomains = list
+            } catch (_: Exception) {
+            }
+        }
+    }
+
+    private fun wsDomains(dc: Int, media: Boolean): List<String> {
+        val d = if (dc == 203) 2 else dc
+        return if (media) listOf("kws$d-1.web.telegram.org", "kws$d.web.telegram.org") else listOf("kws$d.web.telegram.org")
+    }
+
+    private class Route(val id: Int, val open: () -> RawWs)
+
+    private fun routes(ctx: Ctx): List<Route> {
+        val dc = if (ctx.dc == 203) 2 else ctx.dc
+        val engine = Live.socksPort
+        val list = ArrayList<Route>()
+        val path = if (ctx.test) "/apiws_test" else "/apiws"
+        if (dc in WS_DCS) {
+            for (d in wsDomains(dc, ctx.media)) {
+                if (engine > 0) list += Route(1) { RawWs.connect(WS_IP, d, path, socksPort = engine, timeoutMs = 7000) }
+                list += Route(2) { RawWs.connect(WS_IP, d, path, sni = FRONT_SNI, timeoutMs = 7000) }
+                list += Route(3) { RawWs.connect(WS_IP, d, path, timeoutMs = 6000) }
+            }
+        }
+        if (ctx.test) return list
+        val pref = cfPreferred[dc]
+        val bases = (listOfNotNull(pref) + cfDomains.shuffled().filter { it != pref }).take(4)
+        for (b in bases) {
+            val host = "kws$dc.$b"
+            list += Route(4) {
+                RawWs.connect(host, host, timeoutMs = 8000).also { cfPreferred[dc] = b }
+            }
+            if (engine > 0) list += Route(5) {
+                RawWs.connect(host, host, socksPort = engine, timeoutMs = 8000).also { cfPreferred[dc] = b }
+            }
+        }
+        val key = "$dc:${ctx.media}:${ctx.test}"
+        val hint = routeHint[key]
+        return if (hint == null) list else list.sortedBy { if (it.id == hint) 0 else 1 }
+    }
+
+    private class Pooled(val ws: RawWs, val route: Int)
+    private val pool = java.util.concurrent.ConcurrentHashMap<String, java.util.concurrent.ConcurrentLinkedDeque<Pooled>>()
+    private const val POOL_SIZE = 2
+    private const val POOL_AGE = 50_000L
+    private val refilling = java.util.concurrent.ConcurrentHashMap.newKeySet<String>()
+
+    private fun takePooled(key: String): Pooled? {
+        val q = pool[key] ?: return null
+        while (true) {
+            val p = q.pollFirst() ?: return null
+            if (!p.ws.closed && System.currentTimeMillis() - p.ws.created < POOL_AGE) return p
+            p.ws.close()
+        }
+    }
+
+    private fun refill(key: String, ctx: Ctx) {
+        if (server == null || !refilling.add(key)) return
+        thread(name = "tg-pool", isDaemon = true) {
+            try {
+                val q = pool.getOrPut(key) { java.util.concurrent.ConcurrentLinkedDeque() }
+                var guard = 0
+                while (q.size < POOL_SIZE && guard++ < POOL_SIZE + 2 && server != null) {
+                    val r = routes(ctx).firstOrNull { it.id == routeHint[key] } ?: break
+                    val ws = try { r.open() } catch (_: Exception) { null } ?: break
+                    q.addLast(Pooled(ws, r.id))
+                }
+            } finally {
+                refilling.remove(key)
+            }
+        }
+    }
+
     private fun handle(client: Socket) {
         active.incrementAndGet()
         total.incrementAndGet()
         publish()
         try {
             client.tcpNoDelay = true
-            client.soTimeout = 0
             val input = client.getInputStream()
             val output = client.getOutputStream()
             client.soTimeout = 15000
             val hs = readFully(input, HANDSHAKE) ?: return
             client.soTimeout = 0
-            val ctx = setup(hs) ?: return
-            val now = System.currentTimeMillis()
-            if (now > wsBroken && viaWs(ctx, input, output)) return
+            val ctx = setup(hs) ?: run {
+                Logs.append(appContext ?: return, "tg: bad handshake")
+                return
+            }
+            val dc = if (ctx.dc == 203) 2 else ctx.dc
+            val key = "$dc:${ctx.media}:${ctx.test}"
+            var ws: RawWs? = takePooled(key)?.ws
+            if (ws == null) {
+                for (r in routes(ctx)) {
+                    ws = try { r.open() } catch (e: Exception) { null }
+                    if (ws != null) {
+                        if (routeHint[key] != r.id) appContext?.let { Logs.append(it, "tg: DC$dc${if (ctx.media) " media" else ""} route ${r.id}") }
+                        routeHint[key] = r.id
+                        break
+                    }
+                }
+            }
+            if (ws != null) {
+                refill(key, ctx)
+                bridge(ws, ctx, input, output)
+                return
+            }
+            routeHint.remove(key)
             viaTcp(ctx, input, output)
         } catch (_: Exception) {
         } finally {
@@ -270,107 +388,42 @@ object TgBridge {
         }
     }
 
-    private fun wsClient(engine: Boolean): OkHttpClient {
-        val b = Http.client.newBuilder()
-            .readTimeout(0, TimeUnit.SECONDS)
-            .callTimeout(0, TimeUnit.SECONDS)
-            .connectTimeout(8, TimeUnit.SECONDS)
-            .pingInterval(25, TimeUnit.SECONDS)
-            .dns(object : Dns {
-                override fun lookup(hostname: String): List<InetAddress> =
-                    if (hostname.endsWith(".web.telegram.org")) listOf(InetAddress.getByName(WS_IP)) else Dns.SYSTEM.lookup(hostname)
-            })
-        val port = Live.socksPort
-        if (engine && port > 0) b.proxy(Proxy(Proxy.Type.SOCKS, InetSocketAddress("127.0.0.1", port)))
-        return b.build()
-    }
-
-    private val directWs by lazy { wsClient(false) }
-
-    private fun viaWs(ctx: Ctx, input: InputStream, output: OutputStream): Boolean {
-        val domains = if (ctx.media) listOf("kws${ctx.dc}-1.web.telegram.org", "kws${ctx.dc}.web.telegram.org") else listOf("kws${ctx.dc}.web.telegram.org")
-        for (engine in listOf(false, true)) {
-            if (engine && Live.socksPort <= 0) continue
-            val client = if (engine) wsClient(true) else directWs
-            for (d in domains) {
-                val ok = runWs(client, d, ctx, input, output)
-                if (ok != null) return ok
-            }
-        }
-        wsBroken = System.currentTimeMillis() + 60_000L
-        return false
-    }
-
-    private fun runWs(client: OkHttpClient, domain: String, ctx: Ctx, input: InputStream, output: OutputStream): Boolean? {
-        val opened = CountDownLatch(1)
-        val closed = CountDownLatch(1)
-        val ok = AtomicBoolean(false)
-        val outLock = Any()
-        val req = Request.Builder().url("wss://$domain/apiws").header("Sec-WebSocket-Protocol", "binary").header("Origin", "https://web.telegram.org").build()
-        val ws = client.newWebSocket(req, object : WebSocketListener() {
-            override fun onOpen(webSocket: WebSocket, response: Response) {
-                ok.set(true)
-                opened.countDown()
-            }
-
-            override fun onMessage(webSocket: WebSocket, bytes: ByteString) {
-                val data = bytes.toByteArray()
-                TgBridge.bytes.addAndGet(data.size.toLong())
-                val out = ctx.cltEnc.update(ctx.tgDec.update(data))
-                try {
-                    synchronized(outLock) {
-                        output.write(out)
-                        output.flush()
-                    }
-                } catch (_: Exception) {
-                    webSocket.cancel()
-                }
-            }
-
-            override fun onClosing(webSocket: WebSocket, code: Int, reason: String) {
-                webSocket.close(1000, null)
-                closed.countDown()
-            }
-
-            override fun onClosed(webSocket: WebSocket, code: Int, reason: String) {
-                closed.countDown()
-            }
-
-            override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
-                opened.countDown()
-                closed.countDown()
-            }
-        })
-        if (!opened.await(10, TimeUnit.SECONDS) || !ok.get()) {
-            ws.cancel()
-            return null
-        }
+    private fun bridge(ws: RawWs, ctx: Ctx, input: InputStream, output: OutputStream) {
         wsCount.incrementAndGet()
-        ws.send(ctx.relayInit.toByteString())
-        val splitter = Splitter(ctx.proto)
-        val pump = thread(name = "tg-up", isDaemon = true) {
-            val buf = ByteArray(65536)
+        ws.send(ctx.relayInit)
+        val down = thread(name = "tg-down", isDaemon = true) {
             try {
                 while (true) {
-                    val n = input.read(buf)
-                    if (n < 0) break
-                    bytes.addAndGet(n.toLong())
-                    val plain = ctx.cltDec.update(buf, 0, n) ?: continue
-                    val enc = ctx.tgEnc.update(plain) ?: continue
-                    for (part in splitter.split(enc, plain)) ws.send(part.toByteString())
+                    val data = ws.recv() ?: break
+                    if (data.isEmpty()) continue
+                    bytes.addAndGet(data.size.toLong())
+                    output.write(ctx.cltEnc.update(ctx.tgDec.update(data)))
+                    output.flush()
                 }
-                splitter.flush()?.let { ws.send(it.toByteString()) }
             } catch (_: Exception) {
             }
-            ws.close(1000, null)
+            try { input.close() } catch (_: Exception) { }
         }
-        closed.await()
-        pump.interrupt()
-        return true
+        val splitter = Splitter(ctx.proto)
+        val buf = ByteArray(65536)
+        try {
+            while (true) {
+                val n = input.read(buf)
+                if (n < 0) break
+                bytes.addAndGet(n.toLong())
+                val plain = ctx.cltDec.update(buf, 0, n) ?: continue
+                val enc = ctx.tgEnc.update(plain) ?: continue
+                for (part in splitter.split(enc, plain)) ws.send(part)
+            }
+            splitter.flush()?.let { ws.send(it) }
+        } catch (_: Exception) {
+        }
+        ws.close()
+        down.join(2000)
     }
 
     private fun viaTcp(ctx: Ctx, input: InputStream, output: OutputStream) {
-        val ip = DC_IPS[ctx.dc] ?: return
+        val ip = (if (ctx.test) TEST_IPS[ctx.dc] else DC_IPS[ctx.dc]) ?: DC_IPS[2] ?: return
         val port = Live.socksPort
         val sock = if (port > 0) Socket(Proxy(Proxy.Type.SOCKS, InetSocketAddress("127.0.0.1", port))) else Socket()
         sock.use { s ->

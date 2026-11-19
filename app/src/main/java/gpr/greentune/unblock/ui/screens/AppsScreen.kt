@@ -55,7 +55,14 @@ data class AppEntry(val pkg: String, val label: String, val system: Boolean, val
 
 private suspend fun loadApps(context: Context): List<AppEntry> = withContext(Dispatchers.IO) {
     val pm = context.packageManager
-    val apps = pm.getInstalledApplications(PackageManager.GET_META_DATA)
+    val installed = try { pm.getInstalledApplications(PackageManager.GET_META_DATA) } catch (_: Exception) { emptyList() }
+    val launchable = try {
+        pm.queryIntentActivities(android.content.Intent(android.content.Intent.ACTION_MAIN).addCategory(android.content.Intent.CATEGORY_LAUNCHER), 0)
+            .mapNotNull { it.activityInfo?.applicationInfo }
+    } catch (_: Exception) {
+        emptyList()
+    }
+    val apps = (installed + launchable).distinctBy { it.packageName }
     apps.asSequence()
         .filter { it.packageName != context.packageName }
         .filter { pm.checkPermission(android.Manifest.permission.INTERNET, it.packageName) == PackageManager.PERMISSION_GRANTED }
@@ -86,10 +93,22 @@ fun AppsScreen() {
     var showSystem by remember { mutableStateOf(false) }
     var dirty by remember { mutableStateOf(false) }
 
-    LaunchedEffect(Unit) { apps = loadApps(context) }
+    val miuiPerm = "com.android.permission.GET_INSTALLED_APPS"
+    val needMiui = remember {
+        try {
+            context.packageManager.getPermissionInfo(miuiPerm, 0)
+            androidx.core.content.ContextCompat.checkSelfPermission(context, miuiPerm) != PackageManager.PERMISSION_GRANTED
+        } catch (_: Exception) {
+            false
+        }
+    }
+    var reload by remember { mutableStateOf(0) }
+    val launcher = androidx.activity.compose.rememberLauncherForActivityResult(androidx.activity.result.contract.ActivityResultContracts.RequestPermission()) { reload++ }
+    LaunchedEffect(Unit) { if (needMiui) try { launcher.launch(miuiPerm) } catch (_: Exception) { } }
+    LaunchedEffect(reload) { apps = loadApps(context) }
 
     Column(Modifier.fillMaxSize().padding(horizontal = 14.dp, vertical = 8.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-        Text(stringResource(R.string.nav_apps), fontSize = 26.sp, color = c.text, modifier = Modifier.padding(start = 4.dp, top = 4.dp))
+        if (!LocalHideTitle.current) Text(stringResource(R.string.nav_apps), fontSize = 26.sp, color = c.text, modifier = Modifier.padding(start = 4.dp, top = 4.dp))
         Segmented(
             listOf(
                 "all" to stringResource(R.string.apps_mode_all),
@@ -118,7 +137,8 @@ fun AppsScreen() {
                 dirty = false
             })
         }
-        if (settings.appsMode != "all") {
+        run {
+            val locked = settings.appsMode == "all"
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Box(Modifier.weight(1f).glass(c, 14.dp, glossFraction = 0.3f).padding(horizontal = 12.dp, vertical = 10.dp)) {
                     if (query.isEmpty()) Text(stringResource(R.string.search), color = c.subText, fontSize = 14.sp)
@@ -151,7 +171,7 @@ fun AppsScreen() {
                                 Modifier
                                     .fillMaxWidth()
                                     .clickable {
-                                        SettingsStore.update { st -> st.copy(apps = if (checked) st.apps - app.pkg else st.apps + app.pkg) }
+                                        SettingsStore.update { st -> st.copy(appsMode = if (st.appsMode == "all") "except" else st.appsMode, apps = if (checked) st.apps - app.pkg else st.apps + app.pkg) }
                                         dirty = true
                                     }
                                     .padding(horizontal = 10.dp, vertical = 8.dp),
@@ -163,8 +183,8 @@ fun AppsScreen() {
                                     Text(app.label, fontSize = 14.5.sp, color = c.text, maxLines = 1)
                                     Text(app.pkg, fontSize = 11.sp, color = c.subText, maxLines = 1)
                                 }
-                                AeroToggle(checked, { v ->
-                                    SettingsStore.update { st -> st.copy(apps = if (v) st.apps + app.pkg else st.apps - app.pkg) }
+                                AeroToggle(checked && !locked, { v ->
+                                    SettingsStore.update { st -> st.copy(appsMode = if (st.appsMode == "all") "except" else st.appsMode, apps = if (v) st.apps + app.pkg else st.apps - app.pkg) }
                                     dirty = true
                                 })
                             }
