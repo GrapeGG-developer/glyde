@@ -1,5 +1,5 @@
 {
- "version": 2,
+ "version": 3,
  "updated": "2026-11-17",
  "fakeSni": "google.com",
  "categories": [
@@ -810,6 +810,934 @@
    "tests": [
     "https://www.torproject.org/"
    ]
+  },
+  {
+   "id": "messenger",
+   "name": "Messenger",
+   "color": "#0084FF",
+   "cat": "msg",
+   "def": false,
+   "domains": [
+    "messenger.com",
+    "m.me",
+    "fbsbx.com"
+   ],
+   "ipset": [],
+   "tests": [
+    "https://www.messenger.com/"
+   ]
+  },
+  {
+   "id": "threema",
+   "name": "Threema",
+   "color": "#05A63F",
+   "cat": "msg",
+   "def": false,
+   "domains": [
+    "threema.ch",
+    "threema.com"
+   ],
+   "ipset": [],
+   "tests": [
+    "https://threema.ch/"
+   ]
+  },
+  {
+   "id": "wire",
+   "name": "Wire",
+   "color": "#1D1E1F",
+   "cat": "msg",
+   "def": false,
+   "domains": [
+    "wire.com",
+    "app.wire.com",
+    "zinfra.io"
+   ],
+   "ipset": [],
+   "tests": [
+    "https://wire.com/"
+   ]
+  },
+  {
+   "id": "session",
+   "name": "Session",
+   "color": "#00F782",
+   "cat": "msg",
+   "def": false,
+   "domains": [
+    "getsession.org"
+   ],
+   "ipset": [],
+   "tests": [
+    "https://getsession.org/"
+   ]
+  },
+  {
+   "id": "briar",
+   "name": "Briar",
+   "color": "#82B53A",
+   "cat": "msg",
+   "def": false,
+   "domains": [
+    "briarproject.org"
+   ],
+   "ipset": [],
+   "tests": [
+    "https://briarproject.org/"
+   ]
+  },
+  {
+   "id": "tutanota",
+   "name": "Tuta Mail",
+   "color": "#850122",
+   "cat": "msg",
+   "def": false,
+   "domains": [
+    "tuta.com",
+    "tutanota.com",
+    "tuta.io",
+    "tutanota.de"
+   ],
+   "ipset": [],
+   "tests": [
+    "https://tuta.com/"
+   ]
+  },
+  {
+   "id": "pinterest",
+   "name": "Pinterest",
+   "color": "#E60023",
+   "cat": "social",
+   "def": false,
+   "domains": [
+    "pinterest.com",
+    "pinimg.com",
+    "pin.it"
+   ],
+   "ipset": [],
+   "tests": [
+    "https://www.pinterest.com/"
+   ]
+  },
+  {
+   "id": "quora",
+   "name": "Quora",
+   "color": "#B92B27",
+   "cat": "social",
+   "def": false,
+   "domains": [
+    "quora.com",
+    "quoracdn.net"
+   ],
+   "ipset": [],
+   "tests": [
+    "https://www.quora.com/"
+   ]
+  },
+  {
+   "id": "mastodon",
+   "name": "Mastodon",
+   "color": "#6364FF",
+   "cat": "social",
+   "def": false,
+   "domains": [
+    "mastodon.social",
+    "joinmastodon.org",
+    "mastodon.online",
+    "files.mastodon.social"
+   ],
+   "ipset": [],
+   "tests": [
+    "https://mastodon.social/explore"
+   ]
+  },
+  {
+   "id": "deviantart",
+   "name": "DeviantArt",
+   "color": "#05CC47",
+   "cat": "social",
+   "def": false,
+   "domains": [
+    "deviantart.com",
+    "deviantart.net",
+    "wixmp.com"
+   ],
+   "ipset": [],
+   "tests": [
+    "https://www.deviantart.com/"
+   ]
+  },
+  {
+   "id": "flickr",
+   "name": "Flickr",
+   "color": "#FF0084",
+   "cat": "social",
+   "def": false,
+   "domains": [
+    "flickr.com",
+    "staticflickr.com",
+    "flic.kr"
+   ],
+   "ipset": [],
+   "tests": [
+    "https://www.flickr.com/"
+   ]
+  },
+  {
+   "id": "imgur",
+   "name": "Imgur",
+   "color": "#1BB76E",
+   "cat": "social",
+   "def": false,
+   "domains": [
+    "imgur.com",
+    "i.imgur.com",
+    "imgur.io"
+   ],
+   "ipset": [],
+   "tests": [
+    "https://imgur.com/"
+   ]
+  },
+  {
+   "id": "9gag",
+   "name": "9GAG",
+   "color": "#000000",
+   "cat": "social",
+   "def": false,
+   "domains": [
+    "9gag.com",
+    "9cache.com"
+   ],
+   "ipset": [],
+   "tests": [
+    "https://9gag.com/"
+   ]
+  },
+  {
+   "id": "fourchan",
+   "name": "4chan",
+   "color": "#789922",
+   "cat": "social",
+   "def": false,
+   "domains": [
+    "4chan.org",
+    "4cdn.org",
+    "4channel.org"
+   ],
+   "ipset": [],
+   "tests": [
+    "https://boards.4chan.org/"
+   ]
+  },
+  {
+   "id": "tenor",
+   "name": "Tenor",
+   "color": "#2C8EF2",
+   "cat": "social",
+   "def": false,
+   "domains": [
+    "tenor.com",
+    "media.tenor.com"
+   ],
+   "ipset": [],
+   "tests": [
+    "https://tenor.com/"
+   ]
+  },
+  {
+   "id": "giphy",
+   "name": "GIPHY",
+   "color": "#9933FF",
+   "cat": "social",
+   "def": false,
+   "domains": [
+    "giphy.com",
+    "media.giphy.com"
+   ],
+   "ipset": [],
+   "tests": [
+    "https://giphy.com/"
+   ]
+  },
+  {
+   "id": "rumble",
+   "name": "Rumble",
+   "color": "#85C742",
+   "cat": "video",
+   "def": false,
+   "domains": [
+    "rumble.com",
+    "rmbl.ws",
+    "1a-1791.com"
+   ],
+   "ipset": [],
+   "tests": [
+    "https://rumble.com/"
+   ]
+  },
+  {
+   "id": "odysee",
+   "name": "Odysee",
+   "color": "#EF1970",
+   "cat": "video",
+   "def": false,
+   "domains": [
+    "odysee.com",
+    "lbry.tv",
+    "odycdn.com"
+   ],
+   "ipset": [],
+   "tests": [
+    "https://odysee.com/"
+   ]
+  },
+  {
+   "id": "bilibili",
+   "name": "Bilibili",
+   "color": "#00A1D6",
+   "cat": "video",
+   "def": false,
+   "domains": [
+    "bilibili.tv",
+    "bilibili.com",
+    "hdslb.com"
+   ],
+   "ipset": [],
+   "tests": [
+    "https://www.bilibili.tv/"
+   ]
+  },
+  {
+   "id": "nebula",
+   "name": "Nebula",
+   "color": "#3E5EF5",
+   "cat": "video",
+   "def": false,
+   "domains": [
+    "nebula.tv",
+    "nebula.app"
+   ],
+   "ipset": [],
+   "tests": [
+    "https://nebula.tv/"
+   ]
+  },
+  {
+   "id": "hdrezka",
+   "name": "HDrezka",
+   "color": "#E8A53A",
+   "cat": "video",
+   "def": false,
+   "domains": [
+    "rezka.ag",
+    "hdrezka.ag",
+    "hdrezka.me",
+    "hdrezka.website"
+   ],
+   "ipset": [],
+   "tests": [
+    "https://rezka.ag/"
+   ]
+  },
+  {
+   "id": "anilibria",
+   "name": "AniLibria",
+   "color": "#B32121",
+   "cat": "video",
+   "def": false,
+   "domains": [
+    "anilibria.tv",
+    "anilibria.top",
+    "aniliberty.top"
+   ],
+   "ipset": [],
+   "tests": [
+    "https://anilibria.top/"
+   ]
+  },
+  {
+   "id": "shikimori",
+   "name": "Shikimori",
+   "color": "#343434",
+   "cat": "video",
+   "def": false,
+   "domains": [
+    "shikimori.one",
+    "shikimori.me",
+    "shiki.one"
+   ],
+   "ipset": [],
+   "tests": [
+    "https://shikimori.one/"
+   ]
+  },
+  {
+   "id": "bandcamp",
+   "name": "Bandcamp",
+   "color": "#1DA0C3",
+   "cat": "music",
+   "def": false,
+   "domains": [
+    "bandcamp.com",
+    "bcbits.com"
+   ],
+   "ipset": [],
+   "tests": [
+    "https://bandcamp.com/"
+   ]
+  },
+  {
+   "id": "mixcloud",
+   "name": "Mixcloud",
+   "color": "#5000FF",
+   "cat": "music",
+   "def": false,
+   "domains": [
+    "mixcloud.com",
+    "mxcdn.net"
+   ],
+   "ipset": [],
+   "tests": [
+    "https://www.mixcloud.com/"
+   ]
+  },
+  {
+   "id": "genius",
+   "name": "Genius",
+   "color": "#FFFF64",
+   "cat": "music",
+   "def": false,
+   "domains": [
+    "genius.com",
+    "images.genius.com"
+   ],
+   "ipset": [],
+   "tests": [
+    "https://genius.com/"
+   ]
+  },
+  {
+   "id": "kofi",
+   "name": "Ko-fi",
+   "color": "#FF5E5B",
+   "cat": "music",
+   "def": false,
+   "domains": [
+    "ko-fi.com",
+    "storage.ko-fi.com"
+   ],
+   "ipset": [],
+   "tests": [
+    "https://ko-fi.com/"
+   ]
+  },
+  {
+   "id": "bmac",
+   "name": "Buy Me a Coffee",
+   "color": "#FFDD00",
+   "cat": "music",
+   "def": false,
+   "domains": [
+    "buymeacoffee.com",
+    "cdn.buymeacoffee.com"
+   ],
+   "ipset": [],
+   "tests": [
+    "https://www.buymeacoffee.com/"
+   ]
+  },
+  {
+   "id": "itchio",
+   "name": "itch.io",
+   "color": "#FA5C5C",
+   "cat": "games",
+   "def": false,
+   "domains": [
+    "itch.io",
+    "itch.zone",
+    "itchio-mirror.cb031a832f44726753d6267436f3b414.r2.cloudflarestorage.com"
+   ],
+   "ipset": [],
+   "tests": [
+    "https://itch.io/"
+   ]
+  },
+  {
+   "id": "nexusmods",
+   "name": "Nexus Mods",
+   "color": "#D98F40",
+   "cat": "games",
+   "def": false,
+   "domains": [
+    "nexusmods.com",
+    "nexus-cdn.com"
+   ],
+   "ipset": [],
+   "tests": [
+    "https://www.nexusmods.com/"
+   ]
+  },
+  {
+   "id": "faceit",
+   "name": "FACEIT",
+   "color": "#FF5500",
+   "cat": "games",
+   "def": false,
+   "domains": [
+    "faceit.com",
+    "faceit-cdn.net"
+   ],
+   "ipset": [],
+   "tests": [
+    "https://www.faceit.com/"
+   ]
+  },
+  {
+   "id": "chesscom",
+   "name": "Chess.com",
+   "color": "#81B64C",
+   "cat": "games",
+   "def": false,
+   "domains": [
+    "chess.com",
+    "chesscomfiles.com"
+   ],
+   "ipset": [],
+   "tests": [
+    "https://www.chess.com/"
+   ]
+  },
+  {
+   "id": "speedtest",
+   "name": "Speedtest",
+   "color": "#141526",
+   "cat": "work",
+   "def": false,
+   "domains": [
+    "speedtest.net",
+    "ookla.com",
+    "speedtestcustom.com"
+   ],
+   "ipset": [],
+   "tests": [
+    "https://www.speedtest.net/"
+   ]
+  },
+  {
+   "id": "gitlab",
+   "name": "GitLab",
+   "color": "#FC6D26",
+   "cat": "work",
+   "def": false,
+   "domains": [
+    "gitlab.com",
+    "gitlab.io",
+    "gitlab-static.net"
+   ],
+   "ipset": [],
+   "tests": [
+    "https://gitlab.com/"
+   ]
+  },
+  {
+   "id": "dockerhub",
+   "name": "Docker Hub",
+   "color": "#2496ED",
+   "cat": "work",
+   "def": false,
+   "domains": [
+    "hub.docker.com",
+    "docker.com",
+    "docker.io",
+    "registry-1.docker.io"
+   ],
+   "ipset": [],
+   "tests": [
+    "https://hub.docker.com/"
+   ]
+  },
+  {
+   "id": "npm",
+   "name": "npm",
+   "color": "#CB3837",
+   "cat": "work",
+   "def": false,
+   "domains": [
+    "npmjs.com",
+    "npmjs.org",
+    "registry.npmjs.org"
+   ],
+   "ipset": [],
+   "tests": [
+    "https://www.npmjs.com/"
+   ]
+  },
+  {
+   "id": "stackoverflow",
+   "name": "Stack Overflow",
+   "color": "#F48024",
+   "cat": "work",
+   "def": false,
+   "domains": [
+    "stackoverflow.com",
+    "sstatic.net",
+    "stackexchange.com"
+   ],
+   "ipset": [],
+   "tests": [
+    "https://stackoverflow.com/"
+   ]
+  },
+  {
+   "id": "hackernews",
+   "name": "Hacker News",
+   "color": "#FF6600",
+   "cat": "work",
+   "def": false,
+   "domains": [
+    "news.ycombinator.com",
+    "ycombinator.com"
+   ],
+   "ipset": [],
+   "tests": [
+    "https://news.ycombinator.com/"
+   ]
+  },
+  {
+   "id": "duckduckgo",
+   "name": "DuckDuckGo",
+   "color": "#DE5833",
+   "cat": "work",
+   "def": false,
+   "domains": [
+    "duckduckgo.com",
+    "duck.com"
+   ],
+   "ipset": [],
+   "tests": [
+    "https://duckduckgo.com/"
+   ]
+  },
+  {
+   "id": "startpage",
+   "name": "Startpage",
+   "color": "#6573FF",
+   "cat": "work",
+   "def": false,
+   "domains": [
+    "startpage.com"
+   ],
+   "ipset": [],
+   "tests": [
+    "https://www.startpage.com/"
+   ]
+  },
+  {
+   "id": "psiphon",
+   "name": "Psiphon",
+   "color": "#2E2E8C",
+   "cat": "work",
+   "def": false,
+   "domains": [
+    "psiphon.ca",
+    "psiphon3.com"
+   ],
+   "ipset": [],
+   "tests": [
+    "https://psiphon.ca/"
+   ]
+  },
+  {
+   "id": "tvrain",
+   "name": "Дождь",
+   "color": "#FF2E8B",
+   "cat": "news",
+   "def": false,
+   "domains": [
+    "tvrain.tv",
+    "tvrain.ru"
+   ],
+   "ipset": [],
+   "tests": [
+    "https://tvrain.tv/"
+   ]
+  },
+  {
+   "id": "mediazona",
+   "name": "Медиазона",
+   "color": "#F5D300",
+   "cat": "news",
+   "def": false,
+   "domains": [
+    "zona.media",
+    "mediazona.ca"
+   ],
+   "ipset": [],
+   "tests": [
+    "https://zona.media/"
+   ]
+  },
+  {
+   "id": "thebell",
+   "name": "The Bell",
+   "color": "#0F0F0F",
+   "cat": "news",
+   "def": false,
+   "domains": [
+    "thebell.io"
+   ],
+   "ipset": [],
+   "tests": [
+    "https://thebell.io/"
+   ]
+  },
+  {
+   "id": "theinsider",
+   "name": "The Insider",
+   "color": "#C8102E",
+   "cat": "news",
+   "def": false,
+   "domains": [
+    "theins.ru",
+    "theins.press"
+   ],
+   "ipset": [],
+   "tests": [
+    "https://theins.ru/"
+   ]
+  },
+  {
+   "id": "istories",
+   "name": "Важные истории",
+   "color": "#1F1F1F",
+   "cat": "news",
+   "def": false,
+   "domains": [
+    "istories.media"
+   ],
+   "ipset": [],
+   "tests": [
+    "https://istories.media/"
+   ]
+  },
+  {
+   "id": "holod",
+   "name": "Холод",
+   "color": "#2C6DB5",
+   "cat": "news",
+   "def": false,
+   "domains": [
+    "holod.media"
+   ],
+   "ipset": [],
+   "tests": [
+    "https://holod.media/"
+   ]
+  },
+  {
+   "id": "echo",
+   "name": "Эхо",
+   "color": "#D32F2F",
+   "cat": "news",
+   "def": false,
+   "domains": [
+    "echofm.online"
+   ],
+   "ipset": [],
+   "tests": [
+    "https://echofm.online/"
+   ]
+  },
+  {
+   "id": "bellingcat",
+   "name": "Bellingcat",
+   "color": "#E3001B",
+   "cat": "news",
+   "def": false,
+   "domains": [
+    "bellingcat.com"
+   ],
+   "ipset": [],
+   "tests": [
+    "https://www.bellingcat.com/"
+   ]
+  },
+  {
+   "id": "voa",
+   "name": "Голос Америки",
+   "color": "#1330BF",
+   "cat": "news",
+   "def": false,
+   "domains": [
+    "golosameriki.com",
+    "voanews.com"
+   ],
+   "ipset": [],
+   "tests": [
+    "https://www.golosameriki.com/"
+   ]
+  },
+  {
+   "id": "kinozal",
+   "name": "Kinozal",
+   "color": "#3B5998",
+   "cat": "files",
+   "def": false,
+   "domains": [
+    "kinozal.tv",
+    "kinozal.me",
+    "kinozal.guru"
+   ],
+   "ipset": [],
+   "tests": [
+    "https://kinozal.tv/"
+   ]
+  },
+  {
+   "id": "flibusta",
+   "name": "Флибуста",
+   "color": "#8B5A2B",
+   "cat": "files",
+   "def": false,
+   "domains": [
+    "flibusta.is",
+    "flibusta.site",
+    "flibusta.net"
+   ],
+   "ipset": [],
+   "tests": [
+    "https://flibusta.is/"
+   ]
+  },
+  {
+   "id": "zlibrary",
+   "name": "Z-Library",
+   "color": "#3D7DCA",
+   "cat": "files",
+   "def": false,
+   "domains": [
+    "z-library.sk",
+    "z-lib.gs",
+    "z-lib.fm",
+    "singlelogin.re",
+    "1lib.sk"
+   ],
+   "ipset": [],
+   "tests": [
+    "https://z-library.sk/"
+   ]
+  },
+  {
+   "id": "libgen",
+   "name": "Library Genesis",
+   "color": "#7A1F1F",
+   "cat": "files",
+   "def": false,
+   "domains": [
+    "libgen.is",
+    "libgen.rs",
+    "libgen.li",
+    "libgen.st"
+   ],
+   "ipset": [],
+   "tests": [
+    "https://libgen.li/"
+   ]
+  },
+  {
+   "id": "annas",
+   "name": "Anna's Archive",
+   "color": "#9B3D6E",
+   "cat": "files",
+   "def": false,
+   "domains": [
+    "annas-archive.org",
+    "annas-archive.li",
+    "annas-archive.se"
+   ],
+   "ipset": [],
+   "tests": [
+    "https://annas-archive.org/"
+   ]
+  },
+  {
+   "id": "scribd",
+   "name": "Scribd",
+   "color": "#1E7B85",
+   "cat": "files",
+   "def": false,
+   "domains": [
+    "scribd.com",
+    "scribdassets.com"
+   ],
+   "ipset": [],
+   "tests": [
+    "https://www.scribd.com/"
+   ]
+  },
+  {
+   "id": "nyaa",
+   "name": "Nyaa",
+   "color": "#3C8DBC",
+   "cat": "files",
+   "def": false,
+   "domains": [
+    "nyaa.si",
+    "nyaa.land"
+   ],
+   "ipset": [],
+   "tests": [
+    "https://nyaa.si/"
+   ]
+  },
+  {
+   "id": "thepiratebay",
+   "name": "The Pirate Bay",
+   "color": "#614F3A",
+   "cat": "files",
+   "def": false,
+   "domains": [
+    "thepiratebay.org",
+    "apibay.org",
+    "torrindex.net"
+   ],
+   "ipset": [],
+   "tests": [
+    "https://thepiratebay.org/"
+   ]
+  },
+  {
+   "id": "mega",
+   "name": "MEGA",
+   "color": "#D9272E",
+   "cat": "files",
+   "def": false,
+   "domains": [
+    "mega.nz",
+    "mega.io",
+    "mega.co.nz",
+    "userstorage.mega.co.nz"
+   ],
+   "ipset": [],
+   "tests": [
+    "https://mega.io/"
+   ]
+  },
+  {
+   "id": "fdroid",
+   "name": "F-Droid",
+   "color": "#1976D2",
+   "cat": "files",
+   "def": false,
+   "domains": [
+    "f-droid.org",
+    "fdroid.org"
+   ],
+   "ipset": [],
+   "tests": [
+    "https://f-droid.org/"
+   ]
   }
  ],
  "generalTests": [
@@ -1076,6 +2004,594 @@
   {
    "id": "s65",
    "args": "-o1 -d1"
+  },
+  {
+   "id": "g001",
+   "args": "-s1 -a1"
+  },
+  {
+   "id": "g002",
+   "args": "-d1 -a1"
+  },
+  {
+   "id": "g003",
+   "args": "-o1 -a1"
+  },
+  {
+   "id": "g004",
+   "args": "-q1 -a1"
+  },
+  {
+   "id": "g005",
+   "args": "-s1+s -a1"
+  },
+  {
+   "id": "g006",
+   "args": "-d1+s -a1"
+  },
+  {
+   "id": "g007",
+   "args": "-o1+s -a1"
+  },
+  {
+   "id": "g008",
+   "args": "-q1+s -a1"
+  },
+  {
+   "id": "g009",
+   "args": "-s2 -a1"
+  },
+  {
+   "id": "g010",
+   "args": "-d2 -a1"
+  },
+  {
+   "id": "g011",
+   "args": "-o2 -a1"
+  },
+  {
+   "id": "g012",
+   "args": "-q2 -a1"
+  },
+  {
+   "id": "g013",
+   "args": "-s3+s -a1"
+  },
+  {
+   "id": "g014",
+   "args": "-d3+s -a1"
+  },
+  {
+   "id": "g015",
+   "args": "-o3+s -a1"
+  },
+  {
+   "id": "g016",
+   "args": "-q3+s -a1"
+  },
+  {
+   "id": "g017",
+   "args": "-s1+sm -a1"
+  },
+  {
+   "id": "g018",
+   "args": "-d1+sm -a1"
+  },
+  {
+   "id": "g019",
+   "args": "-o1+sm -a1"
+  },
+  {
+   "id": "g020",
+   "args": "-q1+sm -a1"
+  },
+  {
+   "id": "g021",
+   "args": "-s2+sm -a1"
+  },
+  {
+   "id": "g022",
+   "args": "-d2+sm -a1"
+  },
+  {
+   "id": "g023",
+   "args": "-o2+sm -a1"
+  },
+  {
+   "id": "g024",
+   "args": "-q2+sm -a1"
+  },
+  {
+   "id": "g025",
+   "args": "-s5+sm -a1"
+  },
+  {
+   "id": "g026",
+   "args": "-d5+sm -a1"
+  },
+  {
+   "id": "g027",
+   "args": "-o5+sm -a1"
+  },
+  {
+   "id": "g028",
+   "args": "-q5+sm -a1"
+  },
+  {
+   "id": "g029",
+   "args": "-s-1+s -a1"
+  },
+  {
+   "id": "g030",
+   "args": "-d-1+s -a1"
+  },
+  {
+   "id": "g031",
+   "args": "-o-1+s -a1"
+  },
+  {
+   "id": "g032",
+   "args": "-q-1+s -a1"
+  },
+  {
+   "id": "g033",
+   "args": "-s7+s -a1"
+  },
+  {
+   "id": "g034",
+   "args": "-d7+s -a1"
+  },
+  {
+   "id": "g035",
+   "args": "-o7+s -a1"
+  },
+  {
+   "id": "g036",
+   "args": "-q7+s -a1"
+  },
+  {
+   "id": "g037",
+   "args": "-f-1 -t3 -a1"
+  },
+  {
+   "id": "g038",
+   "args": "-n {sni} -Qr -f-1 -t3 -a1"
+  },
+  {
+   "id": "g039",
+   "args": "-d1 -f-1 -t3 -a1"
+  },
+  {
+   "id": "g040",
+   "args": "-f-1 -t4 -a1"
+  },
+  {
+   "id": "g041",
+   "args": "-n {sni} -Qr -f-1 -t4 -a1"
+  },
+  {
+   "id": "g042",
+   "args": "-d1 -f-1 -t4 -a1"
+  },
+  {
+   "id": "g043",
+   "args": "-f-1 -t5 -a1"
+  },
+  {
+   "id": "g044",
+   "args": "-n {sni} -Qr -f-1 -t5 -a1"
+  },
+  {
+   "id": "g045",
+   "args": "-d1 -f-1 -t5 -a1"
+  },
+  {
+   "id": "g046",
+   "args": "-f-1 -t6 -a1"
+  },
+  {
+   "id": "g047",
+   "args": "-n {sni} -Qr -f-1 -t6 -a1"
+  },
+  {
+   "id": "g048",
+   "args": "-d1 -f-1 -t6 -a1"
+  },
+  {
+   "id": "g049",
+   "args": "-f-1 -t7 -a1"
+  },
+  {
+   "id": "g050",
+   "args": "-n {sni} -Qr -f-1 -t7 -a1"
+  },
+  {
+   "id": "g051",
+   "args": "-d1 -f-1 -t7 -a1"
+  },
+  {
+   "id": "g052",
+   "args": "-f-1 -t8 -a1"
+  },
+  {
+   "id": "g053",
+   "args": "-n {sni} -Qr -f-1 -t8 -a1"
+  },
+  {
+   "id": "g054",
+   "args": "-d1 -f-1 -t8 -a1"
+  },
+  {
+   "id": "g055",
+   "args": "-f-1 -t9 -a1"
+  },
+  {
+   "id": "g056",
+   "args": "-n {sni} -Qr -f-1 -t9 -a1"
+  },
+  {
+   "id": "g057",
+   "args": "-d1 -f-1 -t9 -a1"
+  },
+  {
+   "id": "g058",
+   "args": "-f-1 -t10 -a1"
+  },
+  {
+   "id": "g059",
+   "args": "-n {sni} -Qr -f-1 -t10 -a1"
+  },
+  {
+   "id": "g060",
+   "args": "-d1 -f-1 -t10 -a1"
+  },
+  {
+   "id": "g061",
+   "args": "-f-1 -t12 -a1"
+  },
+  {
+   "id": "g062",
+   "args": "-n {sni} -Qr -f-1 -t12 -a1"
+  },
+  {
+   "id": "g063",
+   "args": "-d1 -f-1 -t12 -a1"
+  },
+  {
+   "id": "g064",
+   "args": "-r1+s -s1 -a1"
+  },
+  {
+   "id": "g065",
+   "args": "-r1+s -d1+s -a1"
+  },
+  {
+   "id": "g066",
+   "args": "-r1+s -o1 -a1"
+  },
+  {
+   "id": "g067",
+   "args": "-r2+s -s1 -a1"
+  },
+  {
+   "id": "g068",
+   "args": "-r2+s -d1+s -a1"
+  },
+  {
+   "id": "g069",
+   "args": "-r2+s -o1 -a1"
+  },
+  {
+   "id": "g070",
+   "args": "-r3+s -s1 -a1"
+  },
+  {
+   "id": "g071",
+   "args": "-r3+s -d1+s -a1"
+  },
+  {
+   "id": "g072",
+   "args": "-r3+s -o1 -a1"
+  },
+  {
+   "id": "g073",
+   "args": "-r5+s -s1 -a1"
+  },
+  {
+   "id": "g074",
+   "args": "-r5+s -d1+s -a1"
+  },
+  {
+   "id": "g075",
+   "args": "-r5+s -o1 -a1"
+  },
+  {
+   "id": "g076",
+   "args": "-r10+s -s1 -a1"
+  },
+  {
+   "id": "g077",
+   "args": "-r10+s -d1+s -a1"
+  },
+  {
+   "id": "g078",
+   "args": "-r10+s -o1 -a1"
+  },
+  {
+   "id": "g079",
+   "args": "-r-1+s -s1 -a1"
+  },
+  {
+   "id": "g080",
+   "args": "-r-1+s -d1+s -a1"
+  },
+  {
+   "id": "g081",
+   "args": "-r-1+s -o1 -a1"
+  },
+  {
+   "id": "g082",
+   "args": "-r25+s -s1 -a1"
+  },
+  {
+   "id": "g083",
+   "args": "-r25+s -d1+s -a1"
+  },
+  {
+   "id": "g084",
+   "args": "-r25+s -o1 -a1"
+  },
+  {
+   "id": "g085",
+   "args": "-r1+sm -s1 -a1"
+  },
+  {
+   "id": "g086",
+   "args": "-r1+sm -d1+s -a1"
+  },
+  {
+   "id": "g087",
+   "args": "-r1+sm -o1 -a1"
+  },
+  {
+   "id": "g088",
+   "args": "-d1 -r1+s -a1"
+  },
+  {
+   "id": "g089",
+   "args": "-d1 -f-1 -a1"
+  },
+  {
+   "id": "g090",
+   "args": "-d1 -o2 -a1"
+  },
+  {
+   "id": "g091",
+   "args": "-s1 -r1+s -a1"
+  },
+  {
+   "id": "g092",
+   "args": "-s1 -f-1 -a1"
+  },
+  {
+   "id": "g093",
+   "args": "-s1 -d3+s -a1"
+  },
+  {
+   "id": "g094",
+   "args": "-s1 -o2 -a1"
+  },
+  {
+   "id": "g095",
+   "args": "-o1 -r1+s -a1"
+  },
+  {
+   "id": "g096",
+   "args": "-o1 -f-1 -a1"
+  },
+  {
+   "id": "g097",
+   "args": "-o1 -s3+s -a1"
+  },
+  {
+   "id": "g098",
+   "args": "-o1 -d3+s -a1"
+  },
+  {
+   "id": "g099",
+   "args": "-q1 -r1+s -a1"
+  },
+  {
+   "id": "g100",
+   "args": "-q1 -f-1 -a1"
+  },
+  {
+   "id": "g101",
+   "args": "-q1 -s3+s -a1"
+  },
+  {
+   "id": "g102",
+   "args": "-q1 -d3+s -a1"
+  },
+  {
+   "id": "g103",
+   "args": "-q1 -o2 -a1"
+  },
+  {
+   "id": "g104",
+   "args": "-d1+s -r1+s -a1"
+  },
+  {
+   "id": "g105",
+   "args": "-d1+s -f-1 -a1"
+  },
+  {
+   "id": "g106",
+   "args": "-d1+s -s3+s -a1"
+  },
+  {
+   "id": "g107",
+   "args": "-d1+s -o2 -a1"
+  },
+  {
+   "id": "g108",
+   "args": "-s1+sm -r1+s -a1"
+  },
+  {
+   "id": "g109",
+   "args": "-s1+sm -f-1 -a1"
+  },
+  {
+   "id": "g110",
+   "args": "-s1+sm -d3+s -a1"
+  },
+  {
+   "id": "g111",
+   "args": "-s1+sm -o2 -a1"
+  },
+  {
+   "id": "g112",
+   "args": "-Mh -d1 -a1"
+  },
+  {
+   "id": "g113",
+   "args": "-Mh -s1+s -r1+s -a1"
+  },
+  {
+   "id": "g114",
+   "args": "-Mh,d,r -d1 -a1"
+  },
+  {
+   "id": "g115",
+   "args": "-Mh,d,r -s1+s -r1+s -a1"
+  },
+  {
+   "id": "g116",
+   "args": "-Md -d1 -a1"
+  },
+  {
+   "id": "g117",
+   "args": "-Md -s1+s -r1+s -a1"
+  },
+  {
+   "id": "g118",
+   "args": "-Mr -d1 -a1"
+  },
+  {
+   "id": "g119",
+   "args": "-Mr -s1+s -r1+s -a1"
+  },
+  {
+   "id": "g120",
+   "args": "-d1 -a1 -At,r,s,c -s1+s -r1+s -a1"
+  },
+  {
+   "id": "g121",
+   "args": "-o1 -a1 -At,r,s,c -d1 -a1 -At,r,s,c -f-1 -t6 -a1"
+  },
+  {
+   "id": "g122",
+   "args": "-s1+s -a1 -At,r,s,c -d3+s -a1 -At,r,s,c -n {sni} -Qr -f-1 -a1"
+  },
+  {
+   "id": "g123",
+   "args": "-q1+s -a1 -At,r,s,c -s1+sm -a1 -At,r,s,c -r1+s -f-1 -t7 -a1"
+  },
+  {
+   "id": "g124",
+   "args": "-d1+sm -a1 -At,r,s,c -o1+s -a1 -At,r,s,c -r3+s -a1"
+  },
+  {
+   "id": "g125",
+   "args": "-s2 -a1 -At,r,s,c -d2 -a1 -At,r,s,c -o2 -a1 -At,r,s,c -f-1 -t5 -a1"
+  },
+  {
+   "id": "g126",
+   "args": "-d5+s -a1 -At,r,s,c -s10+s -a1 -At,r,s,c -r20+s -a1"
+  },
+  {
+   "id": "g127",
+   "args": "-r1+s -s1 -a1 -At,r,s,c -r1+s -d1 -a1 -At,r,s,c -r1+s -o1 -a1"
+  },
+  {
+   "id": "g128",
+   "args": "-f-1 -t4 -a1 -At,r,s,c -f-1 -t6 -a1 -At,r,s,c -f-1 -t8 -a1"
+  },
+  {
+   "id": "g129",
+   "args": "-n {sni} -Qr -f-1 -a1 -At,r,s,c -n {sni} -Qr -f1+s -t5 -a1"
+  },
+  {
+   "id": "g130",
+   "args": "-d1+s -s2+s -a1"
+  },
+  {
+   "id": "g131",
+   "args": "-d1+s -s5+s -a1"
+  },
+  {
+   "id": "g132",
+   "args": "-d1+s -s9+s -a1"
+  },
+  {
+   "id": "g133",
+   "args": "-d2+s -s3+s -a1"
+  },
+  {
+   "id": "g134",
+   "args": "-d2+s -s6+s -a1"
+  },
+  {
+   "id": "g135",
+   "args": "-d2+s -s10+s -a1"
+  },
+  {
+   "id": "g136",
+   "args": "-d3+s -s4+s -a1"
+  },
+  {
+   "id": "g137",
+   "args": "-d3+s -s7+s -a1"
+  },
+  {
+   "id": "g138",
+   "args": "-d3+s -s11+s -a1"
+  },
+  {
+   "id": "g139",
+   "args": "-d5+s -s6+s -a1"
+  },
+  {
+   "id": "g140",
+   "args": "-d5+s -s9+s -a1"
+  },
+  {
+   "id": "g141",
+   "args": "-d5+s -s13+s -a1"
+  },
+  {
+   "id": "g142",
+   "args": "-d1 -m2 -a1"
+  },
+  {
+   "id": "g143",
+   "args": "-s1+s -m2 -r1+s -a1"
+  },
+  {
+   "id": "g144",
+   "args": "-d1 -m3 -a1"
+  },
+  {
+   "id": "g145",
+   "args": "-s1+s -m3 -r1+s -a1"
+  },
+  {
+   "id": "g146",
+   "args": "-d1 -m4 -a1"
+  },
+  {
+   "id": "g147",
+   "args": "-s1+s -m4 -r1+s -a1"
   }
  ]
 }

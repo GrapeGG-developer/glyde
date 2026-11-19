@@ -13,6 +13,7 @@ data class ServiceChoice(
     val direct: Boolean,
     val ok: Boolean,
     val ms: Long,
+    val route: String = if (direct) "direct" else if (strategyId != null && ok) "dpi" else "none",
 )
 
 data class TuneResult(
@@ -38,6 +39,7 @@ data class TuneResult(
                         .put("d", it.direct)
                         .put("ok", it.ok)
                         .put("ms", it.ms)
+                        .put("r", it.route)
                 )
             }
         })
@@ -47,13 +49,14 @@ data class TuneResult(
             val arr = o.optJSONArray("choices") ?: JSONArray()
             val list = (0 until arr.length()).map { i ->
                 val c = arr.getJSONObject(i)
-                ServiceChoice(
+                val base = ServiceChoice(
                     serviceId = c.getString("s"),
                     strategyId = if (c.isNull("st")) null else c.getString("st"),
                     direct = c.optBoolean("d"),
                     ok = c.optBoolean("ok"),
                     ms = c.optLong("ms"),
                 )
+                c.optString("r").takeIf { it.isNotEmpty() }?.let { base.copy(route = it) } ?: base
             }
             return TuneResult(
                 networkKey = o.getString("key"),

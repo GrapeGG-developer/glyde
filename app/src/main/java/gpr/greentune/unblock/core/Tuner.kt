@@ -114,7 +114,7 @@ object Tuner {
             emptyList()
         }
         val ordered = order(presets.strategies, ranking)
-        val strategies = if (full) ordered else ordered.take(16)
+        val strategies = if (full) ordered else ordered.take(24)
         val timeout = if (full) 5500L else 4500L
 
         val probes = blocked.flatMap { s -> s.tests.map { s.id to it } } +
@@ -123,7 +123,7 @@ object Tuner {
         val scores = ConcurrentHashMap<String, Map<String, Score>>()
         val done = AtomicInteger(0)
         val total = strategies.size
-        val sem = Semaphore(if (probes.size > 24) 3 else 4)
+        val sem = Semaphore(if (probes.size > 24) 3 else if (full) 6 else 4)
 
         fun goodEnough(): Boolean {
             if (full || scores.size < 6) return false
@@ -162,7 +162,7 @@ object Tuner {
             )
             .firstOrNull()
 
-        val chosen = blocked.map { s ->
+        val firstPass = blocked.map { s ->
             val b = bestFor(s.id)
             ServiceChoice(
                 serviceId = s.id,
@@ -183,8 +183,62 @@ object Tuner {
             )
             .firstOrNull()?.first
 
+        _progress.value = TuneProgress(true, full, total, total, context.getString(R.string.tune_phase_verify))
+        val verified = verify(context, all, firstPass, directChoices.map { it.serviceId }.toSet(), defaultId, timeout)
+        val chosen = firstPass.map { ch ->
+            val okNow = verified[ch.serviceId]
+            when {
+                okNow == true -> ch.copy(ok = true, route = "dpi")
+                okNow == false && ch.ok -> ch.copy(ok = false, route = "none")
+                else -> ch
+            }
+        }.toMutableList()
+
+        val tgIdx = chosen.indexOfFirst { it.serviceId == "telegram" }
+        if (tgIdx >= 0 && !chosen[tgIdx].ok) {
+            _progress.value = TuneProgress(true, full, total, total, context.getString(R.string.tune_phase_proxy))
+            if (withContext(Dispatchers.IO) { gpr.greentune.unblock.tg.TgBridge.probe() }) {
+                chosen[tgIdx] = chosen[tgIdx].copy(ok = true, route = "proxy")
+                gpr.greentune.unblock.data.SettingsStore.update { it.copy(tgBridge = true) }
+            }
+        }
+
         val result = TuneResult(key, label, System.currentTimeMillis(), full, defaultId, chosen + directChoices)
         finish(context, merge(only, result), geo?.asn, geo?.country, scores)
+    }
+
+    private suspend fun verify(
+        context: Context,
+        presets: PresetData,
+        chosen: List<ServiceChoice>,
+        direct: Set<String>,
+        defaultId: String?,
+        timeout: Long,
+    ): Map<String, Boolean> {
+        val map = chosen.filter { it.strategyId != null }.associate { it.serviceId to it.strategyId!! }
+        val targets = chosen.filter { it.strategyId != null }.mapNotNull { presets.service(it.serviceId) }
+        if (targets.isEmpty()) return emptyMap()
+        val tokens = Args.compose(presets, map, direct, defaultId)
+        val port = Ciadpi.freePort()
+        val proc = withContext(Dispatchers.IO) { Ciadpi.start(context, port, tokens, false) }
+        try {
+            if (!Ciadpi.awaitReady(port, proc, 3000)) return emptyMap()
+            val client = Prober.client(port, timeout + 1500)
+            return coroutineScope {
+                targets.map { s ->
+                    async(Dispatchers.IO) {
+                        val res = s.tests.map { Prober.probe(client, it) }
+                        val ok = res.count { it.ok } >= maxOf(1, (s.tests.size + 1) / 2)
+                        val again = if (ok) true else s.tests.map { Prober.probe(client, it) }.count { it.ok } >= maxOf(1, (s.tests.size + 1) / 2)
+                        s.id to again
+                    }
+                }.awaitAll().toMap()
+            }
+        } catch (_: Exception) {
+            return emptyMap()
+        } finally {
+            withContext(Dispatchers.IO) { Ciadpi.stop(proc) }
+        }
     }
 
     private suspend fun testStrategy(
@@ -254,7 +308,7 @@ object Tuner {
                         put(
                             JSONObject().put("service", it.serviceId)
                                 .put("strategy", it.strategyId ?: JSONObject.NULL)
-                                .put("direct", it.direct).put("ok", it.ok).put("ms", it.ms)
+                                .put("direct", it.direct).put("ok", it.ok).put("ms", it.ms).put("route", it.route)
                         )
                     }
                 })

@@ -149,7 +149,7 @@ fun ServicesScreen(onOpenDiag: () -> Unit) {
                             val ch = result?.choices?.firstOrNull { it.serviceId == s.id }
                             val state = when {
                                 ch == null -> null
-                                ch.direct || ch.ok -> c.ok
+                                ch.direct || ch.ok || ch.route == "proxy" -> c.ok
                                 ch.strategyId != null -> c.warn
                                 else -> c.danger
                             }

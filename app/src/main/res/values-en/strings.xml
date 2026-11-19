@@ -12,7 +12,7 @@
     <string name="status_tuning">Tuning…</string>
     <string name="status_error">Error</string>
     <string name="status_proxy_on">SOCKS5 127.0.0.1:%1$d</string>
-    <string name="tap_to_connect">Tap the orb to connect</string>
+    <string name="tap_to_connect">Tap to bypass blocks</string>
     <string name="please_wait">Just a moment…</string>
     <string name="tile_on">On</string>
     <string name="tile_off">Off</string>
@@ -52,6 +52,10 @@
     <string name="tune_phase_strategies">Trying strategies…</string>
     <string name="tune_phase_strategy">Strategy %1$s · %2$d of %3$d</string>
     <string name="tune_done">Done: %1$d of %2$d services work</string>
+    <string name="tune_phase_verify">Verifying the final plan: what goes direct and what through bypass…</string>
+    <string name="tune_phase_proxy">Checking the Telegram proxy…</string>
+    <string name="tune_route_proxy">via proxy</string>
+    <string name="tune_route_dpi">DPI bypass</string>
     <string name="tune_cancelled">Tuning cancelled</string>
     <string name="tune_failed">Tuning failed: %1$s</string>
     <string name="expert_mode">Expert mode</string>
@@ -228,7 +232,7 @@
     <string name="how_site">Website</string>
     <string name="how_block">The ISP filter (DPI) recognizes the request and slows it down</string>
     <string name="how_pass">Glyde slightly reshapes the packets: the filter does not recognize them and the site opens</string>
-    <string name="how_note">The key icon in the status bar is a local Android interface. Traffic is not sent to any server: everything happens right on your phone.</string>
+    <string name="how_note">Everything happens right on your phone, with no VPN servers.</string>
     <string name="how_got_it">Got it</string>
     <string name="sheet_off">Bypass is off</string>
     <string name="sheet_on">Working · %1$d of %2$d services</string>

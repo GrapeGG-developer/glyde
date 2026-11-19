@@ -27,6 +27,8 @@ import gpr.greentune.unblock.system.Perf
 import gpr.greentune.unblock.ui.aero.Aero
 import gpr.greentune.unblock.ui.aero.AquaBackground
 import gpr.greentune.unblock.ui.aero.Bubbles
+import gpr.greentune.unblock.ui.aero.ProvideBackdrop
+import gpr.greentune.unblock.ui.aero.backdropSource
 import gpr.greentune.unblock.ui.aero.TiltSensor
 import gpr.greentune.unblock.ui.aero.observeTouches
 import gpr.greentune.unblock.ui.screens.GlydeHome
@@ -100,9 +102,12 @@ fun AppRoot(
     }
 
     TiltSensor(settings.tilt && !lite)
+    ProvideBackdrop {
     Box(Modifier.fillMaxSize().observeTouches()) {
-        AquaBackground(effects, if (status == EngineStatus.On) 1f else 0f)
-        Bubbles(energy, lite, Modifier.fillMaxSize())
+        Box(Modifier.fillMaxSize().backdropSource()) {
+            AquaBackground(effects, if (status == EngineStatus.On) 1f else 0f)
+            Bubbles(energy, lite, Modifier.fillMaxSize())
+        }
         if (!settings.onboarded) {
             OnboardingScreen(onDone = {
                 requestNotifications()
@@ -113,5 +118,6 @@ fun AppRoot(
         GlydeHome(onConnect = onConnect, onDisconnect = onDisconnect)
         if (whatsNew != null) WhatsNewDialog(BuildConfig.VERSION_NAME, whatsNew, onWhatsNewShown)
         else if (showUpdate) UpdateDialog(onDismiss = onUpdateShown)
+    }
     }
 }

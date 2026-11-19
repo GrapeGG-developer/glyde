@@ -13,7 +13,7 @@
     <string name="status_tuning">Подбираем стратегию…</string>
     <string name="status_error">Ошибка</string>
     <string name="status_proxy_on">SOCKS5 127.0.0.1:%1$d</string>
-    <string name="tap_to_connect">Нажмите на сферу, чтобы подключиться</string>
+    <string name="tap_to_connect">Нажмите, чтобы обойти блокировки</string>
     <string name="please_wait">Секунду…</string>
     <string name="tile_on">Включено</string>
     <string name="tile_off">Выключено</string>
@@ -53,6 +53,10 @@
     <string name="tune_phase_strategies">Перебираем стратегии…</string>
     <string name="tune_phase_strategy">Стратегия %1$s · %2$d из %3$d</string>
     <string name="tune_done">Готово: работает %1$d из %2$d сервисов</string>
+    <string name="tune_phase_verify">Проверяем итоговую схему: что напрямую, что через обход…</string>
+    <string name="tune_phase_proxy">Проверяем прокси для Telegram…</string>
+    <string name="tune_route_proxy">через прокси</string>
+    <string name="tune_route_dpi">обход DPI</string>
     <string name="tune_cancelled">Подбор отменён</string>
     <string name="tune_failed">Подбор не удался: %1$s</string>
     <string name="expert_mode">Экспертный режим</string>
@@ -229,7 +233,7 @@
     <string name="how_site">Сайт</string>
     <string name="how_block">Фильтр провайдера (DPI) узнаёт запрос к сайту и тормозит его</string>
     <string name="how_pass">Glyde слегка меняет форму пакетов: фильтр их не узнаёт, и сайт открывается</string>
-    <string name="how_note">Значок ключа в строке состояния — это локальный интерфейс Android. Трафик не уходит ни на какие серверы: всё происходит прямо на телефоне.</string>
+    <string name="how_note">Всё происходит прямо на телефоне, без VPN-серверов.</string>
     <string name="how_got_it">Понятно</string>
     <string name="sheet_off">Обход выключен</string>
     <string name="sheet_on">Работает · %1$d из %2$d сервисов</string>

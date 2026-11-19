@@ -220,13 +220,15 @@ private fun ResultRow(name: String, ch: ServiceChoice?, expert: Boolean, strateg
         ch == null -> c.subText
         ch.direct -> c.ok
         ch.ok -> c.ok
+        ch.route == "proxy" -> c.ok
         ch.strategyId != null -> c.warn
         else -> c.danger
     }
     val text = when {
         ch == null -> stringResource(R.string.tune_not_checked)
         ch.direct -> stringResource(R.string.tune_direct)
-        ch.strategyId != null -> ch.strategyId + if (ch.ms > 0) " · ${ch.ms} ms" else ""
+        ch.route == "proxy" -> stringResource(R.string.tune_route_proxy)
+        ch.strategyId != null -> stringResource(R.string.tune_route_dpi) + " · " + ch.strategyId + if (ch.ms > 0) " · ${ch.ms} ms" else ""
         else -> stringResource(R.string.tune_not_found)
     }
     Box {

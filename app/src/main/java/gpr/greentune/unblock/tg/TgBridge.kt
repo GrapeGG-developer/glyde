@@ -342,6 +342,17 @@ object TgBridge {
         }
     }
 
+    fun probe(): Boolean {
+        val dummy = Ctx(aes(ByteArray(32), ByteArray(16)), aes(ByteArray(32), ByteArray(16)), aes(ByteArray(32), ByteArray(16)), aes(ByteArray(32), ByteArray(16)), ByteArray(64), 2, false, 0)
+        for (r in routes(dummy)) {
+            val ws = try { r.open() } catch (_: Exception) { null } ?: continue
+            ws.close()
+            routeHint["2:false:false"] = r.id
+            return true
+        }
+        return false
+    }
+
     private fun handle(client: Socket) {
         active.incrementAndGet()
         total.incrementAndGet()
