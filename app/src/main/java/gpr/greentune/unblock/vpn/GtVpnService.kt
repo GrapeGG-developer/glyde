@@ -115,6 +115,7 @@ class GtVpnService : VpnService() {
             val p = withContext(Dispatchers.IO) { Ciadpi.start(this@GtVpnService, port, args, s.blockQuic, log, dnsPort) }
             proc = p
             if (!Ciadpi.awaitReady(port, p, 5000)) throw IllegalStateException(getString(R.string.err_engine_start))
+            gpr.greentune.unblock.net.Live.socksPort = port
             val fd = buildTun(s) ?: throw IllegalStateException(getString(R.string.err_vpn_establish))
             tun = fd
             val cfg = File(filesDir, "tunnel.yml")

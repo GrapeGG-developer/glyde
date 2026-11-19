@@ -14,6 +14,9 @@ import gpr.greentune.unblock.R
 import gpr.greentune.unblock.data.SettingsStore
 import gpr.greentune.unblock.net.Backend
 import gpr.greentune.unblock.net.Http
+import gpr.greentune.unblock.net.Device
+import gpr.greentune.unblock.net.LinkState
+import gpr.greentune.unblock.net.Live
 import gpr.greentune.unblock.ui.MainActivity
 import gpr.greentune.unblock.vpn.Notifications
 import kotlinx.coroutines.Dispatchers
@@ -39,6 +42,8 @@ data class UpdateInfo(
     val mirror: String?,
     val size: Long,
     val beta: Boolean,
+    val display: String = version,
+    val sha256: String? = null,
 )
 
 sealed class UpdateState {
@@ -60,7 +65,49 @@ object Updater {
 
     fun abiAsset(): String {
         val abi = Build.SUPPORTED_ABIS.firstOrNull { it in listOf("arm64-v8a", "armeabi-v7a", "x86_64", "x86") }
-        return if (abi != null) "GT-Unblock-%s-$abi.apk" else "GT-Unblock-%s-universal.apk"
+        return if (abi != null) "Glyde-%s-$abi.apk" else "Glyde-%s-universal.apk"
+    }
+
+    fun assetName(version: String, assets: JSONObject): String {
+        val abi = Build.SUPPORTED_ABIS.firstOrNull { it in listOf("arm64-v8a", "armeabi-v7a", "x86_64", "x86") } ?: "universal"
+        val names = listOf("Glyde-$version-$abi.apk", "Glyde-$version-universal.apk", "GT-Unblock-$version-$abi.apk", "GT-Unblock-$version-universal.apk")
+        return names.firstOrNull { assets.optString(it).isNotBlank() } ?: names[0]
+    }
+
+    private fun parseOffer(o: JSONObject?): UpdateInfo? {
+        o ?: return null
+        val version = o.optString("version").ifBlank { return null }
+        val assets = o.optJSONObject("assets") ?: JSONObject()
+        val name = o.optString("asset").takeIf { it.isNotBlank() && assets.optString(it).isNotBlank() } ?: assetName(version, assets)
+        val url = o.optString("url").takeIf { it.isNotBlank() && o.optString("asset") == name } ?: assets.optString(name).ifBlank { return null }
+        return UpdateInfo(
+            version = version,
+            code = o.optInt("code", 0),
+            changelog = o.optString("changelog"),
+            url = url,
+            mirror = o.optString("mirror").takeIf { it.isNotBlank() },
+            size = o.optJSONObject("sizes")?.optLong(name, 0L)?.takeIf { it > 0 } ?: o.optLong("size", 0L),
+            beta = o.optString("ring", "stable") != "stable",
+            display = o.optString("display").ifBlank { version },
+            sha256 = o.optJSONObject("sums")?.optString(name)?.takeIf { it.length == 64 },
+        )
+    }
+
+    suspend fun offer(context: Context, o: JSONObject?) {
+        val info = parseOffer(o) ?: return
+        if (!isNewer(info)) return
+        val st = _state.value
+        if (st is UpdateState.Downloading || st is UpdateState.Checking) return
+        if (current()?.version == info.version) return
+        lastInfo = info
+        _state.value = if (apkFile(context, info).let { it.exists() && valid(context, it, info) }) UpdateState.ReadyToInstall(info) else UpdateState.Available(info)
+        if (!foreground) {
+            val s = SettingsStore.value
+            if (info.version != s.skippedVersion && info.version != s.notifiedVersion) {
+                SettingsStore.update { it.copy(notifiedVersion = info.version) }
+                notifyAvailable(context, info)
+            }
+        }
     }
 
     fun current(): UpdateInfo? = when (val s = _state.value) {
@@ -86,30 +133,10 @@ object Updater {
     fun pollDelay(): Long = if (pollFails == 0) 200L else minOf(200L * (1L shl minOf(pollFails, 5)), 5_000L)
 
     suspend fun poll(context: Context): UpdateInfo? {
-        val st = _state.value
-        if (st is UpdateState.Downloading || st is UpdateState.Checking) return current()
         if (!checkLock.tryLock()) return current()
         try {
-            val beta = SettingsStore.value.beta
-            val v = Backend.version(if (beta) "beta" else "stable")
-            val now = SystemClock.elapsedRealtime()
-            if (v == null) {
-                pollFails++
-                if (lastFull != 0L && now - lastFull < 60_000L) return current()
-            } else {
-                pollFails = 0
-                if (v == remoteVersion && lastOk) return current()
-                if (compare(v, BuildConfig.VERSION_NAME) <= 0 && !BuildConfig.VERSION_NAME.contains("-dev")) {
-                    remoteVersion = v
-                    lastOk = true
-                    return current()
-                }
-            }
-            lastFull = now
-            lastOk = false
-            val info = check(context, manual = false)
-            if (lastOk && v != null) remoteVersion = v
-            return info
+            Live.check()
+            return current()
         } finally {
             checkLock.unlock()
         }
@@ -122,7 +149,7 @@ object Updater {
 
     suspend fun backgroundCheck(context: Context) {
         if (foreground) return
-        poll(context)
+        if (Live.link.value != LinkState.Live) poll(context)
         val info = current() ?: return
         val s = SettingsStore.value
         if (info.version == s.skippedVersion || info.version == s.notifiedVersion) return
@@ -135,7 +162,7 @@ object Updater {
         if (now is UpdateState.Downloading || (now is UpdateState.ReadyToInstall && downloadJob?.isActive == true)) return current()
         if (manual) _state.value = UpdateState.Checking
         val beta = SettingsStore.value.beta
-        val info = withContext(Dispatchers.IO) { fromBackend(beta) ?: fromGithub(beta) }
+        val info = withContext(Dispatchers.IO) { fromV3() ?: fromBackend(beta) ?: fromMirrors() ?: fromGithub(beta) }
         if (info == null) {
             if (manual) _state.value = UpdateState.Failed(context.getString(R.string.update_check_failed))
             return null
@@ -180,14 +207,29 @@ object Updater {
         }
     }
 
+    private fun fromV3(): UpdateInfo? {
+        for (server in Live.servers) {
+            val o = Http.getJson("$server/v3/check", Device.headers()) ?: continue
+            val u = o.optJSONObject("update")
+            return parseOffer(u) ?: UpdateInfo(BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE, "", "", null, 0, false)
+        }
+        return null
+    }
+
+    private fun fromMirrors(): UpdateInfo? {
+        for (url in Live.mirrors) {
+            val o = Http.getJson(url) ?: continue
+            return parseOffer(o) ?: continue
+        }
+        return null
+    }
+
     private suspend fun fromBackend(beta: Boolean): UpdateInfo? {
         val o = Backend.update(if (beta) "beta" else "stable") ?: return null
         val version = o.optString("version").ifBlank { return null }
         val assets = o.optJSONObject("assets")
-        val name = abiAsset().format(version)
-        val url = assets?.optString(name)?.takeIf { it.isNotBlank() }
-            ?: assets?.optString(name.substringBeforeLast('-') + "-universal.apk")?.takeIf { it.isNotBlank() }
-            ?: return null
+        val name = assetName(version, assets ?: JSONObject())
+        val url = assets?.optString(name)?.takeIf { it.isNotBlank() } ?: return null
         return UpdateInfo(
             version = version,
             code = o.optInt("code", 0),
@@ -215,11 +257,10 @@ object Updater {
         } ?: return null
         val version = rel.optString("tag_name").removePrefix("v").ifBlank { return null }
         val assets = rel.optJSONArray("assets") ?: return null
-        val wanted = abiAsset().format(version)
-        val universal = "GT-Unblock-$version-universal.apk"
         var url: String? = null
         var size = 0L
-        for (name in listOf(wanted, universal)) {
+        val abi = Build.SUPPORTED_ABIS.firstOrNull { it in listOf("arm64-v8a", "armeabi-v7a", "x86_64", "x86") } ?: "universal"
+        for (name in listOf("Glyde-$version-$abi.apk", "Glyde-$version-universal.apk", "GT-Unblock-$version-$abi.apk", "GT-Unblock-$version-universal.apk")) {
             for (i in 0 until assets.length()) {
                 val a = assets.getJSONObject(i)
                 if (a.optString("name") == name) {
@@ -267,13 +308,26 @@ object Updater {
 
     private fun dir(context: Context): File = File(context.cacheDir, "updates").apply { mkdirs() }
 
-    fun apkFile(context: Context, info: UpdateInfo): File = File(dir(context), "GT-Unblock-${info.version}.apk")
+    fun apkFile(context: Context, info: UpdateInfo): File = File(dir(context), "Glyde-${info.version}.apk")
 
     private fun valid(context: Context, file: File, info: UpdateInfo): Boolean = try {
         val pi = context.packageManager.getPackageArchiveInfo(file.absolutePath, 0)
-        pi != null && pi.packageName == context.packageName
+        pi != null && pi.packageName == context.packageName && (info.sha256 == null || sha256(file).equals(info.sha256, true))
     } catch (_: Exception) {
         false
+    }
+
+    fun sha256(file: File): String {
+        val md = java.security.MessageDigest.getInstance("SHA-256")
+        file.inputStream().use { inp ->
+            val buf = ByteArray(65536)
+            while (true) {
+                val n = inp.read(buf)
+                if (n < 0) break
+                md.update(buf, 0, n)
+            }
+        }
+        return md.digest().joinToString("") { "%02x".format(it) }
     }
 
     fun startDownload(context: Context, info: UpdateInfo, installAfter: Boolean = true) {
@@ -331,13 +385,14 @@ object Updater {
         } else {
             part.delete()
             file.delete()
+            Live.updateResult(BuildConfig.VERSION_NAME, info.version, "failed", "download")
             setFailed(context.getString(R.string.update_download_failed))
         }
     }
 
     private fun fetch(url: String, file: File, info: UpdateInfo): Boolean = try {
         val have = if (file.exists()) file.length() else 0L
-        val rb = Request.Builder().url(url).header("User-Agent", "GTUnblock-Android")
+        val rb = Request.Builder().url(url).header("User-Agent", "Glyde-Android")
         if (have > 0) rb.header("Range", "bytes=$have-")
         Http.download.newCall(rb.build()).execute().use { resp ->
             if (!resp.isSuccessful) return false

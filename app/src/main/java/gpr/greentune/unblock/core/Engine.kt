@@ -31,6 +31,14 @@ object Engine {
     fun setStatus(context: Context, status: EngineStatus) {
         if (status == EngineStatus.On && _status.value != EngineStatus.On) _since.value = System.currentTimeMillis()
         _status.value = status
+        if (status != EngineStatus.On) gpr.greentune.unblock.net.Live.socksPort = 0
+        val st = when (status) {
+            EngineStatus.Off -> "off"
+            EngineStatus.Starting -> "starting"
+            EngineStatus.On -> "on"
+            is EngineStatus.Error -> "error"
+        }
+        if (status != EngineStatus.Starting) gpr.greentune.unblock.net.Live.status(st, try { currentArgs().joinToString(" ").take(380) } catch (_: Exception) { "" })
         OrbWidget.updateAll(context)
         GtTileService.requestUpdate(context)
     }

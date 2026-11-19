@@ -41,21 +41,12 @@ jobs:
           if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
             NAME="${GITHUB_REF_NAME#v}"
           else
-            NAME="0.0.0-dev.${GITHUB_RUN_NUMBER}"
+            BASE=$(grep -m1 -oE '^## v?[0-9]+\.[0-9]+\.[0-9]+' CHANGELOG.md | grep -oE '[0-9.]+$')
+            NAME="${BASE}-dev.${GITHUB_RUN_NUMBER}"
           fi
-          CORE="${NAME%%-*}"
-          IFS='.' read -r MA MI PA <<< "$CORE"
-          CODE=$(( ${MA:-0} * 1000000 + ${MI:-0} * 10000 + ${PA:-0} * 100 ))
-          if [[ "$NAME" == *-* ]]; then
-            N=$(echo "$NAME" | grep -oE '[0-9]+$' || echo 1)
-            CODE=$(( CODE - 100 + ${N:-1} ))
-          else
-            CODE=$(( CODE + 99 ))
-          fi
-          if [[ "$GITHUB_REF" != refs/tags/v* ]]; then CODE=$GITHUB_RUN_NUMBER; fi
-          echo "name=$NAME" >> "$GITHUB_OUTPUT"
-          echo "code=$CODE" >> "$GITHUB_OUTPUT"
-          if [[ "$NAME" == *-* ]]; then echo "pre=true" >> "$GITHUB_OUTPUT"; else echo "pre=false" >> "$GITHUB_OUTPUT"; fi
+          python3 tools/version.py "$NAME" >> "$GITHUB_OUTPUT"
+          if [[ "$GITHUB_REF" != refs/tags/v* ]]; then echo "code=$GITHUB_RUN_NUMBER" >> "$GITHUB_OUTPUT"; fi
+          python3 tools/version.py "$NAME"
 
       - name: Keystore
         env:
@@ -73,7 +64,7 @@ jobs:
           GT_KEY_PASSWORD: ${{ secrets.GT_KEY_PASSWORD }}
         run: |
           chmod +x gradlew
-          ./gradlew --no-daemon --stacktrace assembleRelease -PversionName=${{ steps.ver.outputs.name }} -PversionCode=${{ steps.ver.outputs.code }}
+          ./gradlew --no-daemon --stacktrace assembleRelease -PversionName=${{ steps.ver.outputs.name }} -PversionCode=${{ steps.ver.outputs.code }} "-Pcodename=${{ steps.ver.outputs.codename }}" "-PdisplayName=${{ steps.ver.outputs.display }}" "-Pring=${{ steps.ver.outputs.ring }}"
 
       - name: Collect APKs
         run: |
@@ -84,30 +75,48 @@ jobs:
             abi=${b#app-}
             abi=${abi%-release}
             abi=${abi%-unsigned}
-            cp "$f" "dist/GT-Unblock-$V-$abi.apk"
+            cp "$f" "dist/Glyde-$V-$abi.apk"
           done
           ls -la dist
           (cd dist && sha256sum *.apk > SHA256SUMS.txt)
 
       - uses: actions/upload-artifact@v4
         with:
-          name: GT-Unblock-${{ steps.ver.outputs.name }}
+          name: Glyde-${{ steps.ver.outputs.name }}
           path: dist/*
 
       - name: Release notes
         if: startsWith(github.ref, 'refs/tags/v')
         run: |
-          V=${{ steps.ver.outputs.name }}
-          awk -v v="## $V" 'BEGIN{p=0} $0==v{p=1;next} /^## /{if(p)exit} p{print}' CHANGELOG.md > notes.md || true
-          if [ ! -s notes.md ]; then echo "GT Unblock $V" > notes.md; fi
+          python3 tools/version.py "${{ steps.ver.outputs.name }}" notes > notes.md
           cat notes.md
 
       - uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/tags/v')
         with:
-          name: GT Unblock ${{ steps.ver.outputs.name }}
+          name: ${{ steps.ver.outputs.display }}
           body_path: notes.md
           prerelease: ${{ steps.ver.outputs.pre }}
           files: |
             dist/*.apk
             dist/SHA256SUMS.txt
+
+      - name: Static update mirror
+        if: startsWith(github.ref, 'refs/tags/v') && steps.ver.outputs.pre == 'false'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          V=${{ steps.ver.outputs.name }}
+          python3 tools/mirror.py "$V" dist > update.json
+          cat update.json
+          git config user.name "Glyde CI"
+          git config user.email "ci@users.noreply.github.com"
+          git fetch origin gh-pages || true
+          git worktree add -B gh-pages pages origin/gh-pages 2>/dev/null || { git worktree add --detach pages; cd pages; git checkout --orphan gh-pages; git rm -rf . > /dev/null 2>&1 || true; cd ..; }
+          cp update.json pages/update.json
+          if [ -d site ]; then cp -r site/. pages/; fi
+          touch pages/.nojekyll
+          cd pages
+          git add -A
+          git commit -m "Mirror $V" || true
+          git push origin gh-pages

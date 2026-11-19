@@ -95,6 +95,7 @@ class ProxyService : Service() {
             val p = withContext(Dispatchers.IO) { Ciadpi.start(this@ProxyService, port, args, s.blockQuic, Logs.engineLog(this@ProxyService)) }
             proc = p
             if (!Ciadpi.awaitReady(port, p, 5000)) throw IllegalStateException(getString(R.string.err_engine_start))
+            gpr.greentune.unblock.net.Live.socksPort = port
             Engine.setStatus(this, EngineStatus.On)
             Notifications.update(this, Notifications.engine(this, ProxyService::class.java, getString(R.string.status_proxy_on, port)))
             thread(name = "ciadpi-proxy-watch", isDaemon = true) {

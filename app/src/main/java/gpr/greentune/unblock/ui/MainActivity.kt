@@ -76,17 +76,14 @@ class MainActivity : ComponentActivity() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 Updater.foreground = true
+                gpr.greentune.unblock.net.Live.setForeground(true)
+                gpr.greentune.unblock.net.Live.start(applicationContext)
                 launch {
                     try {
                         awaitCancellation()
                     } finally {
                         Updater.foreground = false
-                    }
-                }
-                launch {
-                    while (isActive) {
-                        Updater.poll(applicationContext)
-                        delay(Updater.pollDelay())
+                        gpr.greentune.unblock.net.Live.setForeground(false)
                     }
                 }
                 launch {

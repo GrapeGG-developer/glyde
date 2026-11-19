@@ -11,6 +11,10 @@ val abis = listOf("armeabi-v7a", "arm64-v8a", "x86", "x86_64")
 val appVersionName = (findProperty("versionName") as String?) ?: "1.0.0"
 val appVersionCode = ((findProperty("versionCode") as String?) ?: "1").toInt()
 val serverUrl = (findProperty("serverUrl") as String?) ?: "https://gt-unblock-api.onrender.com"
+val backupUrls = (findProperty("backupUrls") as String?) ?: ""
+val appCodename = (findProperty("codename") as String?) ?: "Andromeda"
+val appDisplay = (findProperty("displayName") as String?) ?: "Glyde 26.11 Andromeda"
+val appRing = (findProperty("ring") as String?) ?: "stable"
 val keystoreFile = System.getenv("GT_KEYSTORE_FILE")
 
 android {
@@ -25,7 +29,12 @@ android {
         versionCode = appVersionCode
         versionName = appVersionName
         buildConfigField("String", "SERVER_URL", "\"$serverUrl\"")
-        buildConfigField("String", "GITHUB_REPO", "\"GrapeGG-developer/gt-unblock\"")
+        buildConfigField("String", "GITHUB_REPO", "\"GrapeGG-developer/glyde\"")
+        buildConfigField("String", "BACKUP_URLS", "\"$backupUrls\"")
+        buildConfigField("String", "CODENAME", "\"$appCodename\"")
+        buildConfigField("String", "DISPLAY_NAME", "\"$appDisplay\"")
+        buildConfigField("String", "RING", "\"$appRing\"")
+        buildConfigField("String", "MIRRORS", "\"https://grapegg-developer.github.io/glyde/update.json|https://cdn.jsdelivr.net/gh/GrapeGG-developer/glyde@gh-pages/update.json|https://raw.githubusercontent.com/GrapeGG-developer/glyde/gh-pages/update.json\"")
         buildConfigField("String", "DONATE_URL", "\"https://pay.cloudtips.ru/p/c9e9cb6d\"")
         ndk {
             abiFilters.addAll(abis)

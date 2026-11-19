@@ -1,0 +1,376 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Glyde · Центр управления</title>
+<style>
+:root{--bg1:#03141f;--bg2:#06324a;--glass:rgba(255,255,255,.08);--glass2:rgba(255,255,255,.14);--line:rgba(255,255,255,.16);--text:#e8f7ff;--sub:#8fb7c9;--aqua:#19a7ce;--aqua2:#4fe0d0;--green:#3ddc84;--red:#ff5d6c;--amber:#ffbf47;--violet:#8b7bff}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;font:14px/1.45 "Segoe UI",system-ui,-apple-system,Roboto,sans-serif;color:var(--text);background:radial-gradient(1200px 700px at 15% -10%,#0d5a7c 0,transparent 60%),radial-gradient(900px 600px at 110% 10%,#1d3f8a 0,transparent 55%),linear-gradient(160deg,var(--bg2),var(--bg1) 60%);background-attachment:fixed}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;background:radial-gradient(4px 4px at 20% 30%,rgba(255,255,255,.25),transparent),radial-gradient(6px 6px at 70% 60%,rgba(255,255,255,.18),transparent),radial-gradient(3px 3px at 40% 80%,rgba(255,255,255,.2),transparent),radial-gradient(9px 9px at 85% 20%,rgba(255,255,255,.12),transparent);animation:float 18s linear infinite}
+@keyframes float{from{transform:translateY(0)}to{transform:translateY(-40px)}}
+a{color:var(--aqua2)}
+.glass{background:linear-gradient(180deg,rgba(255,255,255,.16),rgba(255,255,255,.05) 45%,rgba(255,255,255,.07));border:1px solid var(--line);border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.35);backdrop-filter:blur(18px) saturate(140%);-webkit-backdrop-filter:blur(18px) saturate(140%)}
+header{position:sticky;top:0;z-index:10;display:flex;align-items:center;gap:14px;padding:12px 20px;margin:12px;border-radius:18px}
+.logo{width:36px;height:36px;border-radius:12px;background:radial-gradient(circle at 30% 25%,#fff 0,#8ff 12%,#19a7ce 45%,#0b4f8a 100%);box-shadow:0 0 18px rgba(25,167,206,.7),inset 0 -4px 10px rgba(0,0,0,.3)}
+header h1{font-size:18px;margin:0;font-weight:600;letter-spacing:.3px}
+header .sub{color:var(--sub);font-size:12px}
+.pill{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;background:var(--glass2);border:1px solid var(--line);font-size:12px}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green)}
+.dot.off{background:var(--red);box-shadow:0 0 8px var(--red)}
+.grow{flex:1}
+nav{display:flex;gap:6px;flex-wrap:wrap;padding:0 20px 8px}
+nav button{all:unset;cursor:pointer;padding:8px 14px;border-radius:12px;color:var(--sub);border:1px solid transparent;transition:.2s}
+nav button:hover{color:var(--text);background:var(--glass)}
+nav button.on{color:#fff;background:linear-gradient(180deg,rgba(79,224,208,.35),rgba(25,167,206,.2));border-color:rgba(79,224,208,.5);box-shadow:inset 0 1px 0 rgba(255,255,255,.4),0 0 14px rgba(25,167,206,.35)}
+main{padding:8px 20px 40px;max-width:1500px;margin:0 auto}
+.grid{display:grid;gap:14px}
+.g4{grid-template-columns:repeat(auto-fit,minmax(190px,1fr))}
+.g2{grid-template-columns:repeat(auto-fit,minmax(420px,1fr))}
+.card{padding:16px}
+.card h3{margin:0 0 10px;font-size:13px;font-weight:600;color:var(--sub);text-transform:uppercase;letter-spacing:.8px}
+.big{font-size:34px;font-weight:300;letter-spacing:-.5px}
+.big small{font-size:13px;color:var(--sub);margin-left:6px}
+table{width:100%;border-collapse:collapse}
+th,td{padding:8px 10px;text-align:left;border-bottom:1px solid rgba(255,255,255,.07);vertical-align:top}
+th{color:var(--sub);font-weight:500;font-size:12px;position:sticky;top:0;background:rgba(6,40,60,.9)}
+tr:hover td{background:rgba(255,255,255,.04)}
+.scroll{max-height:560px;overflow:auto;border-radius:12px}
+.btn{all:unset;cursor:pointer;display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:10px;font-size:13px;background:linear-gradient(180deg,rgba(255,255,255,.28),rgba(255,255,255,.08) 50%,rgba(255,255,255,.12));border:1px solid rgba(255,255,255,.3);box-shadow:inset 0 1px 0 rgba(255,255,255,.5),0 2px 6px rgba(0,0,0,.25);transition:.15s;white-space:nowrap}
+.btn:hover{filter:brightness(1.2)}
+.btn:active{transform:translateY(1px)}
+.btn.pri{background:linear-gradient(180deg,#7ff0e2,#19a7ce 55%,#1587b0);color:#022;border-color:#9ff}
+.btn.red{background:linear-gradient(180deg,#ff9aa4,#e5414f 55%,#c02d3a);border-color:#fbb}
+.btn.amb{background:linear-gradient(180deg,#ffe19a,#f0a020 55%,#c98010);color:#210;border-color:#fe9}
+.btn.sm{padding:4px 9px;font-size:12px}
+input,select,textarea{font:inherit;color:var(--text);background:rgba(0,0,0,.25);border:1px solid var(--line);border-radius:10px;padding:8px 10px;outline:none}
+input:focus,select:focus,textarea:focus{border-color:var(--aqua2);box-shadow:0 0 0 3px rgba(79,224,208,.2)}
+textarea{width:100%;min-height:90px;resize:vertical}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.muted{color:var(--sub)}
+.tag{display:inline-block;padding:1px 8px;border-radius:999px;font-size:11px;border:1px solid var(--line);background:var(--glass)}
+.tag.insider{background:rgba(139,123,255,.25);border-color:#a99bff}
+.tag.beta{background:rgba(255,191,71,.2);border-color:#ffcf70}
+.tag.stable{background:rgba(61,220,132,.18);border-color:#6fe9a6}
+.tag.alert,.tag.warn{background:rgba(255,93,108,.2);border-color:#ff8f9a}
+.bar{height:8px;border-radius:6px;background:rgba(255,255,255,.08);overflow:hidden}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--aqua),var(--aqua2));border-radius:6px}
+.list div{display:flex;justify-content:space-between;gap:10px;padding:5px 0;border-bottom:1px dashed rgba(255,255,255,.07)}
+svg text{fill:var(--sub);font-size:10px}
+.login{max-width:380px;margin:12vh auto;padding:28px}
+.login h2{margin:0 0 6px;font-weight:500}
+.login input{width:100%;margin:6px 0}
+.toast{position:fixed;right:20px;bottom:20px;padding:12px 16px;border-radius:12px;z-index:50;transition:.3s;opacity:0;transform:translateY(10px)}
+.toast.show{opacity:1;transform:none}
+.modal{position:fixed;inset:0;background:rgba(0,10,20,.55);display:none;align-items:center;justify-content:center;z-index:40;padding:16px}
+.modal.show{display:flex}
+.modal .glass{max-width:760px;width:100%;max-height:88vh;overflow:auto;padding:20px}
+pre{white-space:pre-wrap;word-break:break-word;background:rgba(0,0,0,.3);padding:10px;border-radius:10px;font-size:12px;max-height:300px;overflow:auto}
+.feed{max-height:300px;overflow:auto;font-size:12px}
+.feed div{padding:4px 0;border-bottom:1px solid rgba(255,255,255,.05)}
+.hidden{display:none!important}
+.kv{display:grid;grid-template-columns:150px 1fr;gap:4px 12px;font-size:13px}
+.kv b{color:var(--sub);font-weight:500}
+@media(max-width:700px){.g2{grid-template-columns:1fr}header{flex-wrap:wrap}.kv{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div id="login" class="glass login hidden">
+  <div class="row" style="gap:12px;margin-bottom:12px"><div class="logo"></div><div><h2>Glyde</h2><div class="muted">Центр управления</div></div></div>
+  <input id="pw" type="password" placeholder="Пароль" autocomplete="current-password">
+  <input id="otp" inputmode="numeric" maxlength="6" placeholder="Код из приложения-аутентификатора" autocomplete="one-time-code">
+  <div class="row" style="margin-top:10px"><button class="btn pri" id="loginBtn">Войти</button><span id="loginErr" class="muted"></span></div>
+</div>
+
+<div id="app" class="hidden">
+<header class="glass">
+  <div class="logo"></div>
+  <div><h1>Glyde · Центр управления</h1><div class="sub" id="hdrSub">—</div></div>
+  <div class="grow"></div>
+  <span class="pill"><span class="dot" id="liveDot"></span><b id="onlineNow">0</b>&nbsp;онлайн</span>
+  <span class="pill" id="siegePill" style="display:none;border-color:#ff8f9a">⚠ Осада</span>
+  <button class="btn sm" id="refreshBtn">Обновить релизы</button>
+  <button class="btn sm" id="logoutBtn">Выйти</button>
+</header>
+<nav id="nav"></nav>
+<main id="main"></main>
+</div>
+
+<div class="modal" id="modal"><div class="glass" id="modalBody"></div></div>
+<div class="toast glass" id="toast"></div>
+
+<script>
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmtT = t => t ? new Date(Number(t)).toLocaleString('ru-RU', {day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}) : '—';
+const ago = t => { if (!t) return '—'; const s = (Date.now() - Number(t)) / 1000; if (s < 60) return Math.round(s) + ' с'; if (s < 3600) return Math.round(s/60) + ' мин'; if (s < 86400) return Math.round(s/3600) + ' ч'; return Math.round(s/86400) + ' дн'; };
+const num = n => Number(n || 0).toLocaleString('ru-RU');
+const ringTag = r => `<span class="tag ${esc(r)}">${esc({insider:'Insider',beta:'Beta',stable:'Stable'}[r] || r)}</span>`;
+
+async function api(path, body) {
+  const opt = body === undefined ? {} : { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'glyde' }, body: JSON.stringify(body) };
+  const r = await fetch('/admin/api/' + path, { credentials: 'same-origin', ...opt });
+  if (r.status === 401) { showLogin(); throw new Error('auth'); }
+  return r.json();
+}
+function toast(msg) { const t = $('#toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove('show'), 2600); }
+function modal(html) { $('#modalBody').innerHTML = html; $('#modal').classList.add('show'); }
+$('#modal').onclick = e => { if (e.target.id === 'modal') $('#modal').classList.remove('show'); };
+
+function bars(rows, key, label, max) {
+  const m = max || Math.max(1, ...rows.map(r => Number(r[key] || 0)));
+  return rows.map(r => `<div style="margin:6px 0"><div class="row" style="justify-content:space-between"><span>${label(r)}</span><b>${num(r[key])}</b></div><div class="bar"><i style="width:${Math.max(2, Number(r[key] || 0) / m * 100)}%"></i></div></div>`).join('') || '<div class="muted">Нет данных</div>';
+}
+function spark(points, h = 120) {
+  if (!points.length) return '<div class="muted">Нет данных</div>';
+  const w = 600, max = Math.max(1, ...points.map(p => p.y));
+  const step = w / Math.max(1, points.length - 1);
+  const pts = points.map((p, i) => [i * step, h - 18 - (p.y / max) * (h - 30)]);
+  const line = pts.map((p, i) => (i ? 'L' : 'M') + p[0].toFixed(1) + ',' + p[1].toFixed(1)).join('');
+  const area = line + `L${w},${h - 18}L0,${h - 18}Z`;
+  const labels = points.map((p, i) => i % Math.ceil(points.length / 6) === 0 ? `<text x="${i * step}" y="${h - 4}">${esc(p.x)}</text>` : '').join('');
+  return `<svg viewBox="0 0 ${w} ${h}" width="100%" height="${h}" preserveAspectRatio="none"><defs><linearGradient id="ga" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4fe0d0" stop-opacity=".5"/><stop offset="1" stop-color="#19a7ce" stop-opacity="0"/></linearGradient></defs><path d="${area}" fill="url(#ga)"/><path d="${line}" fill="none" stroke="#4fe0d0" stroke-width="2"/>${labels}<text x="${w - 4}" y="12" text-anchor="end">${num(max)}</text></svg>`;
+}
+
+const tabs = [
+  ['overview', 'Обзор'], ['online', 'Онлайн'], ['devices', 'Устройства'], ['rollout', 'Раздача'], ['security', 'Безопасность'],
+  ['announce', 'Объявления'], ['flags', 'Флаги'], ['strategies', 'Стратегии'], ['crashes', 'Вылеты'], ['feedback', 'Предложения'], ['updates', 'Журнал обновлений'],
+];
+let current = location.hash.slice(1) || 'overview';
+let feed = [];
+
+function renderNav() {
+  $('#nav').innerHTML = tabs.map(([k, l]) => `<button data-k="${k}" class="${k === current ? 'on' : ''}">${l}</button>`).join('');
+  $('#nav').querySelectorAll('button').forEach(b => b.onclick = () => { current = b.dataset.k; location.hash = current; renderNav(); render(); });
+}
+
+async function render() {
+  const m = $('#main');
+  try { m.innerHTML = await views[current](); bind[current]?.(); } catch (e) { if (e.message !== 'auth') m.innerHTML = `<div class="glass card">Ошибка: ${esc(e.message)}</div>`; }
+}
+
+const views = {
+  async overview() {
+    const o = await api('overview');
+    $('#siegePill').style.display = o.siege ? '' : 'none';
+    $('#hdrSub').textContent = `Работает ${Math.round(o.uptime / 3600000)} ч · память ${Math.round(o.memory / 1048576)} МБ · запросов ${num(o.requests)} · отклонено ${num(o.limited)}`;
+    const daily = o.daily.map(d => ({ x: d.day.slice(5), y: Number(d.n) }));
+    const series = o.series.map(s => ({ x: new Date(s.t).toLocaleTimeString('ru-RU', {hour:'2-digit',minute:'2-digit'}), y: s.online }));
+    const upd = Object.fromEntries(o.updates24h.map(r => [r.result, r.n]));
+    return `<div class="grid g4">
+      <div class="glass card"><h3>Онлайн сейчас</h3><div class="big">${num(o.online)}<small>пик сегодня ${num(o.peak.n)}</small></div><div class="muted">заняты (подбор, тест): ${num(o.busy)}</div></div>
+      <div class="glass card"><h3>За сутки</h3><div class="big">${num(o.active24h)}<small>за 7 дней ${num(o.active7d)}</small></div></div>
+      <div class="glass card"><h3>Всего устройств</h3><div class="big">${num(o.devices)}</div><div class="muted">${o.rings.map(r => ringTag(r.ring) + ' ' + num(r.n)).join(' ')}</div></div>
+      <div class="glass card"><h3>Обновления за сутки</h3><div class="big">${num(upd.installed)}<small>ошибок ${num(upd.failed)}</small></div><div class="muted">вылетов ${num(o.crashes24h)} · предложений за неделю ${num(o.feedback7d)}</div></div>
+    </div>
+    <div class="grid g2" style="margin-top:14px">
+      <div class="glass card"><h3>Пользователи по дням</h3>${spark(daily)}</div>
+      <div class="glass card"><h3>Онлайн за 3 часа</h3>${spark(series)}</div>
+      <div class="glass card"><h3>Версии (7 дней)</h3>${bars(o.versions, 'n', r => esc(r.display || r.v || '?'))}</div>
+      <div class="glass card"><h3>Онлайн по версиям</h3>${bars(Object.entries(o.onlineByV).map(([v, n]) => ({ v, n })), 'n', r => esc(r.v))}</div>
+      <div class="glass card"><h3>Провайдеры</h3>${bars(o.isps, 'n', r => esc((r.isp || '?') + (r.asn ? ' · AS' + r.asn : '')))}</div>
+      <div class="glass card"><h3>Модели</h3>${bars(o.models, 'n', r => esc(r.m.trim() || '?'))}</div>
+      <div class="glass card"><h3>Страны</h3>${bars(o.countries, 'n', r => esc(r.country || '?'))}</div>
+      <div class="glass card"><h3>Android</h3>${bars(o.sdks, 'n', r => 'API ' + esc(r.sdk || '?'))}</div>
+      <div class="glass card"><h3>Сервисы (7 дней, успешно / проверок)</h3>${bars(o.services.slice(0, 20).map(s => ({ ...s, p: Math.round(Number(s.ok) / Math.max(1, Number(s.n)) * 100) })), 'p', r => esc(r.service) + ` <span class="muted">${num(r.ok)}/${num(r.n)}</span>`, 100)}</div>
+      <div class="glass card"><h3>Живая лента</h3><div class="feed" id="feed">${feed.map(f => `<div>${f}</div>`).join('') || '<span class="muted">Ждём событий…</span>'}</div></div>
+    </div>`;
+  },
+  async online() {
+    const list = await api('online');
+    return `<div class="glass card"><div class="row" style="justify-content:space-between"><h3>Подключены прямо сейчас: ${list.length}</h3><button class="btn sm red" data-act="kickall">Оборвать всех</button></div>
+    <div class="scroll"><table><tr><th>Устройство</th><th>Версия</th><th>Кольцо</th><th>IP</th><th>Сеть</th><th>В сети</th><th></th></tr>
+    ${list.map(c => `<tr><td><a href="#" data-dev="${esc(c.id)}">${esc(c.model || c.id)}</a><div class="muted">${esc(c.id.slice(0, 10))}…</div></td><td>${esc(c.display || c.v)}</td><td>${ringTag(c.ring)}${c.busy ? ' <span class="tag beta">занят</span>' : ''}${c.lite ? ' <span class="tag">лёгкий</span>' : ''}</td><td>${esc(c.ip)}</td><td>${esc(c.net || '')}</td><td>${ago(c.since)}</td><td class="row"><button class="btn sm" data-kick="${esc(c.id)}">Оборвать</button></td></tr>`).join('')}</table></div></div>`;
+  },
+  async devices() {
+    const q = new URLSearchParams(sessionStorage.devq || '');
+    const list = await api('devices?' + q.toString());
+    return `<div class="glass card"><div class="row"><input id="dq" placeholder="Поиск: ID, модель, IP, провайдер, город, заметка" value="${esc(q.get('q') || '')}" style="flex:1;min-width:240px">
+      <select id="dring"><option value="">Все кольца</option>${['insider','beta','stable'].map(r => `<option ${q.get('ring') === r ? 'selected' : ''}>${r}</option>`).join('')}</select>
+      <label class="row"><input type="checkbox" id="donline" ${q.get('online') === '1' ? 'checked' : ''}> онлайн</label>
+      <label class="row"><input type="checkbox" id="dbanned" ${q.get('banned') === '1' ? 'checked' : ''}> забанены</label>
+      <button class="btn pri" id="dsearch">Найти</button></div>
+      <div class="row" style="margin-top:10px"><input id="insCode" placeholder="GLY-XXXXXX" style="width:160px"><button class="btn sm" id="insAdd">Добавить в Insider</button><button class="btn sm" id="insDel">Убрать из Insider</button><span class="muted">ID устройства: 7 нажатий на версию в «О приложении»</span></div></div>
+    <div class="glass card" style="margin-top:14px"><div class="scroll"><table><tr><th></th><th>Устройство</th><th>Версия</th><th>Кольцо</th><th>Провайдер</th><th>Город</th><th>IP</th><th>Состояние</th><th>Был</th></tr>
+    ${list.map(d => `<tr><td><span class="dot ${d.online ? '' : 'off'}"></span></td><td><a href="#" data-dev="${esc(d.id)}">${esc((d.maker || '') + ' ' + (d.model || '?'))}</a><div class="muted">${esc(d.short)} · API ${esc(d.sdk)}${d.banned == 1 ? ' · <span class="tag alert">бан</span>' : ''}</div></td><td>${esc(d.display || d.v)}</td><td>${ringTag(d.ring)}</td><td>${esc(d.isp || '')}<div class="muted">${d.asn ? 'AS' + esc(d.asn) : ''}</div></td><td>${esc(d.city || '')} ${esc(d.country || '')}</td><td>${esc(d.ip || '')}</td><td>${esc(d.state || '')}${d.busy == 1 ? ' <span class="tag beta">занят</span>' : ''}</td><td>${ago(d.last)}</td></tr>`).join('')}</table></div></div>`;
+  },
+  async rollout() {
+    const list = await api('releases');
+    return `<div class="glass card"><div class="row" style="justify-content:space-between"><h3>Раздача обновлений</h3><button class="btn pri sm" data-act="push">Разослать предложения сейчас</button></div>
+    <div class="muted">Insider получает всё. Beta — бета и стабильные. Stable — только стабильные, с учётом процента раздачи. Пауза останавливает новых получателей. «Отозвать» скрывает версию у всех (откатить уже установленную Android не даст).</div></div>
+    ${list.map(r => `<div class="glass card" style="margin-top:14px"><div class="row" style="justify-content:space-between"><div><b style="font-size:16px">${esc(r.display)}</b> <span class="muted">${esc(r.tag)} · ${fmtT(Date.parse(r.published))}</span> ${ringTag(r.ring)} ${r.paused ? '<span class="tag beta">пауза</span>' : ''} ${r.pulled ? '<span class="tag alert">отозвана</span>' : ''}</div>
+      <div class="muted">устройств на версии: ${num(r.devices)} · установлено ${num(r.stats.installed)} · ошибок ${num(r.stats.failed)}</div></div>
+      <div class="row" style="margin-top:10px" data-tag="${esc(r.tag)}">
+        <select class="r-ring">${['insider','beta','stable'].map(x => `<option ${x === r.ring ? 'selected' : ''}>${x}</option>`).join('')}</select>
+        <input class="r-pct" type="range" min="0" max="100" step="5" value="${r.percent}" style="width:200px"><b class="r-pv">${r.percent}%</b>
+        <button class="btn sm pri r-save">Применить</button>
+        <button class="btn sm amb r-pause">${r.paused ? 'Продолжить' : 'Пауза'}</button>
+        <button class="btn sm red r-pull">${r.pulled ? 'Вернуть' : 'Отозвать'}</button>
+      </div>
+      <details style="margin-top:8px"><summary class="muted">Что нового</summary><pre>${esc(r.changelog)}</pre></details></div>`).join('')}`;
+  },
+  async security() {
+    const s = await api('security');
+    return `<div class="grid g2">
+      <div class="glass card"><h3>Режим «Осада»</h3><div class="muted">Строгие лимиты, новые устройства не подключаются, работают только известные.</div>
+        <div class="row" style="margin-top:10px">${s.siege ? `<span class="tag alert">включён с ${fmtT(s.siegeSince)}</span><button class="btn" data-siege="0">Выключить</button>` : `<button class="btn red" data-siege="1">Включить осаду</button>`}</div></div>
+      <div class="glass card"><h3>Лимиты</h3><div class="row">
+        <label>запросов/с <input id="l-rate" type="number" value="${s.limits.rate}" style="width:70px"></label>
+        <label>всплеск <input id="l-burst" type="number" value="${s.limits.burst}" style="width:70px"></label>
+        <label>в осаду <input id="l-siege" type="number" value="${s.limits.siegeRate}" style="width:70px"></label>
+        <label>соединений на IP <input id="l-conn" type="number" value="${s.limits.maxConnPerIp}" style="width:70px"></label>
+        <button class="btn pri sm" id="l-save">Сохранить</button></div>
+        <div class="muted" style="margin-top:8px">Отклонено запросов: ${num(s.stats.limited)} из ${num(s.stats.requests)}</div></div>
+      <div class="glass card"><h3>Бан</h3><div class="row"><select id="b-kind"><option value="ip">IP</option><option value="device">Устройство (ID)</option></select><input id="b-val" placeholder="значение"><input id="b-min" type="number" placeholder="минут (0 — навсегда)" style="width:170px"><input id="b-reason" placeholder="причина"><button class="btn red sm" id="b-add">Забанить</button></div>
+        <div class="scroll" style="max-height:260px;margin-top:10px"><table><tr><th>Тип</th><th>Значение</th><th>До</th><th>Причина</th><th></th></tr>${s.bans.map(b => `<tr><td>${esc(b.kind)}</td><td>${esc(b.value)}</td><td>${b.until ? fmtT(b.until) : 'навсегда'}</td><td>${esc(b.reason)}</td><td><button class="btn sm" data-unban="${esc(b.kind)}|${esc(b.value)}">Снять</button></td></tr>`).join('')}</table></div></div>
+      <div class="glass card"><h3>Подозрительные IP за сутки</h3>${s.suspicious.map(x => `<div class="row" style="justify-content:space-between"><span>${esc(x.ip)} — ${num(x.n)}</span><span class="row"><button class="btn sm" data-kickip="${esc(x.ip)}">Оборвать</button><button class="btn sm red" data-banip="${esc(x.ip)}">Бан</button></span></div>`).join('') || '<div class="muted">Чисто</div>'}
+        <h3 style="margin-top:14px">Больше всего соединений</h3>${s.connsPerIp.map(x => `<div class="row" style="justify-content:space-between"><span>${esc(x.ip)} — ${num(x.n)}</span><button class="btn sm" data-kickip="${esc(x.ip)}">Оборвать</button></div>`).join('') || '<div class="muted">—</div>'}</div>
+    </div>
+    <div class="glass card" style="margin-top:14px"><div class="row" style="justify-content:space-between"><h3>Журнал событий</h3><button class="btn sm" id="ev-clear">Очистить старше 7 дней</button></div><div class="scroll"><table><tr><th>Время</th><th>Тип</th><th>IP</th><th>Устройство</th><th>Детали</th></tr>${s.events.map(e => `<tr><td>${fmtT(e.t)}</td><td><span class="tag ${esc(e.level)}">${esc(e.kind)}</span></td><td>${esc(e.ip || '')}</td><td>${e.device ? `<a href="#" data-dev="${esc(e.device)}">${esc(e.device.slice(0, 10))}…</a>` : ''}</td><td class="muted">${esc(e.detail)}</td></tr>`).join('')}</table></div></div>`;
+  },
+  async announce() {
+    const list = await api('announcements');
+    return `<div class="glass card"><h3>Новое объявление</h3><div class="row"><input id="a-title" placeholder="Заголовок" style="flex:1"><select id="a-level"><option value="info">Инфо</option><option value="warn">Важно</option><option value="success">Хорошие новости</option></select><select id="a-ring"><option value="all">Всем</option><option value="insider">Insider</option><option value="beta">Beta</option><option value="stable">Stable</option></select><input id="a-hours" type="number" placeholder="часов (0 — без срока)" style="width:170px"></div>
+      <textarea id="a-text" placeholder="Текст объявления" style="margin-top:8px"></textarea><div class="row" style="margin-top:8px"><button class="btn pri" id="a-send">Отправить сейчас</button></div></div>
+      <div class="glass card" style="margin-top:14px"><div class="scroll"><table><tr><th>Время</th><th>Кому</th><th>Текст</th><th>Статус</th><th></th></tr>${list.map(a => `<tr><td>${fmtT(a.t)}</td><td>${ringTag(a.ring)}</td><td><b>${esc(a.title)}</b><div class="muted">${esc(a.text)}</div></td><td>${a.active == 1 ? 'активно' : 'снято'}${a.until > 0 ? '<div class="muted">до ' + fmtT(a.until) + '</div>' : ''}</td><td>${a.active == 1 ? `<button class="btn sm" data-aoff="${a.id}">Снять</button>` : ''}</td></tr>`).join('')}</table></div></div>`;
+  },
+  async flags() {
+    const f = await api('flags');
+    return `<div class="glass card"><h3>Удалённые флаги</h3><div class="muted">Приложение получает их мгновенно. Примеры: <code>tg_ws</code> = true, <code>autoheal_minutes</code> = 10, <code>speedtest</code> = false, <code>min_version_code</code> = 26110099.</div>
+      <div class="row" style="margin-top:10px"><input id="f-key" placeholder="ключ"><input id="f-val" placeholder="значение (JSON)" style="flex:1"><button class="btn pri sm" id="f-set">Сохранить</button></div></div>
+      <div class="glass card" style="margin-top:14px"><table><tr><th>Ключ</th><th>Значение</th><th></th></tr>${Object.entries(f).map(([k, v]) => `<tr><td>${esc(k)}</td><td><code>${esc(JSON.stringify(v))}</code></td><td><button class="btn sm" data-fdel="${esc(k)}">Удалить</button></td></tr>`).join('') || '<tr><td colspan="3" class="muted">Флагов нет</td></tr>'}</table></div>`;
+  },
+  async strategies() {
+    const s = await api('strategies');
+    const byAsn = {};
+    for (const r of s.reports) (byAsn[r.asn || '?'] ||= []).push(r);
+    const names = Object.fromEntries(s.isps.map(i => [i.asn, i.isp]));
+    return Object.entries(byAsn).slice(0, 30).map(([asn, rows]) => `<div class="glass card" style="margin-bottom:14px"><h3>${esc(names[asn] || 'AS' + asn)} · AS${esc(asn)}</h3><div class="scroll" style="max-height:260px"><table><tr><th>Сервис</th><th>Стратегия</th><th>Успешно</th><th>Проверок</th></tr>${rows.slice(0, 40).map(r => `<tr><td>${esc(r.service)}</td><td><code>${esc(r.strategy || 'напрямую')}</code></td><td>${Math.round(Number(r.ok) / Math.max(1, Number(r.n)) * 100)}%</td><td>${num(r.n)}</td></tr>`).join('')}</table></div></div>`).join('') || '<div class="glass card muted">Отчётов пока нет</div>';
+  },
+  async crashes() {
+    const list = await api('crashes');
+    return `<div class="glass card"><div class="scroll"><table><tr><th>Время</th><th>Версия</th><th>Устройство</th><th>Трассировка</th></tr>${list.map(c => `<tr><td>${fmtT(c.t)}</td><td>${esc(c.v)}</td><td>${esc(c.model)} · API ${esc(c.sdk)}</td><td><details><summary>${esc(String(c.trace || '').split('\n')[0].slice(0, 120))}</summary><pre>${esc(c.trace)}</pre></details></td></tr>`).join('') || '<tr><td colspan="4" class="muted">Вылетов нет</td></tr>'}</table></div></div>`;
+  },
+  async feedback() {
+    const list = await api('feedback');
+    return `<div class="glass card"><div class="scroll"><table><tr><th>Время</th><th>Версия</th><th>Текст</th><th>Контакт</th></tr>${list.map(f => `<tr><td>${fmtT(f.t)}</td><td>${esc(f.v)}<div class="muted">${esc(f.model)}</div></td><td>${esc(f.text)}</td><td>${esc(f.contact)}</td></tr>`).join('') || '<tr><td colspan="4" class="muted">Пока пусто</td></tr>'}</table></div></div>`;
+  },
+  async updates() {
+    const list = await api('updates');
+    return `<div class="glass card"><div class="scroll"><table><tr><th>Время</th><th>Устройство</th><th>С</th><th>На</th><th>Результат</th><th>Детали</th></tr>${list.map(u => `<tr><td>${fmtT(u.t)}</td><td>${u.device ? `<a href="#" data-dev="${esc(u.device)}">${esc(u.device.slice(0, 10))}…</a>` : ''}</td><td>${esc(u.from_v)}</td><td>${esc(u.to_v)}</td><td><span class="tag ${u.result === 'failed' ? 'alert' : 'stable'}">${esc(u.result)}</span></td><td class="muted">${esc(u.detail)}</td></tr>`).join('') || '<tr><td colspan="6" class="muted">Пока пусто</td></tr>'}</table></div></div>`;
+  },
+};
+
+async function openDevice(id) {
+  const d = await api('device/' + encodeURIComponent(id));
+  let svc = '';
+  try { const s = JSON.parse(d.services || '{}'); svc = Object.entries(s).map(([k, v]) => `<span class="tag ${v ? 'stable' : 'alert'}">${esc(k)}</span>`).join(' '); } catch (e) {}
+  modal(`<div class="row" style="justify-content:space-between"><h2 style="margin:0">${esc((d.maker || '') + ' ' + (d.model || ''))}</h2><span class="row"><span class="dot ${d.online ? '' : 'off'}"></span>${d.online ? 'онлайн' : 'не в сети'}</span></div>
+  <div class="kv" style="margin:14px 0">
+    <b>ID</b><span>${esc(d.id)} · <b>${esc(d.short)}</b></span><b>Версия</b><span>${esc(d.display)} (${esc(d.v)}, код ${esc(d.code)})</span>
+    <b>Кольцо</b><span>${ringTag(d.ring)} · бакет раздачи ${d.bucket}</span><b>Android</b><span>API ${esc(d.sdk)} · ${esc(d.abi)} · ОЗУ ${esc(d.ram)} МБ ${d.lite == 1 ? '· лёгкий режим' : ''}</span>
+    <b>Сеть</b><span>${esc(d.net || '')} · ${esc(d.isp || '')} AS${esc(d.asn || '')}</span><b>Место</b><span>${esc(d.city || '')} ${esc(d.country || '')} · IP ${esc(d.ip || '—')}</span>
+    <b>Состояние</b><span>${esc(d.state || '—')}${d.busy == 1 ? ' · занят' : ''}</span><b>Стратегия</b><span><code>${esc(d.strategy || '—')}</code></span>
+    <b>Сервисы</b><span>${svc || '—'}</span><b>Впервые / последний раз</b><span>${fmtT(d.first)} / ${fmtT(d.last)} · сессий ${esc(d.sessions)}</span>
+  </div>
+  <div class="row"><input id="m-note" placeholder="Заметка" value="${esc(d.note || '')}" style="flex:1"><button class="btn sm" data-m="note">Сохранить заметку</button></div>
+  <div class="row" style="margin-top:10px">
+    <select id="m-ring">${['insider','beta','stable'].map(r => `<option ${r === d.ring ? 'selected' : ''}>${r}</option>`).join('')}</select><button class="btn sm pri" data-m="ring">Сменить кольцо</button>
+    <button class="btn sm" data-m="update">Предложить обновление</button>
+    <button class="btn sm" data-m="kick">Оборвать соединение</button>
+    ${d.banned == 1 ? '<button class="btn sm" data-m="unban">Разбанить</button>' : '<button class="btn sm red" data-m="ban">Забанить устройство</button>'}
+    <button class="btn sm red" data-m="banip">Забанить IP</button>
+    <button class="btn sm red" data-m="delete">Удалить данные</button>
+  </div>
+  <div class="row" style="margin-top:10px"><input id="m-msg" placeholder="Личное сообщение на устройство" style="flex:1"><button class="btn sm" data-m="message">Отправить</button></div>
+  <h3 class="muted" style="margin-top:16px">Обновления</h3><table>${d.updates.map(u => `<tr><td>${fmtT(u.t)}</td><td>${esc(u.from_v)} → ${esc(u.to_v)}</td><td>${esc(u.result)}</td><td class="muted">${esc(u.detail)}</td></tr>`).join('') || '<tr><td class="muted">—</td></tr>'}</table>
+  <h3 class="muted" style="margin-top:16px">События</h3><table>${d.events.map(e => `<tr><td>${fmtT(e.t)}</td><td>${esc(e.kind)}</td><td class="muted">${esc(e.detail)}</td></tr>`).join('') || '<tr><td class="muted">—</td></tr>'}</table>`);
+  $('#modalBody').querySelectorAll('[data-m]').forEach(b => b.onclick = async () => {
+    const a = b.dataset.m;
+    if (['delete', 'ban', 'banip'].includes(a) && !confirm('Точно?')) return;
+    const r = await api('device/' + encodeURIComponent(id), { action: a, ring: $('#m-ring').value, note: $('#m-note').value, text: $('#m-msg')?.value, title: 'Сообщение', reason: 'admin' });
+    toast(r.ok ? 'Готово' : 'Не вышло: ' + (r.error || ''));
+    if (a !== 'message') openDevice(id).catch(() => $('#modal').classList.remove('show'));
+  });
+}
+
+document.addEventListener('click', e => {
+  const dev = e.target.closest('[data-dev]');
+  if (dev) { e.preventDefault(); openDevice(dev.dataset.dev); }
+});
+
+const bind = {
+  online() {
+    $('#main').querySelectorAll('[data-kick]').forEach(b => b.onclick = async () => { await api('device/' + b.dataset.kick, { action: 'kick' }); toast('Соединение оборвано'); render(); });
+    $('[data-act=kickall]').onclick = async () => { if (!confirm('Оборвать все соединения? Приложения переподключатся сами.')) return; const r = await api('security', { action: 'kickall' }); toast('Оборвано: ' + r.n); render(); };
+  },
+  devices() {
+    const go = () => { const q = new URLSearchParams(); if ($('#dq').value) q.set('q', $('#dq').value); if ($('#dring').value) q.set('ring', $('#dring').value); if ($('#donline').checked) q.set('online', '1'); if ($('#dbanned').checked) q.set('banned', '1'); sessionStorage.devq = q.toString(); render(); };
+    $('#dsearch').onclick = go; $('#dq').onkeydown = e => { if (e.key === 'Enter') go(); };
+    $('#insAdd').onclick = async () => { const r = await api('insider', { code: $('#insCode').value }); toast(r.ok ? 'Добавлено в Insider: ' + r.ids.length : 'Устройство не найдено'); render(); };
+    $('#insDel').onclick = async () => { const r = await api('insider', { code: $('#insCode').value, remove: true }); toast(r.ok ? 'Убрано из Insider' : 'Не найдено'); render(); };
+  },
+  rollout() {
+    $('[data-act=push]').onclick = async () => { const r = await api('push-updates', {}); toast('Отправлено предложений: ' + r.sent); };
+    $('#main').querySelectorAll('[data-tag]').forEach(row => {
+      const tag = row.dataset.tag;
+      row.querySelector('.r-pct').oninput = e => row.querySelector('.r-pv').textContent = e.target.value + '%';
+      row.querySelector('.r-save').onclick = async () => { const r = await api('release/' + encodeURIComponent(tag), { ring: row.querySelector('.r-ring').value, percent: row.querySelector('.r-pct').value }); toast('Сохранено, разослано: ' + r.sent); render(); };
+      row.querySelector('.r-pause').onclick = async () => { await api('release/' + encodeURIComponent(tag), { paused: row.querySelector('.r-pause').textContent === 'Пауза' }); render(); };
+      row.querySelector('.r-pull').onclick = async () => { const pull = row.querySelector('.r-pull').textContent === 'Отозвать'; if (pull && !confirm('Отозвать версию у всех?')) return; await api('release/' + encodeURIComponent(tag), { pulled: pull }); render(); };
+    });
+  },
+  security() {
+    $('#main').querySelectorAll('[data-siege]').forEach(b => b.onclick = async () => { await api('security', { action: 'siege', on: b.dataset.siege === '1' }); render(); });
+    $('#l-save').onclick = async () => { await api('security', { action: 'limits', rate: $('#l-rate').value, burst: $('#l-burst').value, siegeRate: $('#l-siege').value, maxConnPerIp: $('#l-conn').value }); toast('Лимиты сохранены'); };
+    $('#b-add').onclick = async () => { await api('security', { action: 'ban', kind: $('#b-kind').value, value: $('#b-val').value, minutes: $('#b-min').value, reason: $('#b-reason').value }); render(); };
+    $('#main').querySelectorAll('[data-unban]').forEach(b => b.onclick = async () => { const [kind, value] = b.dataset.unban.split('|'); await api('security', { action: 'unban', kind, value }); render(); });
+    $('#main').querySelectorAll('[data-kickip]').forEach(b => b.onclick = async () => { const r = await api('security', { action: 'kickip', value: b.dataset.kickip }); toast('Оборвано: ' + r.n); });
+    $('#main').querySelectorAll('[data-banip]').forEach(b => b.onclick = async () => { if (!confirm('Забанить ' + b.dataset.banip + '?')) return; await api('security', { action: 'ban', kind: 'ip', value: b.dataset.banip, minutes: 0, reason: 'suspicious' }); render(); });
+    $('#ev-clear').onclick = async () => { await api('security', { action: 'clearEvents', days: 7 }); render(); };
+  },
+  announce() {
+    $('#a-send').onclick = async () => { const r = await api('announce', { title: $('#a-title').value, text: $('#a-text').value, level: $('#a-level').value, ring: $('#a-ring').value, hours: $('#a-hours').value }); toast(r.ok ? 'Доставлено онлайн: ' + r.n : 'Ошибка'); render(); };
+    $('#main').querySelectorAll('[data-aoff]').forEach(b => b.onclick = async () => { await api('announce', { action: 'off', id: b.dataset.aoff }); render(); });
+  },
+  flags() {
+    $('#f-set').onclick = async () => { const r = await api('flags', { key: $('#f-key').value, value: $('#f-val').value }); toast(r.ok ? 'Сохранено, доставлено: ' + r.n : r.error); render(); };
+    $('#main').querySelectorAll('[data-fdel]').forEach(b => b.onclick = async () => { await api('flags', { key: b.dataset.fdel, action: 'delete' }); render(); });
+  },
+};
+
+let es;
+function stream() {
+  es?.close();
+  es = new EventSource('/admin/api/stream');
+  const addFeed = s => { feed.unshift(`<span class="muted">${new Date().toLocaleTimeString('ru-RU')}</span> ${s}`); feed = feed.slice(0, 80); const f = $('#feed'); if (f) f.innerHTML = feed.map(x => `<div>${x}</div>`).join(''); };
+  es.addEventListener('online', e => { const d = JSON.parse(e.data); $('#onlineNow').textContent = d.n; if (d.id) addFeed(d.on ? `🟢 ${esc(d.model || d.id.slice(0, 8))} ${esc(d.v || '')} ${esc(d.country || '')}` : `⚪ ${esc(d.id.slice(0, 8))} отключился`); });
+  es.addEventListener('tick', e => { const d = JSON.parse(e.data); $('#onlineNow').textContent = d.n; $('#liveDot').className = 'dot'; });
+  es.addEventListener('event', e => { const d = JSON.parse(e.data); if (d.level !== 'info' || ['new_device', 'ban', 'admin_login', 'rollout', 'release_seen'].includes(d.kind)) addFeed(`<span class="tag ${esc(d.level)}">${esc(d.kind)}</span> ${esc(d.ip || '')} ${esc(d.detail).slice(0, 120)}`); });
+  es.addEventListener('update_result', e => { const d = JSON.parse(e.data); addFeed(`⬆ ${esc(d.from)} → ${esc(d.to)}: ${esc(d.result)}`); });
+  es.addEventListener('crash', e => { const d = JSON.parse(e.data); addFeed(`💥 вылет ${esc(d.v)} ${esc(d.model)}`); });
+  es.addEventListener('feedback', () => addFeed('✉ новое предложение'));
+  es.addEventListener('broadcast', e => addFeed('📣 разослано предложений: ' + JSON.parse(e.data).sent));
+  es.onerror = () => { $('#liveDot').className = 'dot off'; };
+}
+
+function showLogin() { $('#app').classList.add('hidden'); $('#login').classList.remove('hidden'); es?.close(); }
+async function start() {
+  try { await api('me'); } catch (e) { return; }
+  $('#login').classList.add('hidden'); $('#app').classList.remove('hidden');
+  renderNav(); render(); stream();
+  setInterval(() => { if (['overview', 'online'].includes(current) && !$('#modal').classList.contains('show') && document.visibilityState === 'visible') render(); }, 15000);
+}
+$('#loginBtn').onclick = async () => {
+  const r = await fetch('/admin/api/login', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ password: $('#pw').value, code: $('#otp').value }) });
+  if (r.ok) start(); else $('#loginErr').textContent = r.status === 429 ? 'Слишком много попыток, подождите 15 минут' : 'Неверный пароль или код';
+};
+$('#otp').onkeydown = e => { if (e.key === 'Enter') $('#loginBtn').click(); };
+$('#logoutBtn').onclick = async () => { await fetch('/admin/api/logout', { credentials: 'same-origin' }); showLogin(); };
+$('#refreshBtn').onclick = async () => { const r = await api('refresh', {}); toast('Обновлено, разослано: ' + r.sent); render(); };
+start();
+</script>
+</body>
+</html>
