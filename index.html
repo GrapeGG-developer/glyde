@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Glyde — обход блокировок для Android</title>
+<meta name="description" content="Glyde by GREENTUNE: одна кнопка, и YouTube, Telegram, Discord снова работают. Не VPN, без серверов, открытый код.">
+<meta property="og:title" content="Glyde — обход блокировок для Android">
+<meta property="og:description" content="Одна кнопка. Не VPN. Без серверов. Открытый код.">
+<meta property="og:image" content="icon.png">
+<link rel="icon" href="icon.png">
+<style>
+:root{--t:#19a7ce;--d:#06222e}
+*{box-sizing:border-box;margin:0}
+body{font-family:"Segoe UI",system-ui,-apple-system,Roboto,sans-serif;color:#eaf7fc;min-height:100vh;
+background:radial-gradient(1200px 700px at 50% -10%,#2fc6ef 0%,#0f6f91 35%,#06303f 70%,#041a23 100%);overflow-x:hidden}
+.b{position:fixed;border-radius:50%;pointer-events:none;background:radial-gradient(circle at 35% 30%,rgba(255,255,255,.85),rgba(255,255,255,.15) 30%,rgba(120,220,255,.08) 60%,rgba(255,255,255,.35) 100%);
+box-shadow:inset 0 0 8px rgba(255,255,255,.4);animation:up linear infinite;bottom:-80px}
+@keyframes up{to{transform:translateY(-120vh) translateX(30px)}}
+main{max-width:960px;margin:0 auto;padding:56px 20px 40px;position:relative}
+.hero{text-align:center}
+.hero img{width:148px;height:148px;filter:drop-shadow(0 18px 30px rgba(0,0,0,.35))}
+h1{font-size:64px;font-weight:300;letter-spacing:.5px;margin-top:8px;text-shadow:0 2px 12px rgba(0,0,0,.25)}
+.sub{font-size:20px;opacity:.9;margin-top:6px}
+.ver{display:inline-block;margin-top:14px;padding:6px 14px;border-radius:999px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.35);font-size:14px}
+.btn{display:inline-block;margin:26px 8px 0;padding:16px 34px;border-radius:14px;font-size:18px;font-weight:600;color:#fff;text-decoration:none;
+background:linear-gradient(#5fd8fb 0%,#1aa7d2 49%,#0b8cb8 50%,#0a76a0 100%);border:1px solid #06506b;box-shadow:inset 0 1px 0 rgba(255,255,255,.7),0 8px 22px rgba(0,0,0,.3)}
+.btn.alt{background:linear-gradient(rgba(255,255,255,.35),rgba(255,255,255,.12) 50%,rgba(255,255,255,.06) 51%,rgba(255,255,255,.14));border-color:rgba(255,255,255,.4)}
+.btn:hover{filter:brightness(1.08)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin-top:56px}
+.g{position:relative;padding:20px;border-radius:20px;background:linear-gradient(rgba(255,255,255,.22),rgba(255,255,255,.08));border:1px solid rgba(255,255,255,.35);
+box-shadow:inset 0 1px 0 rgba(255,255,255,.6),0 10px 30px rgba(0,0,0,.2);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);overflow:hidden}
+.g:before{content:"";position:absolute;left:0;right:0;top:0;height:46%;background:linear-gradient(rgba(255,255,255,.28),rgba(255,255,255,0));pointer-events:none}
+.g h3{font-size:18px;margin-bottom:6px}
+.g p{font-size:15px;opacity:.88;line-height:1.45}
+.flow{margin-top:56px;text-align:center}
+.flow h2{font-weight:300;font-size:34px;margin-bottom:16px}
+.row{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;font-size:16px}
+.node{padding:12px 18px;border-radius:14px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.35)}
+.arr{opacity:.8}
+footer{margin-top:60px;text-align:center;font-size:14px;opacity:.8;line-height:1.8}
+footer a{color:#bfeeff}
+@media(max-width:600px){h1{font-size:46px}.sub{font-size:17px}}
+</style>
+</head>
+<body>
+<main>
+<section class="hero">
+<img src="icon.png" alt="Glyde">
+<h1>Glyde</h1>
+<p class="sub">Одна кнопка — и YouTube, Telegram, Discord снова работают</p>
+<span class="ver" id="ver">Glyde 26.11 Andromeda</span><br>
+<a class="btn" id="dl" href="https://github.com/GrapeGG-developer/glyde/releases/latest">Скачать для Android</a>
+<a class="btn alt" href="https://github.com/GrapeGG-developer/glyde">Исходный код</a>
+</section>
+<section class="grid">
+<div class="g"><h3>Не VPN</h3><p>Серверов нет. Трафик идёт напрямую к сайтам, Glyde меняет только форму пакетов прямо на телефоне.</p></div>
+<div class="g"><h3>Ноль настроек</h3><p>Glyde сам подбирает рабочую стратегию под вашего провайдера и чинит её, если что-то поменялось.</p></div>
+<div class="g"><h3>Быстрый Telegram</h3><p>Встроенный прокси через WebSocket: картинки и видео грузятся без вечного «Соединение…».</p></div>
+<div class="g"><h3>Звонки и игры</h3><p>Обход для UDP и QUIC: голосовые каналы Discord и звонки работают лучше.</p></div>
+<div class="g"><h3>Для экспертов</h3><p>Все параметры ByeByeDPI, конструктор команды, свои стратегии, журнал движка.</p></div>
+<div class="g"><h3>Открытый код</h3><p>GPL-3.0, сборки в GitHub Actions и проверка подлинности APK прямо в приложении.</p></div>
+</section>
+<section class="flow">
+<h2>Как это работает</h2>
+<div class="row"><span class="node">Ваш телефон</span><span class="arr">→</span><span class="node">Glyde меняет форму пакетов</span><span class="arr">→</span><span class="node">Фильтр не узнаёт</span><span class="arr">→</span><span class="node">Сайт открывается</span></div>
+</section>
+<footer>
+Android 10+ · GREENTUNE · <a href="https://github.com/GrapeGG-developer/glyde/blob/main/PRIVACY.md">Конфиденциальность</a> · <a href="https://pay.cloudtips.ru/p/c9e9cb6d">Поддержать</a><br>
+Движок обхода основан на byedpi (MIT)
+</footer>
+</main>
+<script>
+for(let i=0;i<18;i++){const b=document.createElement('div');b.className='b';const s=8+Math.random()*46;b.style.width=b.style.height=s+'px';b.style.left=Math.random()*100+'vw';b.style.animationDuration=(10+Math.random()*16)+'s';b.style.animationDelay=(-Math.random()*20)+'s';b.style.opacity=.35+Math.random()*.5;document.body.appendChild(b)}
+fetch('update.json').then(r=>r.json()).then(u=>{if(u.display)document.getElementById('ver').textContent=u.display;const a=(u.assets||{});const k=Object.keys(a);const f=k.find(x=>x.includes('arm64-v8a'))||k.find(x=>x.includes('universal'));const url=f?a[f]:null;if(url)document.getElementById('dl').href=url}).catch(()=>{})
+</script>
+</body>
+</html>

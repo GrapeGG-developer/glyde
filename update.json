@@ -1,0 +1,29 @@
+{
+ "version": "26.11.0",
+ "code": 26110099,
+ "codename": "Andromeda",
+ "display": "Glyde 26.11 Andromeda",
+ "ring": "stable",
+ "changelog": "Glyde 26.11 Andromeda — новое имя, новый дизайн и Telegram без тормозов.\n\n- GT Unblock теперь называется Glyde. Новая иконка с прозрачной птицей, обновления приходят как обычно\n- Всё на одном экране: большая сфера и стеклянная шторка снизу. Если потянуть шторку вверх, сфера уменьшается и уезжает наверх, но никогда не закрывается\n- Ускорение Telegram: локальный прокси через WebSocket, подключается одной кнопкой\n- Обход для звонков и игр (UDP/QUIC), голосовые каналы Discord работают лучше\n- Живые пузыри разного размера: не слипаются, разлетаются от пальца, реагируют на наклон и быстрее поднимаются, когда обход включён\n- Лёгкий режим для слабых телефонов включается сам, плюс одна кнопка на главном экране\n- Новый собственный шрифт Glyde Sans: геометричный, с клиновидными засечками и волнами\n- Новая сфера: мягкий блик, тонкая подсветка края, аккуратная кнопка питания\n- Новые глянцевые Aero-иконки\n- Понятно, что Glyde — не VPN: подпись на главном экране, анимация «Как это работает» и первый запуск\n- Обновления по постоянному соединению: приходят мгновенно и не прерывают подбор, проверку и загрузку\n- Проверка подлинности сборки в разделе «О приложении»\n- Новая схема версий: Glyde ГГ.ММ и название созвездия",
+ "assets": {
+  "Glyde-26.11.0-arm64-v8a.apk": "https://github.com/GrapeGG-developer/glyde/releases/download/v26.11.0/Glyde-26.11.0-arm64-v8a.apk",
+  "Glyde-26.11.0-armeabi-v7a.apk": "https://github.com/GrapeGG-developer/glyde/releases/download/v26.11.0/Glyde-26.11.0-armeabi-v7a.apk",
+  "Glyde-26.11.0-universal.apk": "https://github.com/GrapeGG-developer/glyde/releases/download/v26.11.0/Glyde-26.11.0-universal.apk",
+  "Glyde-26.11.0-x86.apk": "https://github.com/GrapeGG-developer/glyde/releases/download/v26.11.0/Glyde-26.11.0-x86.apk",
+  "Glyde-26.11.0-x86_64.apk": "https://github.com/GrapeGG-developer/glyde/releases/download/v26.11.0/Glyde-26.11.0-x86_64.apk"
+ },
+ "sizes": {
+  "Glyde-26.11.0-arm64-v8a.apk": 4923013,
+  "Glyde-26.11.0-armeabi-v7a.apk": 4899503,
+  "Glyde-26.11.0-universal.apk": 5513761,
+  "Glyde-26.11.0-x86.apk": 4937919,
+  "Glyde-26.11.0-x86_64.apk": 4929756
+ },
+ "sums": {
+  "Glyde-26.11.0-arm64-v8a.apk": "7e436dd3458020bdf7c33c64604292c09074bf9d891bf8f17635c22104571801",
+  "Glyde-26.11.0-armeabi-v7a.apk": "8b0e51616d5eb86bd065aa8b6eefb86e022e675abdfdf4beea86b9859d7de6e3",
+  "Glyde-26.11.0-universal.apk": "7a6d53e4c0e8746e3967b0a34135a8f017c3f814ceedc44a1bbe0640baac8f38",
+  "Glyde-26.11.0-x86.apk": "e1ed05d85ad494830526476a0510c63bbfc328acb62fb7424adb2ab4c3532ee8",
+  "Glyde-26.11.0-x86_64.apk": "149d8b06c083733bf833fbdc6b675ab22067286eced86b7d967ed88d6055be14"
+ }
+}
