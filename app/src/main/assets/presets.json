@@ -22,7 +22,8 @@
    "ipset": [],
    "tests": [
     "https://www.youtube.com/",
-    "https://i.ytimg.com/vi/dQw4w9WgXcQ/maxresdefault.jpg"
+    "https://i.ytimg.com/vi/dQw4w9WgXcQ/maxresdefault.jpg",
+    "https://redirector.googlevideo.com/report_mapping?di=no"
    ]
   },
   {
