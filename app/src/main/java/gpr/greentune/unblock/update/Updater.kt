@@ -284,7 +284,7 @@ object Updater {
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
         val n = NotificationCompat.Builder(context, Notifications.CHANNEL_INFO)
-            .setSmallIcon(R.drawable.ic_stat_wave)
+            .setSmallIcon(R.drawable.ic_stat_glyde)
             .setContentTitle(context.getString(R.string.update_available_title, info.version))
             .setContentText(context.getString(R.string.update_available_text))
             .setAutoCancel(true)
@@ -483,7 +483,7 @@ object Updater {
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
         val n = NotificationCompat.Builder(context, Notifications.CHANNEL_INFO)
-            .setSmallIcon(R.drawable.ic_stat_wave)
+            .setSmallIcon(R.drawable.ic_stat_glyde)
             .setContentTitle(context.getString(R.string.update_ready))
             .setContentText(context.getString(R.string.update_ready_text, info.version))
             .setAutoCancel(true)

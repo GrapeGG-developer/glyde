@@ -65,7 +65,7 @@ import gpr.greentune.unblock.data.SettingsStore
 import gpr.greentune.unblock.data.TuneStore
 import gpr.greentune.unblock.ui.aero.Aero
 import gpr.greentune.unblock.ui.aero.AeroButton
-import gpr.greentune.unblock.ui.aero.Glasswave
+import gpr.greentune.unblock.ui.aero.GlydeSans
 import gpr.greentune.unblock.ui.aero.GlassPanel
 import gpr.greentune.unblock.ui.aero.StatusDot
 import gpr.greentune.unblock.ui.aero.glass
@@ -273,7 +273,7 @@ private fun SearchField(value: String, onChange: (String) -> Unit, hint: String)
             value = value,
             onValueChange = onChange,
             singleLine = true,
-            textStyle = TextStyle(fontFamily = Glasswave, fontSize = 14.sp, color = c.text),
+            textStyle = TextStyle(fontFamily = GlydeSans, fontSize = 14.sp, color = c.text),
             cursorBrush = SolidColor(c.accent),
             modifier = Modifier.fillMaxWidth()
         )
@@ -338,7 +338,7 @@ private fun CustomSitesPanel() {
                             addAll(Presets.parseHostlist(input))
                             input = ""
                         }),
-                        textStyle = TextStyle(fontFamily = Glasswave, fontSize = 14.sp, color = c.text),
+                        textStyle = TextStyle(fontFamily = GlydeSans, fontSize = 14.sp, color = c.text),
                         cursorBrush = SolidColor(c.accent),
                         modifier = Modifier.fillMaxWidth()
                     )

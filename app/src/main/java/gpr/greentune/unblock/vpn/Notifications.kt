@@ -41,7 +41,7 @@ object Notifications {
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
         return NotificationCompat.Builder(context, CHANNEL_ENGINE)
-            .setSmallIcon(R.drawable.ic_stat_wave)
+            .setSmallIcon(R.drawable.ic_stat_glyde)
             .setContentTitle(context.getString(R.string.app_name))
             .setContentText(text)
             .setOngoing(true)

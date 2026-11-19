@@ -11,3 +11,4 @@ captures/
 keystore.properties
 /secrets/
 /keystore/
+__pycache__/

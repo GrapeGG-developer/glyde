@@ -20,6 +20,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import gpr.greentune.unblock.ui.aero.Aero
 
+val LocalHideTitle = androidx.compose.runtime.staticCompositionLocalOf { false }
+
 @Composable
 fun ScreenColumn(title: String?, content: @Composable ColumnScope.() -> Unit) {
     val c = Aero.colors
@@ -31,7 +33,7 @@ fun ScreenColumn(title: String?, content: @Composable ColumnScope.() -> Unit) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Column(Modifier.widthIn(max = 640.dp).fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            if (title != null) {
+            if (title != null && !LocalHideTitle.current) {
                 Text(title, fontSize = 26.sp, fontWeight = FontWeight.Light, color = c.text, modifier = Modifier.padding(start = 4.dp, top = 4.dp))
             }
             content()

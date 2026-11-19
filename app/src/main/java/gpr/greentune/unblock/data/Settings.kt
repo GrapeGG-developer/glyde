@@ -37,6 +37,18 @@ data class AppSettings(
     val effects3d: Boolean = true,
     val notifiedVersion: String = "",
     val seenVersion: String = "",
+    val tgBridge: Boolean = true,
+    val tgLinked: Boolean = false,
+    val lite: String = "auto",
+    val autoRepair: Boolean = true,
+    val udpBypass: Boolean = true,
+    val proxyAuth: Boolean = false,
+    val proxyUser: String = "",
+    val proxyPass: String = "",
+    val hostsMode: String = "all",
+    val hostsList: String = "",
+    val explained: Boolean = false,
+    val profiles: Boolean = true,
 )
 
 object SettingsStore {
@@ -91,6 +103,18 @@ object SettingsStore {
             effects3d = sp.getBoolean("effects3d", d.effects3d),
             notifiedVersion = sp.getString("notifiedVersion", "") ?: "",
             seenVersion = sp.getString("seenVersion", "") ?: "",
+            tgBridge = sp.getBoolean("tgBridge", d.tgBridge),
+            tgLinked = sp.getBoolean("tgLinked", d.tgLinked),
+            lite = sp.getString("lite", d.lite) ?: d.lite,
+            autoRepair = sp.getBoolean("autoRepair", d.autoRepair),
+            udpBypass = sp.getBoolean("udpBypass", d.udpBypass),
+            proxyAuth = sp.getBoolean("proxyAuth", d.proxyAuth),
+            proxyUser = sp.getString("proxyUser", "") ?: "",
+            proxyPass = sp.getString("proxyPass", "") ?: "",
+            hostsMode = sp.getString("hostsMode", d.hostsMode) ?: d.hostsMode,
+            hostsList = sp.getString("hostsList", "") ?: "",
+            explained = sp.getBoolean("explained", d.explained),
+            profiles = sp.getBoolean("profiles", d.profiles),
         )
     }
 
@@ -126,6 +150,18 @@ object SettingsStore {
             .putString("customDomains", s.customDomains.joinToString("\n"))
             .putBoolean("tilt", s.tilt)
             .putBoolean("effects3d", s.effects3d)
+            .putBoolean("tgBridge", s.tgBridge)
+            .putBoolean("tgLinked", s.tgLinked)
+            .putString("lite", s.lite)
+            .putBoolean("autoRepair", s.autoRepair)
+            .putBoolean("udpBypass", s.udpBypass)
+            .putBoolean("proxyAuth", s.proxyAuth)
+            .putString("proxyUser", s.proxyUser)
+            .putString("proxyPass", s.proxyPass)
+            .putString("hostsMode", s.hostsMode)
+            .putString("hostsList", s.hostsList)
+            .putBoolean("explained", s.explained)
+            .putBoolean("profiles", s.profiles)
             .putString("notifiedVersion", s.notifiedVersion)
             .putString("seenVersion", s.seenVersion)
             .apply()

@@ -4,7 +4,7 @@ CAP = 700
 XH = 515
 ASC = 750
 DESC = -215
-SQ = 2.3
+SQ = 2.0
 
 
 class G:
@@ -33,6 +33,20 @@ def arc(cx, cy, rx, ry, a0, a1, n=2.0, step=2.5):
         x = cx + rx * math.copysign(abs(c) ** e, c)
         y = cy + ry * math.copysign(abs(s) ** e, s)
         pts.append((x, y))
+    return pts
+
+
+def wave(p0, p1, amp=16.0, n=24):
+    (x0, y0), (x1, y1) = p0, p1
+    dx, dy = x1 - x0, y1 - y0
+    ln = math.hypot(dx, dy) or 1.0
+    nx, ny = -dy / ln, dx / ln
+    amp = amp * min(1.0, ln / 520.0)
+    pts = []
+    for i in range(n + 1):
+        t = i / n
+        o = amp * math.sin(2 * math.pi * t) * math.sin(math.pi * t)
+        pts.append((x0 + dx * t + nx * o, y0 + dy * t + ny * o))
     return pts
 
 
@@ -126,7 +140,9 @@ def U_F(g, m, W, H):
 def U_G(g, m, W, H):
     t, b = m.top(H), m.b
     cy = (t + b) / 2
-    g.P(chain(arc(W / 2, cy, W / 2, (t - b) / 2, 42, 360, SQ), [(W, m.mid(H, 0.42)), (W * 0.55, m.mid(H, 0.42))]))
+    bar = m.mid(H, 0.44)
+    g.P(chain(arc(W / 2, cy, W / 2, (t - b) / 2, 40, 360, SQ), [(W, bar), (W * 0.56, bar)]))
+    g.L((W, bar), (W, b - (t - b) * 0.10))
 
 
 def U_H(g, m, W, H):
@@ -150,9 +166,9 @@ def U_K(g, m, W, H):
     t, b = m.top(H), m.b
     y0 = m.mid(H, 0.34)
     g.L((0, b), (0, t))
-    g.L((W * 0.95, t), (0, y0))
+    g.P(wave((W * 0.95, t), (0, y0), 14))
     s = 0.36
-    g.L((W * 0.95 * s, y0 + (t - y0) * s), (W, b))
+    g.P(wave((W * 0.95 * s, y0 + (t - y0) * s), (W, b), -14))
 
 
 def U_L(g, m, W, H):
@@ -253,17 +269,17 @@ def C_GE(g, m, W, H):
 def C_DE(g, m, W, H, desc):
     t, b = m.top(H), m.b
     g.L((0, desc), (0, b), (W, b), (W, desc))
-    g.L((W * 0.10, b), (W * 0.30, t), (W * 0.84, t), (W * 0.84, b))
+    g.P(chain(wave((W * 0.10, b), (W * 0.30, t), 10), [(W * 0.84, t), (W * 0.84, b)]))
 
 
 def C_ZHE(g, m, W, H):
     t, b = m.top(H), m.b
     mid = m.mid(H, 0.5)
     g.L((W / 2, b), (W / 2, t))
-    g.L((W * 0.04, t), (W / 2 - W * 0.02, mid))
-    g.L((W * 0.96, t), (W / 2 + W * 0.02, mid))
-    g.L((0, b), (W * 0.36, mid + (t - b) * 0.06))
-    g.L((W, b), (W * 0.64, mid + (t - b) * 0.06))
+    g.P(wave((W * 0.04, t), (W / 2 - W * 0.02, mid), -12))
+    g.P(wave((W * 0.96, t), (W / 2 + W * 0.02, mid), 12))
+    g.P(wave((0, b), (W * 0.36, mid + (t - b) * 0.06), 12))
+    g.P(wave((W, b), (W * 0.64, mid + (t - b) * 0.06), -12))
 
 
 def C_ZE(g, m, W, H):
@@ -374,4 +390,4 @@ def C_YA(g, m, W, H):
     t, b = m.top(H), m.b
     mid = m.mid(H, 0.44)
     g.P(chain([(W, b), (W, t)], side_bowl_left(W, W * 0.04, t, mid, (t - mid) / 2)))
-    g.L((W * 0.52, mid), (0, b))
+    g.P(wave((W * 0.52, mid), (0, b), 14))

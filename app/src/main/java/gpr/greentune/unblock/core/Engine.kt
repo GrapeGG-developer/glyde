@@ -32,6 +32,8 @@ object Engine {
         if (status == EngineStatus.On && _status.value != EngineStatus.On) _since.value = System.currentTimeMillis()
         _status.value = status
         if (status != EngineStatus.On) gpr.greentune.unblock.net.Live.socksPort = 0
+        if (status == EngineStatus.On && SettingsStore.value.tgBridge) gpr.greentune.unblock.tg.TgBridge.start(context)
+        if (status == EngineStatus.Off || status is EngineStatus.Error) gpr.greentune.unblock.tg.TgBridge.stop()
         val st = when (status) {
             EngineStatus.Off -> "off"
             EngineStatus.Starting -> "starting"
@@ -47,6 +49,13 @@ object Engine {
         SettingsStore.value.mode == "vpn" && VpnService.prepare(context) != null
 
     fun currentArgs(): List<String> {
+        val base = baseArgs()
+        val s = SettingsStore.value
+        if (!s.udpBypass || (s.expert && s.customArgsEnabled) || base.isEmpty()) return base
+        return listOf("-Ku", "-a6", "-An") + base
+    }
+
+    private fun baseArgs(): List<String> {
         val s = SettingsStore.value
         val presets = Presets.active(Presets.data.value, s)
         if (s.expert && s.customArgsEnabled && s.customArgs.isNotBlank()) {

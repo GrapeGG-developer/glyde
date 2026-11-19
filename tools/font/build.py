@@ -6,7 +6,9 @@ from fontTools.fontBuilder import FontBuilder
 from fontTools.pens.ttGlyphPen import TTGlyphPen
 from glyphs import *
 
-FAMILY = "Glasswave"
+FAMILY = "Glyde Sans"
+LOWER_W = 1.16
+ROUND = set("ocedqagOCGQSsоеэсюяфЭСОФЮЯЗзб0123456789")
 SB = 46
 
 
@@ -297,14 +299,47 @@ def punct(g, m, ch):
 PUNCT = list(".,:;!?-_()[]/\\|+=<>*\"'%#@&") + ['\u2013', '\u2014', '\u00ab', '\u00bb', '\u2026', '\u00b7', '\u00b0', '\u20bd', '\u2116', '\u2022', '\u2191', '\u2193', '\u2192', '\u2190']
 
 
+def wedge(p, q, h):
+    dx, dy = p[0] - q[0], p[1] - q[1]
+    ln = math.hypot(dx, dy) or 1.0
+    ux, uy = dx / ln, dy / ln
+    nx, ny = -uy, ux
+    fl = h * 1.3
+    back = min(h * 2.8, ln * 0.9)
+    bx, by = p[0] - ux * back, p[1] - uy * back
+    return Polygon([
+        (bx + nx * h, by + ny * h),
+        (p[0] + nx * fl, p[1] + ny * fl),
+        (p[0] - nx * fl, p[1] - ny * fl),
+        (bx - nx * h, by - ny * h),
+    ])
+
+
 def outline(g):
     geoms = []
     h = g.h
-    for st in g.strokes:
+    lines = []
+    for idx, st in enumerate(g.strokes):
         if len(st) == 1:
             geoms.append(Point(st[0]).buffer(h, 24))
         else:
-            geoms.append(LineString(st).buffer(h, quad_segs=12, cap_style='round', join_style='round'))
+            ls = LineString(st)
+            lines.append((idx, ls))
+            geoms.append(ls.buffer(h, quad_segs=12, cap_style='flat', join_style='round'))
+    for idx, st in enumerate(g.strokes):
+        if len(st) < 2:
+            continue
+        if math.hypot(st[0][0] - st[-1][0], st[0][1] - st[-1][1]) < 1.0:
+            continue
+        for p, q in ((st[0], st[1]), (st[-1], st[-2])):
+            if math.hypot(p[0] - q[0], p[1] - q[1]) < 1e-6:
+                continue
+            pt = Point(p)
+            joined = any(l.distance(pt) < h * 1.2 for k, l in lines if k != idx)
+            if joined:
+                geoms.append(pt.buffer(h, 16))
+            elif len(st) <= 4:
+                geoms.append(wedge(p, q, h))
     for (x, y, r) in g.dots:
         geoms.append(Point(x, y).buffer(r, 24))
     if not geoms:
@@ -346,13 +381,20 @@ def build(weight_name, weight, h, out):
         W = fn(g)
         if W is None:
             return
+        low = (len(name) == 1 and name.islower()) or (name.startswith('uni04') and (0x0430 <= int(name[3:], 16) <= 0x044F or int(name[3:], 16) == 0x0451))
+        if low:
+            g.strokes = [[(x * LOWER_W, y) for x, y in st] for st in g.strokes]
+            g.dots = [(x * LOWER_W, y, r) for x, y, r in g.dots]
+            W = W * LOWER_W
+        ch = chr(cp) if cp is not None else ''
+        sb = (SB * 0.78 if ch in ROUND else SB) * (1.18 if ch.isupper() else 1.0)
         geom = outline(g)
         pen = TTGlyphPen(None)
         if geom is not None and not geom.is_empty:
             minx = geom.bounds[0]
-            dx = SB - minx
+            dx = sb - minx
             draw(pen, geom, dx)
-            width = int(round(geom.bounds[2] - geom.bounds[0] + 2 * SB))
+            width = int(round(geom.bounds[2] - geom.bounds[0] + 2 * sb))
         else:
             width = int(W)
         glyphs[name] = pen.glyph()
@@ -410,13 +452,13 @@ def build(weight_name, weight, h, out):
     fb.setupNameTable({
         'familyName': FAMILY,
         'styleName': style,
-        'uniqueFontIdentifier': f"GREENTUNE:{FAMILY}-{style}:2.0",
+        'uniqueFontIdentifier': f"GREENTUNE:{FAMILY}-{style}:3.0",
         'fullName': f"{FAMILY} {style}",
-        'psName': f"{FAMILY}-{style.replace(' ', '')}",
-        'version': "Version 2.000",
+        'psName': f"{FAMILY.replace(' ', '')}-{style.replace(' ', '')}",
+        'version': "Version 3.000",
         'manufacturer': "GREENTUNE",
         'designer': "GREENTUNE",
-        'description': "Glasswave is a rounded geometric typeface generated for GT Unblock.",
+        'description': "Glyde Sans is a geometric typeface with wedge terminals made for Glyde.",
         'licenseDescription': "This Font Software is licensed under the SIL Open Font License, Version 1.1.",
         'licenseInfoURL': "https://openfontlicense.org",
         'copyright': "Copyright 2026 GREENTUNE",
@@ -428,7 +470,7 @@ def build(weight_name, weight, h, out):
         ulUnicodeRange1=(1 << 0) | (1 << 1) | (1 << 9), ulCodePageRange1=(1 << 0) | (1 << 2),
     )
     fb.setupPost()
-    fb.setupHead(unitsPerEm=1000, fontRevision=2.0, macStyle=(1 if style == "Bold" else 0))
+    fb.setupHead(unitsPerEm=1000, fontRevision=3.0, macStyle=(1 if style == "Bold" else 0))
     fb.save(out)
     return len(order)
 
@@ -436,7 +478,7 @@ def build(weight_name, weight, h, out):
 if __name__ == '__main__':
     out = sys.argv[1]
     os.makedirs(out, exist_ok=True)
-    for name, wt, h, fn in (("Light", 300, 29, "glasswave_light.ttf"), ("Regular", 400, 39, "glasswave_regular.ttf"),
-                            ("SemiBold", 600, 51, "glasswave_semibold.ttf"), ("Bold", 700, 61, "glasswave_bold.ttf")):
+    for name, wt, h, fn in (("Light", 300, 27, "glyde_sans_light.ttf"), ("Regular", 400, 36, "glyde_sans_regular.ttf"),
+                            ("SemiBold", 600, 47, "glyde_sans_semibold.ttf"), ("Bold", 700, 57, "glyde_sans_bold.ttf")):
         n = build(name, wt, h, os.path.join(out, fn))
         print(fn, n, os.path.getsize(os.path.join(out, fn)))

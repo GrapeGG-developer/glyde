@@ -36,37 +36,20 @@ import gpr.greentune.unblock.ui.aero.GlassPanel
 fun OnboardingScreen(onDone: () -> Unit) {
     val c = Aero.colors
     Column(
-        Modifier.fillMaxSize().statusBarsPadding().navigationBarsPadding().verticalScroll(rememberScrollState()).padding(20.dp),
+        Modifier.fillMaxSize().statusBarsPadding().navigationBarsPadding().padding(vertical = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Image(painterResource(R.drawable.logo_glass), null, Modifier.size(150.dp))
-        Text(stringResource(R.string.app_name), fontSize = 32.sp, fontWeight = FontWeight.Light, color = c.text)
+        Image(painterResource(R.drawable.logo_glass), null, Modifier.size(112.dp))
         Spacer(Modifier.height(6.dp))
         Badge("by GREENTUNE", color = Aero.colors.accent)
-        Spacer(Modifier.height(18.dp))
-        GlassPanel(Modifier.widthIn(max = 520.dp).fillMaxWidth()) {
-            Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
-                Point(R.drawable.ic_menu_home, R.string.onb_1_title, R.string.onb_1_text)
-                Point(R.drawable.ic_menu_tune, R.string.onb_2_title, R.string.onb_2_text)
-                Point(R.drawable.ic_menu_settings, R.string.onb_3_title, R.string.onb_3_text)
-                Text(stringResource(R.string.onb_telemetry), fontSize = 11.5.sp, color = c.subText, textAlign = TextAlign.Start)
+        Spacer(Modifier.height(14.dp))
+        GlassPanel(Modifier.widthIn(max = 520.dp).fillMaxWidth().padding(horizontal = 16.dp), padding = 4.dp) {
+            Column(Modifier.padding(vertical = 16.dp)) {
+                OnboardingContent(onDone)
+                Spacer(Modifier.height(8.dp))
+                Text(stringResource(R.string.onb_telemetry), fontSize = 11.sp, color = c.subText, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp))
             }
-        }
-        Spacer(Modifier.height(18.dp))
-        AeroButton(stringResource(R.string.onb_start), primary = true, onClick = onDone, modifier = Modifier.widthIn(max = 520.dp).fillMaxWidth())
-    }
-}
-
-@Composable
-private fun Point(icon: Int, title: Int, text: Int) {
-    val c = Aero.colors
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        Image(painterResource(icon), null, Modifier.size(44.dp))
-        Spacer(Modifier.width(12.dp))
-        Column {
-            Text(stringResource(title), fontSize = 15.5.sp, fontWeight = FontWeight.SemiBold, color = c.text)
-            Text(stringResource(text), fontSize = 13.sp, color = c.subText)
         }
     }
 }

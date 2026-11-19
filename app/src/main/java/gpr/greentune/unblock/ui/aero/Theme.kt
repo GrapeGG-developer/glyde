@@ -88,12 +88,12 @@ fun aeroColors(dark: Boolean, tint: Color, intensity: Float): AeroColors {
 
 val LocalAero = staticCompositionLocalOf { aeroColors(false, Color(0xFF19A7CE), 0.6f) }
 
-val Glasswave = FontFamily(
-    Font(R.font.glasswave_light, FontWeight.Light),
-    Font(R.font.glasswave_regular, FontWeight.Normal),
-    Font(R.font.glasswave_regular, FontWeight.Medium),
-    Font(R.font.glasswave_semibold, FontWeight.SemiBold),
-    Font(R.font.glasswave_bold, FontWeight.Bold),
+val GlydeSans = FontFamily(
+    Font(R.font.glyde_sans_light, FontWeight.Light),
+    Font(R.font.glyde_sans_regular, FontWeight.Normal),
+    Font(R.font.glyde_sans_regular, FontWeight.Medium),
+    Font(R.font.glyde_sans_semibold, FontWeight.SemiBold),
+    Font(R.font.glyde_sans_bold, FontWeight.Bold),
 )
 
 object Aero {
@@ -114,7 +114,7 @@ fun AeroTheme(theme: String, tint: Color, intensity: Float, content: @Composable
     } else {
         lightColorScheme(primary = c.accentDark, onPrimary = Color.White, surface = Color(0xFFF3FBFE), background = Color(0xFFE6F7FD), onSurface = c.text, onBackground = c.text)
     }
-    val base = TextStyle(fontFamily = Glasswave, color = c.text)
+    val base = TextStyle(fontFamily = GlydeSans, color = c.text)
     val typography = MaterialTheme.typography.copy(
         bodyLarge = base.copy(fontSize = 16.sp),
         bodyMedium = base.copy(fontSize = 14.sp),

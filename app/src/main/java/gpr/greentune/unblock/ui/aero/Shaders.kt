@@ -17,8 +17,9 @@ float powerIcon(float2 q, float s) {
     float r = length(q);
     float ring = abs(r - 0.30 * s) - 0.045 * s;
     float ang = atan(q.x, q.y);
-    float gap = abs(ang) < 0.62 ? 1.0 : 0.0;
-    float dRing = mix(ring, 1.0, gap);
+    float2 e = float2(sin(0.62), cos(0.62)) * 0.30 * s;
+    float dCap = length(float2(abs(q.x), q.y) - e) - 0.045 * s;
+    float dRing = abs(ang) < 0.62 ? dCap : ring;
     float2 b = q - float2(0.0, 0.17 * s);
     float2 dd = abs(b) - float2(0.0, 0.17 * s);
     float dLine = length(max(dd, 0.0)) + min(max(dd.x, dd.y), 0.0) - 0.045 * s;
@@ -107,22 +108,29 @@ half4 main(float2 fc) {
     float icon = smoothstep(0.012, -0.012, pd);
     float iconGlow = exp(-max(pd, 0.0) * 22.0) * energy;
     float3 iconCol = mix(float3(1.0), mix(float3(1.0), tc, 0.25), energy);
+    float airL = (1.0 - liquid) * (1.0 - dark);
+    iconCol = mix(iconCol, mix(float3(0.62, 0.70, 0.76), tc * 0.85, energy), airL);
+    iconGlow *= 1.0 - 0.7 * airL;
     col = mix(col, iconCol, icon * mix(0.55, 0.95, energy));
     col += tc * iconGlow * 0.6;
 
-    float3 H = normalize(L + V);
-    float spec = pow(max(dot(n, H), 0.0), 90.0) * 1.4;
-    float2 hp = p - float2(-tilt.x * 0.18, -0.48 + tilt.y * 0.12);
-    float gloss = smoothstep(1.1, 0.1, length(hp * float2(1.05, 2.0))) * smoothstep(-0.95, -0.2, p.y + tilt.y * 0.1);
-    float glossBand = smoothstep(0.74, 0.71, length(hp * float2(1.05, 2.0)));
-    float bottomGlow = smoothstep(0.2, 1.0, p.y) * smoothstep(0.55, 1.0, d) * (0.4 + 0.6 * energy);
-    float rimDark = smoothstep(0.80, 1.0, d);
+    float2 gc = float2(-tilt.x * 0.10, -0.50 + tilt.y * 0.06);
+    float2 ge = (p - gc) / float2(0.74, 0.44);
+    float gd = length(ge);
+    float gEdge = smoothstep(1.0, 1.0 - aa * 4.0, gd);
+    float gFall = clamp((0.30 - (p.y - gc.y)) / 0.74, 0.0, 1.0);
+    float gloss = gEdge * pow(gFall, 1.3) * mix(0.90, 0.42, dark);
+    float2 sp2 = p - float2(0.42 - tilt.x * 0.15, 0.58 - tilt.y * 0.10);
+    float sparkle = smoothstep(0.16, 0.0, length(sp2 * float2(1.6, 1.0))) * mix(0.35, 0.22, dark) * (0.4 + 0.6 * energy);
+    float bottomGlow = smoothstep(0.15, 1.0, p.y) * smoothstep(0.45, 1.0, d) * (0.35 + 0.65 * energy);
+    float rimDark = smoothstep(0.78, 1.0, d);
+    float rimLight = smoothstep(0.90, 0.985, d) * smoothstep(1.0, 0.985, d);
 
-    col = mix(col, col * mix(0.55, 0.35, dark) + tc * 0.12, rimDark * 0.65);
-    col += tc * bottomGlow * 0.85;
-    col += float3(1.0) * fres * 0.18;
-    col = mix(col, float3(1.0), gloss * glossBand * 0.78);
-    col += float3(1.0) * spec;
+    col = mix(col, col * mix(0.62, 0.40, dark) + tc * 0.10, rimDark * 0.6);
+    col += tc * bottomGlow * 0.75;
+    col += float3(1.0) * fres * 0.12;
+    col += float3(1.0) * rimLight * mix(0.16, 0.14, dark);
+    col = mix(col, float3(1.0), gloss);
 
     float edge = smoothstep(1.0, 1.0 - aa, d);
     float a = edge;
@@ -139,8 +147,6 @@ uniform float2 tilt;
 uniform half4 tint;
 uniform float dark;
 uniform float energy;
-
-float hash(float n) { return fract(sin(n) * 43758.5453); }
 
 half4 main(float2 fc) {
     float2 uv = fc / size;
@@ -184,23 +190,6 @@ half4 main(float2 fc) {
     rays *= 0.5 + 0.5 * sin(ang * 7.0 - t * 0.21 + 1.3);
     rays *= smoothstep(1.0, 0.0, y) * smoothstep(0.0, 0.25, 1.0 - abs(rp.x) * 1.2);
     col += mix(float3(1.0), tc + 0.2, dark) * rays * mix(0.16, 0.07, dark);
-
-    float b = 0.0;
-    for (int i = 0; i < 16; i++) {
-        float fi = float(i);
-        float depth = 0.35 + 0.65 * hash(fi * 1.7);
-        float speed = 0.015 + 0.03 * depth;
-        float ph = fract(hash(fi * 9.1) + t * speed);
-        float2 bp = float2(hash(fi * 4.3) * asp + 0.03 * sin(t * 0.8 + fi * 2.0), 1.1 - ph * 1.25);
-        bp += tilt * 0.06 * depth;
-        float r = (0.008 + 0.022 * depth);
-        float2 dv = float2(uv.x * asp, uv.y) - bp;
-        float dd = length(dv);
-        float ring = smoothstep(r, r * 0.82, dd) * (1.0 - smoothstep(r * 0.82, r * 0.35, dd) * 0.85);
-        float hl = smoothstep(r * 0.4, 0.0, length(dv + float2(r * 0.35, r * 0.35)));
-        b += (ring * 0.55 + hl * 0.9) * depth;
-    }
-    col += mix(float3(1.0), float3(0.75, 0.95, 1.0), dark) * b * mix(0.55, 0.35, dark);
 
     float vig = smoothstep(1.25, 0.35, length((uv - 0.5) * float2(1.0, 1.15)));
     col *= mix(1.0, mix(0.82, 0.55, dark) + 0.45 * vig, 1.0);
