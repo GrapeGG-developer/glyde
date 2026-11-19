@@ -148,9 +148,9 @@ async function releases() {
   });
 }
 
-async function presets() {
-  return cached('presets', 30 * 60 * 1000, async () => {
-    const r = await fetch(`https://raw.githubusercontent.com/${REPO}/main/presets/presets.json`, { headers: { 'User-Agent': 'gt-unblock-api' } });
+async function presets(file) {
+  return cached('presets:' + file, 30 * 60 * 1000, async () => {
+    const r = await fetch(`https://raw.githubusercontent.com/${REPO}/main/presets/${file}`, { headers: { 'User-Agent': 'gt-unblock-api' } });
     if (!r.ok) throw new Error('presets ' + r.status);
     return r.text();
   });
@@ -162,8 +162,8 @@ async function handle(req, res) {
 
   if (p === '/' || p === '/health') return send(res, 200, { ok: true, service: 'gt-unblock-api' });
 
-  if (req.method === 'GET' && p === '/v1/presets') {
-    const text = await presets();
+  if (req.method === 'GET' && (p === '/v1/presets' || p === '/v2/presets')) {
+    const text = await presets(p === '/v2/presets' ? 'presets.json' : 'presets_v1.json');
     return send(res, 200, text, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'public, max-age=600' });
   }
 

@@ -45,8 +45,8 @@ fun Superbar(items: List<BarItem>, selected: String, onSelect: (String) -> Unit,
         modifier
             .fillMaxWidth()
             .drawBehind {
-                val top = if (c.dark) Color(0xFF16231B).copy(alpha = 0.86f) else Color(0xFFDCEFE3).copy(alpha = 0.80f)
-                val bottom = if (c.dark) Color(0xFF07100B).copy(alpha = 0.92f) else Color(0xFFB9DCC6).copy(alpha = 0.88f)
+                val top = if (c.dark) Color(0xFF0D2230).copy(alpha = 0.82f) else Color(0xFFE2F4FB).copy(alpha = 0.78f)
+                val bottom = if (c.dark) Color(0xFF020A10).copy(alpha = 0.90f) else Color(0xFFB4DDEE).copy(alpha = 0.86f)
                 drawRect(Brush.verticalGradient(listOf(top, bottom)))
                 drawRect(c.glassTint)
                 drawRect(Brush.verticalGradient(listOf(Color.White.copy(alpha = if (c.dark) 0.10f else 0.45f), Color.Transparent), 0f, size.height * 0.5f), size = Size(size.width, size.height * 0.5f))
@@ -76,12 +76,12 @@ private fun SuperbarButton(item: BarItem, selected: Boolean, onClick: () -> Unit
     val pr by animateFloatAsState(if (pressed) 1f else 0f, tween(150), label = "pr")
     Column(
         Modifier
-            .size(width = 72.dp, height = 56.dp)
-            .clip(RoundedCornerShape(6.dp))
+            .size(width = 66.dp, height = 56.dp)
+            .clip(RoundedCornerShape(18.dp))
             .drawBehind {
                 val a = maxOf(sel, pr * 0.7f)
                 if (a > 0f) {
-                    val r = CornerRadius(6.dp.toPx())
+                    val r = CornerRadius(18.dp.toPx())
                     drawRoundRect(Brush.verticalGradient(listOf(Color.White.copy(alpha = 0.40f * a), Color.White.copy(alpha = 0.10f * a))), cornerRadius = r)
                     drawRoundRect(
                         Brush.radialGradient(listOf(c.tint.copy(alpha = 0.65f * a), Color.Transparent), Offset(size.width / 2, size.height), size.width * 0.7f),

@@ -1,6 +1,9 @@
 package gpr.greentune.unblock.core
 
 import android.content.Context
+import gpr.greentune.unblock.R
+import gpr.greentune.unblock.data.AppSettings
+import gpr.greentune.unblock.data.SettingsStore
 import gpr.greentune.unblock.net.Backend
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -15,7 +18,11 @@ data class Service(
     val domains: List<String>,
     val ipset: List<String>,
     val tests: List<String>,
+    val category: String = "other",
+    val default: Boolean = false,
 )
+
+data class Category(val id: String, val ru: String, val en: String)
 
 data class Strategy(val id: String, val args: String)
 
@@ -25,18 +32,56 @@ data class PresetData(
     val services: List<Service>,
     val generalTests: List<String>,
     val strategies: List<Strategy>,
+    val categories: List<Category> = emptyList(),
 ) {
     fun service(id: String): Service? = services.firstOrNull { it.id == id }
     fun strategy(id: String?): Strategy? = if (id == null) null else strategies.firstOrNull { it.id == id }
 }
 
 object Presets {
+    const val CUSTOM = "custom"
+    var customName: String = "Custom"
+    private val DOMAIN = Regex("^([a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?\\.)+[a-z][a-z0-9-]{0,61}[a-z0-9]$")
     private val _data = MutableStateFlow(PresetData(0, "google.com", emptyList(), emptyList(), emptyList()))
     val data: StateFlow<PresetData> get() = _data
 
     private fun cacheFile(context: Context) = File(context.filesDir, "presets.json")
 
+    fun enabledIds(p: PresetData, s: AppSettings): Set<String> =
+        if (s.servicesSet) s.services else p.services.filter { it.default }.map { it.id }.toSet()
+
+    fun custom(s: AppSettings): Service? {
+        val doms = s.customDomains.filter { it.isNotBlank() }
+        if (doms.isEmpty()) return null
+        return Service(CUSTOM, customName, 0xFF19A7CEL, doms, emptyList(), doms.take(3).map { "https://$it/" }, CUSTOM, true)
+    }
+
+    fun active(p: PresetData = _data.value, s: AppSettings = SettingsStore.value): PresetData {
+        val ids = enabledIds(p, s)
+        return p.copy(services = p.services.filter { it.id in ids } + listOfNotNull(custom(s)))
+    }
+
+    fun normalizeDomain(raw: String): String? {
+        var d = raw.trim().lowercase()
+        if (d.isEmpty() || d.startsWith("#")) return null
+        d = d.substringAfter("://").substringBefore('/').substringBefore(':').substringBefore('?')
+        d = d.removePrefix("*.").removePrefix(".").removePrefix("www.").trimEnd('.')
+        if (d.split(' ', '\t').size > 1) d = d.split(' ', '\t').last()
+        d = try {
+            java.net.IDN.toASCII(d, java.net.IDN.ALLOW_UNASSIGNED).lowercase()
+        } catch (_: Exception) {
+            return null
+        }
+        if (!DOMAIN.matches(d)) return null
+        if (d == "localhost" || d.endsWith(".local")) return null
+        return d
+    }
+
+    fun parseHostlist(text: String): List<String> =
+        text.split('\n', '\r', ',', ';').mapNotNull { normalizeDomain(it.substringBefore('#')) }.distinct()
+
     fun init(context: Context) {
+        customName = context.getString(R.string.custom_sites)
         val bundled = try {
             parse(context.assets.open("presets.json").bufferedReader().use { it.readText() })
         } catch (_: Exception) {
@@ -79,6 +124,8 @@ object Presets {
                     domains = s.optJSONArray("domains").strings(),
                     ipset = s.optJSONArray("ipset").strings(),
                     tests = s.optJSONArray("tests").strings(),
+                    category = s.optString("cat", "other"),
+                    default = s.optBoolean("def", false),
                 )
             }
         }
@@ -94,6 +141,12 @@ object Presets {
             services = services,
             generalTests = o.optJSONArray("generalTests").strings(),
             strategies = strategies,
+            categories = o.optJSONArray("categories").let { arr ->
+                if (arr == null) emptyList() else (0 until arr.length()).map { i ->
+                    val c = arr.getJSONObject(i)
+                    Category(c.getString("id"), c.optString("ru", c.getString("id")), c.optString("en", c.getString("id")))
+                }
+            },
         )
     }
 

@@ -51,7 +51,7 @@ fun AeroWallpaper(modifier: Modifier = Modifier) {
             val a = if (c.dark) 0.30f else 0.38f
             val blobs = listOf(
                 Triple(Offset(w * (0.18f + 0.06f * cos(phase)), h * (0.20f + 0.04f * sin(phase))), w * 0.55f, c.tint.copy(alpha = a)),
-                Triple(Offset(w * (0.85f + 0.05f * sin(phase * 2)), h * (0.42f + 0.05f * cos(phase))), w * 0.50f, Color(0xFF39C6D8).copy(alpha = a * 0.7f)),
+                Triple(Offset(w * (0.85f + 0.05f * sin(phase * 2)), h * (0.42f + 0.05f * cos(phase))), w * 0.50f, Color(0xFF7FE3F5).copy(alpha = a * 0.8f)),
                 Triple(Offset(w * (0.35f + 0.07f * sin(phase)), h * (0.86f + 0.03f * cos(phase * 2))), w * 0.65f, c.tint.copy(alpha = a * 0.8f)),
             )
             for ((center, r, col) in blobs) {
@@ -78,27 +78,55 @@ fun AeroWallpaper(modifier: Modifier = Modifier) {
 
 fun Modifier.glass(
     colors: AeroColors,
-    corner: Dp = 14.dp,
+    corner: Dp = 20.dp,
     tinted: Boolean = true,
     glossFraction: Float = 0.48f,
 ): Modifier = this.drawWithContent {
-    val r = corner.toPx()
+    val r = minOf(corner.toPx(), size.height / 2, size.width / 2)
     val cr = CornerRadius(r, r)
     val one = 1.dp.toPx()
+    val tilt = Motion.tilt.value
+    drawRoundRect(
+        Color.Black.copy(alpha = if (colors.dark) 0.30f else 0.10f),
+        topLeft = Offset(-tilt.x * 3.dp.toPx(), 3.dp.toPx() - tilt.y * 2.dp.toPx()),
+        size = size,
+        cornerRadius = cr
+    )
     drawRoundRect(Brush.verticalGradient(listOf(colors.glassTop, colors.glassBottom)), cornerRadius = cr)
     if (tinted) drawRoundRect(colors.glassTint, cornerRadius = cr)
-    clipRect(bottom = size.height * glossFraction) {
+    val gh = size.height * glossFraction
+    clipRect(bottom = gh) {
         drawRoundRect(
-            Brush.verticalGradient(listOf(colors.gloss, colors.gloss.copy(alpha = colors.gloss.alpha * 0.25f)), 0f, size.height * glossFraction),
-            topLeft = Offset(one, one),
-            size = Size(size.width - 2 * one, size.height - 2 * one),
+            Brush.verticalGradient(listOf(colors.gloss, colors.gloss.copy(alpha = colors.gloss.alpha * 0.12f)), 0f, gh),
+            topLeft = Offset(one * 1.5f, one * 1.5f),
+            size = Size(size.width - 3 * one, size.height - 3 * one),
             cornerRadius = CornerRadius(r - one, r - one)
         )
     }
+    val sx = size.width * (0.5f - 0.9f * tilt.x)
+    val band = size.width * 0.55f
+    drawRoundRect(
+        Brush.linearGradient(
+            0f to Color.Transparent,
+            0.5f to Color.White.copy(alpha = if (colors.dark) 0.07f else 0.22f),
+            1f to Color.Transparent,
+            start = Offset(sx - band, 0f),
+            end = Offset(sx + band * 0.4f, size.height)
+        ),
+        cornerRadius = cr
+    )
+    drawRoundRect(
+        Brush.radialGradient(
+            listOf(colors.tint.copy(alpha = if (colors.dark) 0.16f else 0.12f), Color.Transparent),
+            Offset(size.width * (0.5f + 0.3f * tilt.x), size.height * 1.05f),
+            maxOf(size.width, size.height) * 0.7f
+        ),
+        cornerRadius = cr
+    )
     drawContent()
     drawRoundRect(colors.borderOuter, cornerRadius = cr, style = Stroke(one))
     drawRoundRect(
-        colors.borderInner,
+        Brush.verticalGradient(listOf(colors.borderInner, colors.borderInner.copy(alpha = colors.borderInner.alpha * 0.25f), colors.borderInner.copy(alpha = colors.borderInner.alpha * 0.6f))),
         topLeft = Offset(one, one),
         size = Size(size.width - 2 * one, size.height - 2 * one),
         cornerRadius = CornerRadius(r - one, r - one),
@@ -109,7 +137,7 @@ fun Modifier.glass(
 @Composable
 fun GlassPanel(
     modifier: Modifier = Modifier,
-    corner: Dp = 14.dp,
+    corner: Dp = 22.dp,
     padding: Dp = 16.dp,
     content: @Composable BoxScope.() -> Unit,
 ) {

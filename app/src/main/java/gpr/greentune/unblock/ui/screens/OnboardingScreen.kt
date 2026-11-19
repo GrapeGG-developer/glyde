@@ -43,7 +43,7 @@ fun OnboardingScreen(onDone: () -> Unit) {
         Image(painterResource(R.drawable.logo_glass), null, Modifier.size(150.dp))
         Text(stringResource(R.string.app_name), fontSize = 32.sp, fontWeight = FontWeight.Light, color = c.text)
         Spacer(Modifier.height(6.dp))
-        Badge(stringResource(R.string.unofficial_port))
+        Badge("by GREENTUNE", color = Aero.colors.accent)
         Spacer(Modifier.height(18.dp))
         GlassPanel(Modifier.widthIn(max = 520.dp).fillMaxWidth()) {
             Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {

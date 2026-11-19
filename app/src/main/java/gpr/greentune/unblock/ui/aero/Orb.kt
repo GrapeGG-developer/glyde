@@ -57,7 +57,7 @@ fun Orb(state: OrbState, onClick: () -> Unit, description: String, modifier: Mod
     val onA by animateFloatAsState(if (state == OrbState.On) 1f else 0f, tween(250), label = "on")
     val glowColor = when (state) {
         OrbState.Error -> c.danger
-        else -> Color(0xFF3BE07A)
+        else -> c.tint
     }
     Box(modifier.size(size * 1.32f), contentAlignment = Alignment.Center) {
         Canvas(Modifier.fillMaxSize()) {

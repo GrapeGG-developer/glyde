@@ -35,24 +35,29 @@ object Prober {
 
     private val dnsCache = ConcurrentHashMap<String, Pair<Long, List<InetAddress>>>()
 
-    private val resolver: Dns by lazy {
+    private val doh: DnsOverHttps by lazy {
         val p = DnsProviders.byId(SettingsStore.value.dns)
-        val doh = DnsOverHttps.Builder()
+        DnsOverHttps.Builder()
             .client(base.newBuilder().connectTimeout(4, TimeUnit.SECONDS).readTimeout(5, TimeUnit.SECONDS).build())
             .url(p.url.toHttpUrl())
             .bootstrapDnsHosts(p.ips.map { InetAddress.getByName(it) })
             .includeIPv6(false)
             .resolvePrivateAddresses(false)
             .build()
+    }
+
+    fun resolveDoh(host: String): List<InetAddress>? = try {
+        doh.lookup(host).filter { it.address.size == 4 }.ifEmpty { null }
+    } catch (_: Exception) {
+        null
+    }
+
+    private val resolver: Dns by lazy {
         object : Dns {
             override fun lookup(hostname: String): List<InetAddress> {
                 val now = SystemClock.elapsedRealtime()
                 dnsCache[hostname]?.let { if (now - it.first < 300_000) return it.second }
-                val list = try {
-                    doh.lookup(hostname).filter { it.address.size == 4 }.ifEmpty { null }
-                } catch (_: Exception) {
-                    null
-                } ?: Dns.SYSTEM.lookup(hostname).filter { it.address.size == 4 }.ifEmpty { Dns.SYSTEM.lookup(hostname) }
+                val list = resolveDoh(hostname) ?: Dns.SYSTEM.lookup(hostname).filter { it.address.size == 4 }.ifEmpty { Dns.SYSTEM.lookup(hostname) }
                 dnsCache[hostname] = now to list
                 return list
             }

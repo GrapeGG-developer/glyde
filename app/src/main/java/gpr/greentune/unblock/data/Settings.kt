@@ -9,7 +9,7 @@ data class AppSettings(
     val mode: String = "vpn",
     val proxyPort: Int = 1080,
     val theme: String = "system",
-    val tint: Long = 0xFF27B35AL,
+    val tint: Long = 0xFF19A7CEL,
     val tintIntensity: Float = 0.6f,
     val sound: Boolean = true,
     val haptics: Boolean = true,
@@ -30,6 +30,11 @@ data class AppSettings(
     val lastUpdateCheck: Long = 0L,
     val lastPing: Long = 0L,
     val skippedVersion: String = "",
+    val servicesSet: Boolean = false,
+    val services: Set<String> = emptySet(),
+    val customDomains: List<String> = emptyList(),
+    val tilt: Boolean = true,
+    val effects3d: Boolean = true,
 )
 
 object SettingsStore {
@@ -56,7 +61,7 @@ object SettingsStore {
             mode = sp.getString("mode", d.mode) ?: d.mode,
             proxyPort = sp.getInt("proxyPort", d.proxyPort),
             theme = sp.getString("theme", d.theme) ?: d.theme,
-            tint = sp.getLong("tint", d.tint),
+            tint = sp.getLong("tint", d.tint).let { if (it == 0xFF27B35AL && !sp.getBoolean("v2", false)) d.tint else it },
             tintIntensity = sp.getFloat("tintIntensity", d.tintIntensity),
             sound = sp.getBoolean("sound", d.sound),
             haptics = sp.getBoolean("haptics", d.haptics),
@@ -77,6 +82,11 @@ object SettingsStore {
             lastUpdateCheck = sp.getLong("lastUpdateCheck", d.lastUpdateCheck),
             lastPing = sp.getLong("lastPing", d.lastPing),
             skippedVersion = sp.getString("skippedVersion", d.skippedVersion) ?: d.skippedVersion,
+            servicesSet = sp.getBoolean("servicesSet", d.servicesSet),
+            services = sp.getStringSet("services", d.services)?.toSet() ?: d.services,
+            customDomains = (sp.getString("customDomains", "") ?: "").split('\n').filter { it.isNotBlank() },
+            tilt = sp.getBoolean("tilt", d.tilt),
+            effects3d = sp.getBoolean("effects3d", d.effects3d),
         )
     }
 
@@ -86,6 +96,7 @@ object SettingsStore {
             .putInt("proxyPort", s.proxyPort)
             .putString("theme", s.theme)
             .putLong("tint", s.tint)
+            .putBoolean("v2", true)
             .putFloat("tintIntensity", s.tintIntensity)
             .putBoolean("sound", s.sound)
             .putBoolean("haptics", s.haptics)
@@ -106,6 +117,11 @@ object SettingsStore {
             .putLong("lastUpdateCheck", s.lastUpdateCheck)
             .putLong("lastPing", s.lastPing)
             .putString("skippedVersion", s.skippedVersion)
+            .putBoolean("servicesSet", s.servicesSet)
+            .putStringSet("services", s.services)
+            .putString("customDomains", s.customDomains.joinToString("\n"))
+            .putBoolean("tilt", s.tilt)
+            .putBoolean("effects3d", s.effects3d)
             .apply()
     }
 }

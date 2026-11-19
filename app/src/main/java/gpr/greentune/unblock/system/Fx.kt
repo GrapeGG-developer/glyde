@@ -6,7 +6,7 @@ import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.media.AudioAttributes
-import android.media.MediaPlayer
+import android.media.SoundPool
 import android.os.SystemClock
 import android.view.HapticFeedbackConstants
 import android.view.View
@@ -14,19 +14,57 @@ import gpr.greentune.unblock.R
 import kotlin.math.sqrt
 
 object Fx {
-    fun chime(context: Context, on: Boolean) {
-        try {
-            val mp = MediaPlayer.create(
-                context, if (on) R.raw.chime_on else R.raw.chime_off,
+    private var pool: SoundPool? = null
+    private val ids = HashMap<Int, Int>()
+    private val ready = HashSet<Int>()
+    private val pending = HashMap<Int, Float>()
+
+    @Synchronized
+    fun preload(context: Context) {
+        if (pool != null) return
+        val p = SoundPool.Builder()
+            .setMaxStreams(3)
+            .setAudioAttributes(
                 AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_ASSISTANCE_SONIFICATION)
-                    .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION).build(),
-                0
-            ) ?: return
-            mp.setOnCompletionListener { it.release() }
-            mp.start()
+                    .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION).build()
+            )
+            .build()
+        p.setOnLoadCompleteListener { sp, sampleId, status ->
+            synchronized(this) {
+                if (status == 0) {
+                    ready.add(sampleId)
+                    pending.remove(sampleId)?.let { v -> sp.play(sampleId, v, v, 1, 0, 1f) }
+                }
+            }
+        }
+        val app = context.applicationContext
+        for (res in listOf(R.raw.chime_on, R.raw.chime_off, R.raw.tune_done, R.raw.error, R.raw.tap)) {
+            try {
+                ids[res] = p.load(app, res, 1)
+            } catch (_: Exception) {
+            }
+        }
+        pool = p
+    }
+
+    @Synchronized
+    private fun play(context: Context, res: Int, volume: Float = 1f) {
+        try {
+            preload(context)
+            val p = pool ?: return
+            val id = ids[res] ?: return
+            if (id in ready) p.play(id, volume, volume, 1, 0, 1f) else pending[id] = volume
         } catch (_: Exception) {
         }
     }
+
+    fun chime(context: Context, on: Boolean) = play(context, if (on) R.raw.chime_on else R.raw.chime_off)
+
+    fun done(context: Context) = play(context, R.raw.tune_done, 0.85f)
+
+    fun error(context: Context) = play(context, R.raw.error, 0.8f)
+
+    fun tap(context: Context) = play(context, R.raw.tap, 0.55f)
 
     fun haptic(view: View, strong: Boolean = false) {
         view.performHapticFeedback(

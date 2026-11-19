@@ -53,13 +53,14 @@ import gpr.greentune.unblock.ui.aero.SectionTitle
 import gpr.greentune.unblock.ui.aero.Segmented
 import gpr.greentune.unblock.ui.aero.SettingRow
 import gpr.greentune.unblock.ui.aero.ToggleRow
+import gpr.greentune.unblock.ui.aero.AquaFx
 import gpr.greentune.unblock.ui.aero.glass
 import gpr.greentune.unblock.update.UpdateState
 import gpr.greentune.unblock.update.Updater
 import kotlinx.coroutines.launch
 
 val tintPalette = listOf(
-    0xFF27B35AL, 0xFF1E9BD7L, 0xFF3D6FE0L, 0xFF7B4FD6L, 0xFFC2459BL,
+    0xFF19A7CEL, 0xFF27B35AL, 0xFF3D6FE0L, 0xFF7B4FD6L, 0xFFC2459BL,
     0xFFE04848L, 0xFFE98A2BL, 0xFFD8B21FL, 0xFF14A89AL, 0xFF6B7B86L,
 )
 
@@ -109,7 +110,7 @@ fun SettingsScreen() {
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                             textStyle = TextStyle(color = c.text, fontSize = 15.sp),
                             cursorBrush = SolidColor(c.accent),
-                            modifier = Modifier.size(90.dp, 40.dp).glass(c, 6.dp, glossFraction = 0.3f).padding(10.dp)
+                            modifier = Modifier.size(90.dp, 40.dp).glass(c, 12.dp, glossFraction = 0.3f).padding(10.dp)
                         )
                     }
                 }
@@ -154,6 +155,14 @@ fun SettingsScreen() {
                 }
                 Text(stringResource(R.string.set_tint_intensity), fontSize = 15.sp, color = c.text)
                 AeroSlider(s.tintIntensity, { v -> SettingsStore.update { it.copy(tintIntensity = v) } })
+                ToggleRow(
+                    stringResource(R.string.set_effects),
+                    stringResource(if (AquaFx.supported) R.string.set_effects_sub else R.string.set_effects_old),
+                    s.effects3d && AquaFx.supported,
+                    { v -> change(false) { it.copy(effects3d = v) } },
+                    enabled = AquaFx.supported
+                )
+                ToggleRow(stringResource(R.string.set_tilt), stringResource(R.string.set_tilt_sub), s.tilt, { v -> change(false) { it.copy(tilt = v) } })
                 ToggleRow(stringResource(R.string.set_sound), null, s.sound, { v -> change(false) { it.copy(sound = v) } })
                 ToggleRow(stringResource(R.string.set_haptics), null, s.haptics, { v -> change(false) { it.copy(haptics = v) } })
                 ToggleRow(stringResource(R.string.set_shake), stringResource(R.string.set_shake_sub), s.shake, { v -> change(false) { it.copy(shake = v) } })

@@ -1,57 +1,50 @@
 {
- "version": 1,
- "updated": "2026-11-19",
+ "version": 2,
+ "updated": "2026-11-17",
  "fakeSni": "google.com",
+ "categories": [
+  {
+   "id": "msg",
+   "ru": "Мессенджеры",
+   "en": "Messengers"
+  },
+  {
+   "id": "social",
+   "ru": "Соцсети",
+   "en": "Social networks"
+  },
+  {
+   "id": "video",
+   "ru": "Видео и стримы",
+   "en": "Video and streams"
+  },
+  {
+   "id": "music",
+   "ru": "Музыка и авторы",
+   "en": "Music and creators"
+  },
+  {
+   "id": "games",
+   "ru": "Игры",
+   "en": "Games"
+  },
+  {
+   "id": "work",
+   "ru": "Работа и разработка",
+   "en": "Work and dev"
+  },
+  {
+   "id": "news",
+   "ru": "Новости и медиа",
+   "en": "News and media"
+  },
+  {
+   "id": "files",
+   "ru": "Торренты и архивы",
+   "en": "Torrents and archives"
+  }
+ ],
  "services": [
-  {
-   "id": "youtube",
-   "name": "YouTube",
-   "color": "#FF0033",
-   "domains": [
-    "youtube.com",
-    "youtu.be",
-    "ytimg.com",
-    "ggpht.com",
-    "googlevideo.com",
-    "youtubei.googleapis.com",
-    "youtube-nocookie.com",
-    "yt.be",
-    "youtubekids.com",
-    "jnn-pa.googleapis.com"
-   ],
-   "ipset": [],
-   "tests": [
-    "https://www.youtube.com/",
-    "https://i.ytimg.com/vi/dQw4w9WgXcQ/maxresdefault.jpg",
-    "https://redirector.googlevideo.com/report_mapping?di=no"
-   ]
-  },
-  {
-   "id": "discord",
-   "name": "Discord",
-   "color": "#5865F2",
-   "domains": [
-    "discord.com",
-    "discord.gg",
-    "discordapp.com",
-    "discordapp.net",
-    "discord.media",
-    "discordcdn.com",
-    "discord.co",
-    "discord.app",
-    "discord.dev",
-    "discord.gift",
-    "discord.new",
-    "dis.gd",
-    "discordstatus.com",
-    "discord-attachments-uploads-prd.storage.googleapis.com"
-   ],
-   "ipset": [],
-   "tests": [
-    "https://discord.com/",
-    "https://cdn.discordapp.com/embed/avatars/0.png"
-   ]
-  },
   {
    "id": "telegram",
    "name": "Telegram",
@@ -80,7 +73,37 @@
    "tests": [
     "https://web.telegram.org/",
     "https://telegram.org/"
-   ]
+   ],
+   "cat": "msg",
+   "def": true
+  },
+  {
+   "id": "discord",
+   "name": "Discord",
+   "color": "#5865F2",
+   "domains": [
+    "discord.com",
+    "discord.gg",
+    "discordapp.com",
+    "discordapp.net",
+    "discord.media",
+    "discordcdn.com",
+    "discord.co",
+    "discord.app",
+    "discord.dev",
+    "discord.gift",
+    "discord.new",
+    "dis.gd",
+    "discordstatus.com",
+    "discord-attachments-uploads-prd.storage.googleapis.com"
+   ],
+   "ipset": [],
+   "tests": [
+    "https://discord.com/",
+    "https://cdn.discordapp.com/embed/avatars/0.png"
+   ],
+   "cat": "msg",
+   "def": true
   },
   {
    "id": "whatsapp",
@@ -89,11 +112,89 @@
    "domains": [
     "whatsapp.com",
     "whatsapp.net",
-    "wa.me"
+    "wa.me",
+    "whatsapp.biz",
+    "wl.co"
    ],
    "ipset": [],
    "tests": [
     "https://web.whatsapp.com/"
+   ],
+   "cat": "msg",
+   "def": true
+  },
+  {
+   "id": "signal",
+   "name": "Signal",
+   "color": "#3A76F0",
+   "domains": [
+    "signal.org",
+    "whispersystems.org",
+    "signal.art",
+    "signal.me",
+    "updates.signal.org",
+    "cdn.signal.org",
+    "chat.signal.org",
+    "storage.signal.org"
+   ],
+   "ipset": [],
+   "tests": [
+    "https://signal.org/"
+   ],
+   "cat": "msg",
+   "def": true
+  },
+  {
+   "id": "element",
+   "name": "Element (Matrix)",
+   "color": "#0DBD8B",
+   "cat": "msg",
+   "def": false,
+   "domains": [
+    "matrix.org",
+    "element.io",
+    "app.element.io",
+    "matrix-client.matrix.org"
+   ],
+   "ipset": [],
+   "tests": [
+    "https://element.io/",
+    "https://matrix.org/"
+   ]
+  },
+  {
+   "id": "line",
+   "name": "LINE",
+   "color": "#06C755",
+   "cat": "msg",
+   "def": false,
+   "domains": [
+    "line.me",
+    "line-apps.com",
+    "line-scdn.net",
+    "naver.jp"
+   ],
+   "ipset": [],
+   "tests": [
+    "https://line.me/"
+   ]
+  },
+  {
+   "id": "viber",
+   "name": "Viber",
+   "color": "#7360F2",
+   "cat": "msg",
+   "def": false,
+   "domains": [
+    "viber.com",
+    "cdn.viber.com",
+    "dl-media.viber.com",
+    "media.cdn.viber.com",
+    "invite.viber.com"
+   ],
+   "ipset": [],
+   "tests": [
+    "https://www.viber.com/"
    ]
   },
   {
@@ -109,7 +210,28 @@
    "ipset": [],
    "tests": [
     "https://www.instagram.com/"
-   ]
+   ],
+   "cat": "social",
+   "def": true
+  },
+  {
+   "id": "x",
+   "name": "X (Twitter)",
+   "color": "#14171A",
+   "domains": [
+    "x.com",
+    "twitter.com",
+    "twimg.com",
+    "t.co",
+    "pscp.tv",
+    "periscope.tv"
+   ],
+   "ipset": [],
+   "tests": [
+    "https://x.com/"
+   ],
+   "cat": "social",
+   "def": true
   },
   {
    "id": "facebook",
@@ -122,26 +244,487 @@
     "facebook.net",
     "messenger.com",
     "fb.me",
-    "fbsbx.com"
+    "fbsbx.com",
+    "m.me"
    ],
    "ipset": [],
    "tests": [
     "https://www.facebook.com/"
-   ]
+   ],
+   "cat": "social",
+   "def": true
   },
   {
-   "id": "x",
-   "name": "X (Twitter)",
-   "color": "#14171A",
+   "id": "linkedin",
+   "name": "LinkedIn",
+   "color": "#0A66C2",
    "domains": [
-    "x.com",
-    "twitter.com",
-    "twimg.com",
-    "t.co"
+    "linkedin.com",
+    "licdn.com",
+    "lnkd.in"
    ],
    "ipset": [],
    "tests": [
-    "https://x.com/"
+    "https://www.linkedin.com/"
+   ],
+   "cat": "social",
+   "def": false
+  },
+  {
+   "id": "threads",
+   "name": "Threads",
+   "color": "#101010",
+   "cat": "social",
+   "def": false,
+   "domains": [
+    "threads.net",
+    "threads.com"
+   ],
+   "ipset": [],
+   "tests": [
+    "https://www.threads.net/"
+   ]
+  },
+  {
+   "id": "snapchat",
+   "name": "Snapchat",
+   "color": "#FFFC00",
+   "cat": "social",
+   "def": false,
+   "domains": [
+    "snapchat.com",
+    "snap.com",
+    "sc-cdn.net",
+    "snapkit.com",
+    "snap-dev.net",
+    "feelinsonice-hrd.appspot.com"
+   ],
+   "ipset": [],
+   "tests": [
+    "https://www.snapchat.com/"
+   ]
+  },
+  {
+   "id": "tiktok",
+   "name": "TikTok",
+   "color": "#FE2C55",
+   "cat": "social",
+   "def": false,
+   "domains": [
+    "tiktok.com",
+    "tiktokv.com",
+    "tiktokcdn.com",
+    "tiktokcdn-eu.com",
+    "ttwstatic.com",
+    "byteoversea.com",
+    "ibytedtos.com",
+    "muscdn.com"
+   ],
+   "ipset": [],
+   "tests": [
+    "https://www.tiktok.com/"
+   ]
+  },
+  {
+   "id": "reddit",
+   "name": "Reddit",
+   "color": "#FF4500",
+   "cat": "social",
+   "def": false,
+   "domains": [
+    "reddit.com",
+    "redd.it",
+    "redditmedia.com",
+    "redditstatic.com",
+    "reddituploads.com",
+    "redditinc.com"
+   ],
+   "ipset": [],
+   "tests": [
+    "https://www.reddit.com/",
+    "https://www.redditstatic.com/shreddit/assets/favicon/192x192.png"
+   ]
+  },
+  {
+   "id": "tumblr",
+   "name": "Tumblr",
+   "color": "#36465D",
+   "cat": "social",
+   "def": false,
+   "domains": [
+    "tumblr.com",
+    "tmblr.co"
+   ],
+   "ipset": [],
+   "tests": [
+    "https://www.tumblr.com/"
+   ]
+  },
+  {
+   "id": "bluesky",
+   "name": "Bluesky",
+   "color": "#1185FE",
+   "cat": "social",
+   "def": false,
+   "domains": [
+    "bsky.app",
+    "bsky.social",
+    "bsky.network",
+    "blueskyweb.xyz",
+    "bsky.chat"
+   ],
+   "ipset": [],
+   "tests": [
+    "https://bsky.app/"
+   ]
+  },
+  {
+   "id": "youtube",
+   "name": "YouTube",
+   "color": "#FF0033",
+   "domains": [
+    "youtube.com",
+    "youtu.be",
+    "ytimg.com",
+    "ggpht.com",
+    "googlevideo.com",
+    "youtubei.googleapis.com",
+    "youtube-nocookie.com",
+    "yt.be",
+    "youtubekids.com",
+    "jnn-pa.googleapis.com"
+   ],
+   "ipset": [],
+   "tests": [
+    "https://www.youtube.com/",
+    "https://i.ytimg.com/vi/dQw4w9WgXcQ/maxresdefault.jpg",
+    "https://redirector.googlevideo.com/report_mapping?di=no"
+   ],
+   "cat": "video",
+   "def": true
+  },
+  {
+   "id": "twitch",
+   "name": "Twitch",
+   "color": "#9146FF",
+   "cat": "video",
+   "def": true,
+   "domains": [
+    "twitch.tv",
+    "ttvnw.net",
+    "jtvnw.net",
+    "twitchcdn.net",
+    "twitchsvc.net",
+    "ext-twitch.tv",
+    "live-video.net"
+   ],
+   "ipset": [],
+   "tests": [
+    "https://www.twitch.tv/",
+    "https://static-cdn.jtvnw.net/ttv-static/404_preview-320x180.jpg"
+   ]
+  },
+  {
+   "id": "vimeo",
+   "name": "Vimeo",
+   "color": "#1AB7EA",
+   "cat": "video",
+   "def": false,
+   "domains": [
+    "vimeo.com",
+    "vimeocdn.com",
+    "player.vimeo.com",
+    "vimeo.dev"
+   ],
+   "ipset": [],
+   "tests": [
+    "https://vimeo.com/"
+   ]
+  },
+  {
+   "id": "dailymotion",
+   "name": "Dailymotion",
+   "color": "#0D0D0D",
+   "cat": "video",
+   "def": false,
+   "domains": [
+    "dailymotion.com",
+    "dmcdn.net",
+    "dm-event.net",
+    "dmxleo.com"
+   ],
+   "ipset": [],
+   "tests": [
+    "https://www.dailymotion.com/"
+   ]
+  },
+  {
+   "id": "kick",
+   "name": "Kick",
+   "color": "#53FC18",
+   "cat": "video",
+   "def": false,
+   "domains": [
+    "kick.com",
+    "kick.video",
+    "files.kick.com"
+   ],
+   "ipset": [],
+   "tests": [
+    "https://kick.com/"
+   ]
+  },
+  {
+   "id": "soundcloud",
+   "name": "SoundCloud",
+   "color": "#FF5500",
+   "domains": [
+    "soundcloud.com",
+    "sndcdn.com",
+    "soundcloud.app.goo.gl",
+    "soundcloud.cloud",
+    "snd.sc"
+   ],
+   "ipset": [],
+   "tests": [
+    "https://soundcloud.com/"
+   ],
+   "cat": "music",
+   "def": true
+  },
+  {
+   "id": "patreon",
+   "name": "Patreon",
+   "color": "#FF424D",
+   "cat": "music",
+   "def": false,
+   "domains": [
+    "patreon.com",
+    "patreonusercontent.com",
+    "patreon.net"
+   ],
+   "ipset": [],
+   "tests": [
+    "https://www.patreon.com/"
+   ]
+  },
+  {
+   "id": "medium",
+   "name": "Medium",
+   "color": "#000000",
+   "cat": "music",
+   "def": false,
+   "domains": [
+    "medium.com",
+    "miro.medium.com",
+    "cdn-static-1.medium.com",
+    "glitch.medium.com"
+   ],
+   "ipset": [],
+   "tests": [
+    "https://medium.com/"
+   ]
+  },
+  {
+   "id": "substack",
+   "name": "Substack",
+   "color": "#FF6719",
+   "cat": "music",
+   "def": false,
+   "domains": [
+    "substack.com",
+    "substackcdn.com",
+    "substack-post-media.s3.amazonaws.com"
+   ],
+   "ipset": [],
+   "tests": [
+    "https://substack.com/"
+   ]
+  },
+  {
+   "id": "roblox",
+   "name": "Roblox",
+   "color": "#E2231A",
+   "cat": "games",
+   "def": false,
+   "domains": [
+    "roblox.com",
+    "rbxcdn.com",
+    "rbx.com",
+    "robloxlabs.com",
+    "roblox.cn",
+    "rbxtrk.com"
+   ],
+   "ipset": [],
+   "tests": [
+    "https://www.roblox.com/"
+   ]
+  },
+  {
+   "id": "steamcommunity",
+   "name": "Steam Community",
+   "color": "#1B2838",
+   "cat": "games",
+   "def": false,
+   "domains": [
+    "steamcommunity.com",
+    "steamusercontent.com",
+    "steamuserimages-a.akamaihd.net"
+   ],
+   "ipset": [],
+   "tests": [
+    "https://steamcommunity.com/"
+   ]
+  },
+  {
+   "id": "proton",
+   "name": "Proton",
+   "color": "#6D4AFF",
+   "domains": [
+    "proton.me",
+    "protonmail.com",
+    "pm.me",
+    "protonvpn.com",
+    "protonmail.ch",
+    "proton.ch"
+   ],
+   "ipset": [],
+   "tests": [
+    "https://proton.me/"
+   ],
+   "cat": "work",
+   "def": false
+  },
+  {
+   "id": "github",
+   "name": "GitHub",
+   "color": "#24292F",
+   "cat": "work",
+   "def": false,
+   "domains": [
+    "github.com",
+    "githubusercontent.com",
+    "githubassets.com",
+    "github.io",
+    "githubcopilot.com",
+    "ghcr.io",
+    "github.dev"
+   ],
+   "ipset": [],
+   "tests": [
+    "https://github.com/",
+    "https://raw.githubusercontent.com/github/gitignore/main/Android.gitignore"
+   ]
+  },
+  {
+   "id": "meet",
+   "name": "Google Meet",
+   "color": "#00897B",
+   "cat": "work",
+   "def": false,
+   "domains": [
+    "meet.google.com",
+    "meet.googleapis.com",
+    "hangouts.google.com",
+    "clients6.google.com"
+   ],
+   "ipset": [],
+   "tests": [
+    "https://meet.google.com/"
+   ]
+  },
+  {
+   "id": "bbc",
+   "name": "BBC",
+   "color": "#BB1919",
+   "cat": "news",
+   "def": false,
+   "domains": [
+    "bbc.com",
+    "bbc.co.uk",
+    "bbci.co.uk",
+    "bbcrussian.com"
+   ],
+   "ipset": [],
+   "tests": [
+    "https://www.bbc.com/russian"
+   ]
+  },
+  {
+   "id": "dw",
+   "name": "DW",
+   "color": "#05B2FC",
+   "cat": "news",
+   "def": false,
+   "domains": [
+    "dw.com",
+    "dw-world.de",
+    "dw-world.com"
+   ],
+   "ipset": [],
+   "tests": [
+    "https://www.dw.com/ru/"
+   ]
+  },
+  {
+   "id": "meduza",
+   "name": "Meduza",
+   "color": "#B88B58",
+   "cat": "news",
+   "def": false,
+   "domains": [
+    "meduza.io"
+   ],
+   "ipset": [],
+   "tests": [
+    "https://meduza.io/"
+   ]
+  },
+  {
+   "id": "svoboda",
+   "name": "Радио Свобода",
+   "color": "#E2001A",
+   "cat": "news",
+   "def": false,
+   "domains": [
+    "svoboda.org",
+    "rferl.org",
+    "currenttime.tv",
+    "rfe.rferl.org",
+    "gdb.rferl.org"
+   ],
+   "ipset": [],
+   "tests": [
+    "https://www.svoboda.org/"
+   ]
+  },
+  {
+   "id": "euronews",
+   "name": "Euronews",
+   "color": "#0B3B7A",
+   "cat": "news",
+   "def": false,
+   "domains": [
+    "euronews.com",
+    "static.euronews.com"
+   ],
+   "ipset": [],
+   "tests": [
+    "https://ru.euronews.com/"
+   ]
+  },
+  {
+   "id": "novayagazeta",
+   "name": "Новая газета Европа",
+   "color": "#1A1A1A",
+   "cat": "news",
+   "def": false,
+   "domains": [
+    "novayagazeta.eu"
+   ],
+   "ipset": [],
+   "tests": [
+    "https://novayagazeta.eu/"
    ]
   },
   {
@@ -157,62 +740,75 @@
    "ipset": [],
    "tests": [
     "https://rutracker.org/forum/index.php"
-   ]
+   ],
+   "cat": "files",
+   "def": true
   },
   {
-   "id": "linkedin",
-   "name": "LinkedIn",
-   "color": "#0A66C2",
+   "id": "nnmclub",
+   "name": "NNM-Club",
+   "color": "#3D6E3A",
+   "cat": "files",
+   "def": false,
    "domains": [
-    "linkedin.com",
-    "licdn.com"
+    "nnmclub.to",
+    "nnm-club.me",
+    "nnm-club.ws"
    ],
    "ipset": [],
    "tests": [
-    "https://www.linkedin.com/"
+    "https://nnmclub.to/"
    ]
   },
   {
-   "id": "soundcloud",
-   "name": "SoundCloud",
-   "color": "#FF5500",
+   "id": "rutor",
+   "name": "Rutor",
+   "color": "#2E5E8C",
+   "cat": "files",
+   "def": false,
    "domains": [
-    "soundcloud.com",
-    "sndcdn.com",
-    "soundcloud.app.goo.gl"
+    "rutor.info",
+    "rutor.is",
+    "rutor.org"
    ],
    "ipset": [],
    "tests": [
-    "https://soundcloud.com/"
+    "https://rutor.info/"
    ]
   },
   {
-   "id": "proton",
-   "name": "Proton",
-   "color": "#6D4AFF",
+   "id": "archive",
+   "name": "Internet Archive",
+   "color": "#6B6B6B",
+   "cat": "files",
+   "def": false,
    "domains": [
-    "proton.me",
-    "protonmail.com",
-    "pm.me",
-    "protonvpn.com"
+    "archive.org",
+    "web.archive.org",
+    "archive.ph",
+    "archive.is",
+    "archive.today"
    ],
    "ipset": [],
    "tests": [
-    "https://proton.me/"
+    "https://web.archive.org/",
+    "https://archive.org/"
    ]
   },
   {
-   "id": "signal",
-   "name": "Signal",
-   "color": "#3A76F0",
+   "id": "tor",
+   "name": "Tor Project",
+   "color": "#7D4698",
+   "cat": "files",
+   "def": false,
    "domains": [
-    "signal.org",
-    "whispersystems.org",
-    "signal.art"
+    "torproject.org",
+    "bridges.torproject.org",
+    "dist.torproject.org"
    ],
    "ipset": [],
    "tests": [
-    "https://signal.org/"
+    "https://www.torproject.org/"
    ]
   }
  ],

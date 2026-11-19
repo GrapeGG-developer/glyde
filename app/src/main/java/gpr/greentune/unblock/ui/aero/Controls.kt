@@ -76,38 +76,59 @@ fun AeroButton(
     val base = when {
         danger -> c.danger
         primary -> c.accent
-        else -> if (c.dark) Color(0xFF3A4A40) else Color(0xFFF1F4F2)
+        else -> if (c.dark) Color(0xFF3B5664) else Color(0xFFE9F3F8)
     }
-    val corner = 7.dp
+    val colored = primary || danger
     Box(
         modifier
-            .defaultMinSize(minHeight = 42.dp)
-            .glow(if (primary || danger) base else c.tint, glowA * 0.9f, 12.dp, corner)
-            .clip(RoundedCornerShape(corner))
+            .defaultMinSize(minHeight = 44.dp)
+            .glow(if (colored) base else c.tint, glowA * 0.9f, 12.dp, 22.dp)
             .drawBehind {
-                val r = corner.toPx()
-                val one = 1.dp.toPx()
-                val top = lerp(base, Color.White, if (primary || danger) 0.45f else 0.75f)
-                val mid = lerp(base, Color.White, if (primary || danger) 0.18f else 0.25f)
-                val low = lerp(base, Color.Black, if (primary || danger) 0.12f + 0.15f * pressA else 0.04f + 0.08f * pressA)
-                val bottom = lerp(base, Color.White, 0.15f)
+                val r = size.height / 2
                 drawRoundRect(
-                    Brush.verticalGradient(0f to top, 0.49f to mid, 0.5f to low, 1f to bottom),
-                    cornerRadius = CornerRadius(r, r),
-                    alpha = if (enabled) 1f else 0.45f
+                    Color.Black.copy(alpha = (if (c.dark) 0.35f else 0.16f) * (1f - pressA * 0.6f)),
+                    topLeft = Offset(0f, 2.dp.toPx()),
+                    size = size,
+                    cornerRadius = CornerRadius(r, r)
                 )
-                drawRoundRect(Color.Black.copy(alpha = if (c.dark) 0.6f else 0.38f), cornerRadius = CornerRadius(r, r), style = Stroke(one))
+            }
+            .clip(RoundedCornerShape(50))
+            .drawBehind {
+                val r = size.height / 2
+                val one = 1.dp.toPx()
+                val alpha = if (enabled) 1f else 0.45f
+                val deep = lerp(base, Color.Black, if (colored) 0.28f + 0.12f * pressA else 0.10f + 0.08f * pressA)
+                val mid = lerp(base, Color.Black, 0.06f * pressA)
+                val glowC = lerp(base, Color.White, if (colored) 0.55f else 0.85f)
+                drawRoundRect(Brush.verticalGradient(0f to deep, 0.45f to mid, 1f to glowC), cornerRadius = CornerRadius(r, r), alpha = alpha)
                 drawRoundRect(
-                    Color.White.copy(alpha = 0.55f - 0.3f * pressA),
-                    topLeft = Offset(one, one),
-                    size = Size(size.width - 2 * one, size.height - 2 * one),
-                    cornerRadius = CornerRadius(r - one, r - one),
+                    Brush.radialGradient(
+                        listOf(Color.White.copy(alpha = (if (colored) 0.55f else 0.65f) * alpha), Color.Transparent),
+                        Offset(size.width / 2, size.height * 1.15f),
+                        size.width * 0.55f
+                    ),
+                    cornerRadius = CornerRadius(r, r)
+                )
+                val gx = 1.5f * one + size.height * 0.18f
+                val gh = size.height * 0.48f
+                drawRoundRect(
+                    Brush.verticalGradient(
+                        listOf(Color.White.copy(alpha = (0.92f - 0.35f * pressA) * alpha), Color.White.copy(alpha = 0.18f * alpha)),
+                        startY = one, endY = one + gh
+                    ),
+                    topLeft = Offset(gx, one * 1.5f),
+                    size = Size(size.width - gx * 2, gh),
+                    cornerRadius = CornerRadius(gh / 2, gh / 2)
+                )
+                drawRoundRect(
+                    lerp(base, Color.Black, 0.45f).copy(alpha = (if (c.dark) 0.8f else 0.55f) * alpha),
+                    cornerRadius = CornerRadius(r, r),
                     style = Stroke(one)
                 )
                 if (glowA > 0f) {
                     drawRoundRect(
                         Brush.radialGradient(
-                            listOf(Color.White.copy(alpha = 0.35f * glowA), Color.Transparent),
+                            listOf(Color.White.copy(alpha = 0.30f * glowA), Color.Transparent),
                             Offset(size.width / 2, size.height),
                             size.width * 0.6f
                         ),
@@ -116,7 +137,7 @@ fun AeroButton(
                 }
             }
             .clickable(interactionSource = source, indication = null, enabled = enabled, role = Role.Button, onClick = onClick)
-            .padding(horizontal = 18.dp, vertical = 10.dp),
+            .padding(horizontal = 16.dp, vertical = 11.dp),
         contentAlignment = Alignment.Center
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -140,7 +161,7 @@ fun AeroProgressBar(
     fraction: Float?,
     modifier: Modifier = Modifier,
     height: Dp = 16.dp,
-    color: Color = Color(0xFF2FBF3F),
+    color: Color = Aero.colors.accent,
 ) {
     val c = Aero.colors
     val t = rememberInfiniteTransition(label = "pb")
@@ -294,7 +315,7 @@ fun Segmented(options: List<Pair<String, String>>, selected: String, onSelect: (
     Row(
         modifier
             .fillMaxWidth()
-            .glass(c, 8.dp, glossFraction = 0.5f)
+            .glass(c, 14.dp, glossFraction = 0.5f)
             .padding(3.dp),
         horizontalArrangement = Arrangement.spacedBy(3.dp)
     ) {

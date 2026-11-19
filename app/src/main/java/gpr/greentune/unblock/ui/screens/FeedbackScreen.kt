@@ -77,7 +77,7 @@ fun FeedbackScreen() {
 @Composable
 private fun Field(value: String, onChange: (String) -> Unit, hint: String, minHeight: Int) {
     val c = Aero.colors
-    Box(Modifier.fillMaxWidth().heightIn(min = maxOf(44, minHeight).dp).glass(c, 8.dp, glossFraction = 0.2f).padding(12.dp)) {
+    Box(Modifier.fillMaxWidth().heightIn(min = maxOf(44, minHeight).dp).glass(c, 14.dp, glossFraction = 0.2f).padding(12.dp)) {
         if (value.isEmpty()) Text(hint, color = c.subText, fontSize = 14.sp)
         BasicTextField(
             value = value,

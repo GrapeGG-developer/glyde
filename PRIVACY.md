@@ -33,6 +33,7 @@ GT Unblock использует системный механизм Android VpnS
 
 - Для определения оператора приложение обращается к ipinfo.io или ipwho.is. Эти сервисы видят ваш IP-адрес по своим правилам.
 - DNS-запросы отправляются выбранному вами DoH-провайдеру: Cloudflare, Google, Quad9 или AdGuard.
+- «Проверка сети» обращается напрямую к проверяемым сервисам, а тест скорости загружает данные с speed.cloudflare.com. Результаты остаются на устройстве, пока вы сами не отправите отчёт.
 - Обновления загружаются с GitHub или через сервер GT Unblock.
 - Сервер статистики размещён на Render, база данных на Turso.
 
@@ -54,4 +55,4 @@ Crash reports and anonymous statistics are enabled by default. Only the followin
 
 Not collected: IP addresses (not stored by the server), device or advertising identifiers, browsing history, DNS queries, traffic contents, installed app lists, location.
 
-Third parties: ipinfo.io or ipwho.is for ISP detection, the DoH provider you select, GitHub for updates, Render and Turso for the statistics server.
+Third parties: ipinfo.io or ipwho.is for ISP detection, the DoH provider you select, GitHub for updates, Render and Turso for the statistics server. The network check connects directly to the services being checked, and the speed test downloads data from speed.cloudflare.com; results stay on the device unless you share a report.

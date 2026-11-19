@@ -40,7 +40,7 @@ object Engine {
 
     fun currentArgs(): List<String> {
         val s = SettingsStore.value
-        val presets = Presets.data.value
+        val presets = Presets.active(Presets.data.value, s)
         if (s.expert && s.customArgsEnabled && s.customArgs.isNotBlank()) {
             return Args.tokenize(Args.withSni(s.customArgs, presets.fakeSni))
         }

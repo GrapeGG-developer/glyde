@@ -1,5 +1,15 @@
 package gpr.greentune.unblock.ui.screens
 
+import android.content.Intent
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
+import gpr.greentune.unblock.core.ShareCode
+import gpr.greentune.unblock.ui.aero.AeroDialog
 import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -102,7 +112,7 @@ fun TuneScreen() {
                         fontSize = 12.sp, color = c.subText
                     )
                     Spacer(Modifier.height(8.dp))
-                    for (s in presets.services) {
+                    for (s in Presets.active(presets, settings).services) {
                         val ch = r.choices.firstOrNull { it.serviceId == s.id }
                         ResultRow(s.name, ch, settings.expert, presets.strategies.map { it.id }) { sid ->
                             val updated = r.choices.filter { it.serviceId != s.id } +
@@ -120,7 +130,85 @@ fun TuneScreen() {
             }
         }
 
+        SharePanel()
+
         if (settings.expert) ExpertPanel()
+    }
+}
+
+@Composable
+private fun SharePanel() {
+    val c = Aero.colors
+    val context = LocalContext.current
+    val clipboard = LocalClipboardManager.current
+    val result by TuneStore.current.collectAsStateWithLifecycle()
+    val settings by SettingsStore.state.collectAsStateWithLifecycle()
+    var showQr by remember { mutableStateOf(false) }
+    val code = remember(result, settings.customDomains, settings.customArgs, settings.customArgsEnabled) { ShareCode.build() }
+    GlassPanel(Modifier.fillMaxWidth()) {
+        Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+            Text(stringResource(R.string.share_title), fontSize = 16.sp, fontWeight = FontWeight.SemiBold, color = c.text)
+            Text(stringResource(R.string.share_explain), fontSize = 13.sp, color = c.subText)
+            if (code != null) {
+                Text(
+                    code.take(64) + if (code.length > 64) "…" else "",
+                    fontFamily = FontFamily.Monospace, fontSize = 11.5.sp, color = c.text,
+                    modifier = Modifier.fillMaxWidth().glass(c, 14.dp, glossFraction = 0.2f).padding(10.dp)
+                )
+            }
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                AeroButton(stringResource(R.string.share_send), primary = true, enabled = code != null, modifier = Modifier.weight(1f), onClick = {
+                    val cd = code ?: return@AeroButton
+                    val send = Intent(Intent.ACTION_SEND).setType("text/plain").putExtra(Intent.EXTRA_TEXT, cd)
+                    try {
+                        context.startActivity(Intent.createChooser(send, null).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+                    } catch (_: Exception) {
+                    }
+                })
+                AeroButton("QR", enabled = code != null, onClick = { showQr = true })
+                AeroButton(stringResource(R.string.diag_copy), enabled = code != null, onClick = {
+                    clipboard.setText(AnnotatedString(code ?: ""))
+                    Toast.makeText(context, R.string.copied, Toast.LENGTH_SHORT).show()
+                })
+            }
+            AeroButton(stringResource(R.string.share_import), modifier = Modifier.fillMaxWidth(), onClick = {
+                val text = clipboard.getText()?.text
+                if (ShareCode.looksLike(text) && ShareCode.apply(text!!)) {
+                    Engine.reload(context)
+                    Toast.makeText(context, R.string.share_imported, Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(context, R.string.share_bad, Toast.LENGTH_SHORT).show()
+                }
+            })
+        }
+    }
+    if (showQr && code != null) {
+        AeroDialog(
+            title = stringResource(R.string.share_code),
+            onDismiss = { showQr = false },
+            buttons = { AeroButton(stringResource(R.string.close), onClick = { showQr = false }) }
+        ) {
+            val matrix = remember(code) { ShareCode.qr(code) }
+            Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                Canvas(
+                    Modifier
+                        .size(240.dp)
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(Color.White)
+                        .padding(10.dp)
+                ) {
+                    val n = matrix.width
+                    val cell = size.width / n
+                    for (y in 0 until matrix.height) {
+                        for (x in 0 until n) {
+                            if (matrix.get(x, y)) {
+                                drawRect(Color(0xFF06222F), Offset(x * cell, y * cell), androidx.compose.ui.geometry.Size(cell + 0.6f, cell + 0.6f))
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -210,7 +298,7 @@ private fun ExpertPanel() {
                 onValueChange = { args = it },
                 textStyle = TextStyle(fontFamily = FontFamily.Monospace, fontSize = 13.sp, color = c.text),
                 cursorBrush = SolidColor(c.accent),
-                modifier = Modifier.fillMaxWidth().heightIn(min = 90.dp).glass(c, 8.dp, glossFraction = 0.2f).padding(10.dp)
+                modifier = Modifier.fillMaxWidth().heightIn(min = 90.dp).glass(c, 14.dp, glossFraction = 0.2f).padding(10.dp)
             )
             Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                 AeroButton(stringResource(R.string.save), primary = true, modifier = Modifier.weight(1f), onClick = {
@@ -265,7 +353,7 @@ private fun ExpertPanel() {
             }
             val l = log
             if (l != null) {
-                Box(Modifier.fillMaxWidth().heightIn(max = 320.dp).glass(c, 8.dp, glossFraction = 0.1f).verticalScroll(rememberScrollState()).padding(8.dp)) {
+                Box(Modifier.fillMaxWidth().heightIn(max = 320.dp).glass(c, 14.dp, glossFraction = 0.1f).verticalScroll(rememberScrollState()).padding(8.dp)) {
                     Text(l.ifBlank { "—" }, fontFamily = FontFamily.Monospace, fontSize = 11.sp, color = c.text)
                 }
             }

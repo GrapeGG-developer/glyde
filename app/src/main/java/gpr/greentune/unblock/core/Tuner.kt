@@ -46,12 +46,12 @@ object Tuner {
 
     fun isRunning(): Boolean = job?.isActive == true
 
-    fun start(context: Context, full: Boolean) {
+    fun start(context: Context, full: Boolean, only: Set<String>? = null) {
         if (isRunning()) return
         val app = context.applicationContext
         job = App.scope.launch {
             try {
-                run(app, full)
+                run(app, full, only)
             } catch (e: CancellationException) {
                 _progress.value = TuneProgress(message = app.getString(R.string.tune_cancelled))
                 throw e
@@ -71,8 +71,13 @@ object Tuner {
 
     private data class Score(val ok: Int, val ms: Long)
 
-    private suspend fun run(context: Context, full: Boolean) {
-        val presets = Presets.data.value
+    private suspend fun run(context: Context, full: Boolean, only: Set<String>?) {
+        val all = Presets.active()
+        val presets = if (only == null) all else all.copy(services = all.services.filter { it.id in only })
+        if (presets.services.isEmpty() && only != null) {
+            _progress.value = TuneProgress()
+            return
+        }
         _progress.value = TuneProgress(true, full, 0, 0, context.getString(R.string.tune_phase_network))
         val geo = Geo.lookup()
         val key = NetKey.key(context, geo)
@@ -92,14 +97,14 @@ object Tuner {
             val r = baseline[s.id].orEmpty()
             r.isEmpty() || r.any { !it.ok }
         }
-        val generalBlocked = generalBase.any { !it.ok }
+        val generalBlocked = only == null && generalBase.any { !it.ok }
         val directChoices = presets.services.filter { it !in blocked }.map { s ->
             val r = baseline[s.id].orEmpty()
             ServiceChoice(s.id, null, true, true, if (r.isEmpty()) 0 else r.sumOf { it.ms } / r.size)
         }
 
         if (blocked.isEmpty() && !generalBlocked) {
-            finish(context, TuneResult(key, label, System.currentTimeMillis(), full, null, directChoices), geo?.asn, geo?.country, emptyMap())
+            finish(context, merge(only, TuneResult(key, label, System.currentTimeMillis(), full, null, directChoices)), geo?.asn, geo?.country, emptyMap())
             return
         }
 
@@ -118,7 +123,7 @@ object Tuner {
         val scores = ConcurrentHashMap<String, Map<String, Score>>()
         val done = AtomicInteger(0)
         val total = strategies.size
-        val sem = Semaphore(3)
+        val sem = Semaphore(if (probes.size > 24) 3 else 4)
 
         fun goodEnough(): Boolean {
             if (full || scores.size < 6) return false
@@ -179,7 +184,7 @@ object Tuner {
             .firstOrNull()?.first
 
         val result = TuneResult(key, label, System.currentTimeMillis(), full, defaultId, chosen + directChoices)
-        finish(context, result, geo?.asn, geo?.country, scores)
+        finish(context, merge(only, result), geo?.asn, geo?.country, scores)
     }
 
     private suspend fun testStrategy(
@@ -206,6 +211,17 @@ object Tuner {
         } finally {
             withContext(Dispatchers.IO) { Ciadpi.stop(proc) }
         }
+    }
+
+    private fun merge(only: Set<String>?, fresh: TuneResult): TuneResult {
+        if (only == null) return fresh
+        val prev = TuneStore.get(fresh.networkKey) ?: return fresh
+        val kept = prev.choices.filter { it.serviceId !in only }
+        return prev.copy(
+            time = fresh.time,
+            choices = kept + fresh.choices,
+            defaultStrategy = prev.defaultStrategy ?: fresh.defaultStrategy,
+        )
     }
 
     private fun order(all: List<Strategy>, ranking: List<String>): List<Strategy> {

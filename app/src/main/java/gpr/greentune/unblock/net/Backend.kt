@@ -22,7 +22,7 @@ object Backend {
         .put("abi", Build.SUPPORTED_ABIS.firstOrNull() ?: "")
 
     suspend fun presets(): String? = withContext(Dispatchers.IO) {
-        Http.getText("$base/v1/presets")
+        Http.getText("$base/v2/presets")
             ?: Http.getText("https://raw.githubusercontent.com/$repo/main/presets/presets.json")
     }
 

@@ -58,16 +58,19 @@ import gpr.greentune.unblock.BuildConfig
 import gpr.greentune.unblock.R
 import gpr.greentune.unblock.core.Engine
 import gpr.greentune.unblock.core.EngineStatus
+import gpr.greentune.unblock.core.Tuner
 import gpr.greentune.unblock.data.SettingsStore
 import gpr.greentune.unblock.system.Fx
 import gpr.greentune.unblock.ui.aero.Aero
-import gpr.greentune.unblock.ui.aero.AeroWallpaper
+import gpr.greentune.unblock.ui.aero.AquaBackground
+import gpr.greentune.unblock.ui.aero.TiltSensor
 import gpr.greentune.unblock.ui.aero.BarItem
-import gpr.greentune.unblock.ui.aero.Badge
 import gpr.greentune.unblock.ui.aero.Superbar
 import gpr.greentune.unblock.ui.aero.glass
 import gpr.greentune.unblock.ui.screens.AboutScreen
 import gpr.greentune.unblock.ui.screens.AppsScreen
+import gpr.greentune.unblock.ui.screens.DiagScreen
+import gpr.greentune.unblock.ui.screens.ServicesScreen
 import gpr.greentune.unblock.ui.screens.DonateScreen
 import gpr.greentune.unblock.ui.screens.FeedbackScreen
 import gpr.greentune.unblock.ui.screens.HomeScreen
@@ -85,6 +88,8 @@ object Screens {
     const val ABOUT = "about"
     const val DONATE = "donate"
     const val FEEDBACK = "feedback"
+    const val SERVICES = "services"
+    const val DIAG = "diag"
 }
 
 fun openUrl(context: android.content.Context, url: String) {
@@ -119,6 +124,14 @@ fun AppRoot(
         ctl.isAppearanceLightNavigationBars = !c.dark
     }
 
+    val tuneState by Tuner.progress.collectAsStateWithLifecycle()
+    var wasTuning by remember { mutableStateOf(false) }
+    LaunchedEffect(Unit) { Fx.preload(context) }
+    LaunchedEffect(tuneState.running) {
+        if (wasTuning && !tuneState.running && tuneState.message != null && settings.sound) Fx.done(context)
+        wasTuning = tuneState.running
+    }
+
     LaunchedEffect(status) {
         val prev = lastStatus
         lastStatus = status
@@ -129,6 +142,9 @@ fun AppRoot(
         } else if (status == EngineStatus.Off && prev == EngineStatus.On) {
             if (settings.sound) Fx.chime(context, false)
             if (settings.haptics) Fx.haptic(view)
+        } else if (status is EngineStatus.Error && prev !is EngineStatus.Error) {
+            if (settings.sound) Fx.error(context)
+            if (settings.haptics) Fx.haptic(view, true)
         }
     }
 
@@ -142,8 +158,9 @@ fun AppRoot(
         scope.launch { drawer.close() }
     }
 
+    TiltSensor(settings.tilt && settings.effects3d)
     Box(Modifier.fillMaxSize()) {
-        AeroWallpaper()
+        AquaBackground(settings.effects3d, if (status == EngineStatus.On) 1f else 0f)
         if (!settings.onboarded) {
             OnboardingScreen(onDone = {
                 requestNotifications()
@@ -171,20 +188,23 @@ fun AppRoot(
                     ) { s ->
                         when (s) {
                             Screens.TUNE -> TuneScreen()
+                            Screens.SERVICES -> ServicesScreen(onOpenDiag = { go(Screens.DIAG) })
+                            Screens.DIAG -> DiagScreen()
                             Screens.APPS -> AppsScreen()
                             Screens.SETTINGS -> SettingsScreen()
                             Screens.ABOUT -> AboutScreen(onDonate = { go(Screens.DONATE) }, onFeedback = { go(Screens.FEEDBACK) })
                             Screens.DONATE -> DonateScreen()
                             Screens.FEEDBACK -> FeedbackScreen()
-                            else -> HomeScreen(onConnect = onConnect, onDisconnect = onDisconnect, onOpenTune = { go(Screens.TUNE) })
+                            else -> HomeScreen(onConnect = onConnect, onDisconnect = onDisconnect, onOpenTune = { go(Screens.TUNE) }, onOpenServices = { go(Screens.SERVICES) })
                         }
                     }
                 }
                 Superbar(
                     items = listOf(
                         BarItem(Screens.HOME, R.drawable.ic_menu_home, stringResource(R.string.nav_home)),
+                        BarItem(Screens.SERVICES, R.drawable.ic_menu_services, stringResource(R.string.nav_services)),
                         BarItem(Screens.TUNE, R.drawable.ic_menu_tune, stringResource(R.string.nav_tune)),
-                        BarItem(Screens.APPS, R.drawable.ic_menu_apps, stringResource(R.string.nav_apps)),
+                        BarItem(Screens.DIAG, R.drawable.ic_menu_diag, stringResource(R.string.nav_diag)),
                         BarItem(Screens.SETTINGS, R.drawable.ic_menu_settings, stringResource(R.string.nav_settings)),
                     ),
                     selected = screen,
@@ -234,8 +254,6 @@ private fun TopBar(onMenu: () -> Unit) {
         Spacer(Modifier.width(8.dp))
         Text(stringResource(R.string.app_name), fontSize = 19.sp, fontWeight = FontWeight.SemiBold, color = c.text)
         Spacer(Modifier.weight(1f))
-        Badge(stringResource(R.string.unofficial_port))
-        Spacer(Modifier.width(6.dp))
     }
 }
 
@@ -248,7 +266,7 @@ private fun Drawer(current: String, go: (String) -> Unit) {
             .fillMaxHeight()
             .width(300.dp)
             .drawBehind {
-                drawRect(if (c.dark) Color(0xFF0B140F).copy(alpha = 0.94f) else Color(0xFFEFF8F2).copy(alpha = 0.95f))
+                drawRect(if (c.dark) Color(0xFF07151D).copy(alpha = 0.94f) else Color(0xFFEEF8FC).copy(alpha = 0.95f))
                 drawRect(
                     Brush.radialGradient(listOf(c.tint.copy(alpha = 0.30f), Color.Transparent), Offset(0f, 0f), size.width * 1.2f)
                 )
@@ -266,12 +284,12 @@ private fun Drawer(current: String, go: (String) -> Unit) {
                 Text("GREENTUNE · v${BuildConfig.VERSION_NAME}", fontSize = 12.sp, color = c.subText)
             }
         }
-        Spacer(Modifier.height(4.dp))
-        Badge(stringResource(R.string.unofficial_port))
         Spacer(Modifier.height(14.dp))
         val items = listOf(
             Triple(Screens.HOME, R.drawable.ic_menu_home, R.string.nav_home),
+            Triple(Screens.SERVICES, R.drawable.ic_menu_services, R.string.nav_services),
             Triple(Screens.TUNE, R.drawable.ic_menu_tune, R.string.nav_tune),
+            Triple(Screens.DIAG, R.drawable.ic_menu_diag, R.string.diag_title),
             Triple(Screens.APPS, R.drawable.ic_menu_apps, R.string.nav_apps),
             Triple(Screens.SETTINGS, R.drawable.ic_menu_settings, R.string.nav_settings),
             Triple(Screens.FEEDBACK, R.drawable.ic_menu_feedback, R.string.nav_feedback),
@@ -279,7 +297,7 @@ private fun Drawer(current: String, go: (String) -> Unit) {
         )
         for ((id, icon, label) in items) DrawerItem(icon, stringResource(label), id == current) { go(id) }
         Spacer(Modifier.weight(1f))
-        Box(Modifier.fillMaxWidth().glass(c, 12.dp).clickable { go(Screens.DONATE) }.padding(12.dp)) {
+        Box(Modifier.fillMaxWidth().glass(c, 18.dp).clickable { go(Screens.DONATE) }.padding(12.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Image(painterResource(R.drawable.ic_menu_donate), null, Modifier.size(40.dp))
                 Spacer(Modifier.width(10.dp))
@@ -300,7 +318,7 @@ private fun DrawerItem(icon: Int, label: String, selected: Boolean, onClick: () 
         Modifier
             .fillMaxWidth()
             .padding(vertical = 2.dp)
-            .then(if (selected) Modifier.glass(c, 8.dp) else Modifier)
+            .then(if (selected) Modifier.glass(c, 14.dp) else Modifier)
             .clip(RoundedCornerShape(8.dp))
             .clickable(onClick = onClick)
             .padding(horizontal = 10.dp, vertical = 8.dp),

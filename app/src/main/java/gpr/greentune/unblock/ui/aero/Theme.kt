@@ -11,7 +11,9 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
+import gpr.greentune.unblock.R
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 
@@ -44,20 +46,20 @@ fun aeroColors(dark: Boolean, tint: Color, intensity: Float): AeroColors {
             dark = true,
             tint = tint,
             intensity = i,
-            text = Color(0xFFF2F7F3),
-            subText = Color(0xFFA9BCB0),
-            glassTop = Color.White.copy(alpha = 0.13f),
-            glassBottom = Color.White.copy(alpha = 0.05f),
-            glassTint = tint.copy(alpha = 0.06f + 0.14f * i),
-            borderOuter = Color.Black.copy(alpha = 0.55f),
-            borderInner = Color.White.copy(alpha = 0.22f),
-            gloss = Color.White.copy(alpha = 0.16f),
-            wallTop = lerp(Color(0xFF0B1610), tint, 0.10f + 0.12f * i),
-            wallBottom = Color(0xFF030806),
-            accent = lerp(tint, Color.White, 0.12f),
+            text = Color(0xFFEFF9FF),
+            subText = Color(0xFFA3C1D0),
+            glassTop = Color.White.copy(alpha = 0.14f),
+            glassBottom = Color.White.copy(alpha = 0.04f),
+            glassTint = tint.copy(alpha = 0.05f + 0.12f * i),
+            borderOuter = Color.Black.copy(alpha = 0.45f),
+            borderInner = Color.White.copy(alpha = 0.26f),
+            gloss = Color.White.copy(alpha = 0.17f),
+            wallTop = lerp(Color(0xFF061824), tint, 0.12f + 0.14f * i),
+            wallBottom = Color(0xFF01070C),
+            accent = lerp(tint, Color.White, 0.10f),
             accentDark = lerp(tint, Color.Black, 0.35f),
             danger = Color(0xFFFF6B5E),
-            ok = Color(0xFF5BE07A),
+            ok = Color(0xFF52E58A),
             warn = Color(0xFFFFC34D),
         )
     } else {
@@ -65,26 +67,34 @@ fun aeroColors(dark: Boolean, tint: Color, intensity: Float): AeroColors {
             dark = false,
             tint = tint,
             intensity = i,
-            text = Color(0xFF13261A),
-            subText = Color(0xFF4F6657),
-            glassTop = Color.White.copy(alpha = 0.72f),
-            glassBottom = Color.White.copy(alpha = 0.42f),
-            glassTint = tint.copy(alpha = 0.05f + 0.12f * i),
-            borderOuter = Color(0xFF1E3A28).copy(alpha = 0.35f),
-            borderInner = Color.White.copy(alpha = 0.85f),
-            gloss = Color.White.copy(alpha = 0.55f),
-            wallTop = lerp(Color(0xFFEAF6EE), tint, 0.10f + 0.18f * i),
-            wallBottom = lerp(Color(0xFFD6ECDD), tint, 0.18f + 0.22f * i),
+            text = Color(0xFF0B2533),
+            subText = Color(0xFF3A5D6E),
+            glassTop = Color.White.copy(alpha = 0.66f),
+            glassBottom = Color.White.copy(alpha = 0.34f),
+            glassTint = tint.copy(alpha = 0.04f + 0.10f * i),
+            borderOuter = Color(0xFF0E3A52).copy(alpha = 0.28f),
+            borderInner = Color.White.copy(alpha = 0.90f),
+            gloss = Color.White.copy(alpha = 0.60f),
+            wallTop = lerp(Color(0xFFE6F7FD), tint, 0.10f + 0.18f * i),
+            wallBottom = lerp(Color(0xFFBFE6F4), tint, 0.25f + 0.25f * i),
             accent = tint,
             accentDark = lerp(tint, Color.Black, 0.30f),
             danger = Color(0xFFD9372B),
-            ok = Color(0xFF1F9E3E),
+            ok = Color(0xFF16A34A),
             warn = Color(0xFFC98400),
         )
     }
 }
 
-val LocalAero = staticCompositionLocalOf { aeroColors(false, Color(0xFF27B35A), 0.6f) }
+val LocalAero = staticCompositionLocalOf { aeroColors(false, Color(0xFF19A7CE), 0.6f) }
+
+val Glasswave = FontFamily(
+    Font(R.font.glasswave_light, FontWeight.Light),
+    Font(R.font.glasswave_regular, FontWeight.Normal),
+    Font(R.font.glasswave_regular, FontWeight.Medium),
+    Font(R.font.glasswave_semibold, FontWeight.SemiBold),
+    Font(R.font.glasswave_bold, FontWeight.Bold),
+)
 
 object Aero {
     val colors: AeroColors
@@ -100,11 +110,11 @@ fun AeroTheme(theme: String, tint: Color, intensity: Float, content: @Composable
     }
     val c = aeroColors(dark, tint, intensity)
     val scheme = if (dark) {
-        darkColorScheme(primary = c.accent, onPrimary = Color.White, surface = Color(0xFF101A14), background = Color(0xFF07100B), onSurface = c.text, onBackground = c.text)
+        darkColorScheme(primary = c.accent, onPrimary = Color.White, surface = Color(0xFF0C1B24), background = Color(0xFF040E14), onSurface = c.text, onBackground = c.text)
     } else {
-        lightColorScheme(primary = c.accentDark, onPrimary = Color.White, surface = Color(0xFFF4FAF6), background = Color(0xFFEAF6EE), onSurface = c.text, onBackground = c.text)
+        lightColorScheme(primary = c.accentDark, onPrimary = Color.White, surface = Color(0xFFF3FBFE), background = Color(0xFFE6F7FD), onSurface = c.text, onBackground = c.text)
     }
-    val base = TextStyle(fontFamily = FontFamily.SansSerif, color = c.text)
+    val base = TextStyle(fontFamily = Glasswave, color = c.text)
     val typography = MaterialTheme.typography.copy(
         bodyLarge = base.copy(fontSize = 16.sp),
         bodyMedium = base.copy(fontSize = 14.sp),

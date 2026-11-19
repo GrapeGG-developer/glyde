@@ -120,7 +120,7 @@ fun AppsScreen() {
         }
         if (settings.appsMode != "all") {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Box(Modifier.weight(1f).glass(c, 8.dp, glossFraction = 0.3f).padding(horizontal = 12.dp, vertical = 10.dp)) {
+                Box(Modifier.weight(1f).glass(c, 14.dp, glossFraction = 0.3f).padding(horizontal = 12.dp, vertical = 10.dp)) {
                     if (query.isEmpty()) Text(stringResource(R.string.search), color = c.subText, fontSize = 14.sp)
                     BasicTextField(
                         value = query,

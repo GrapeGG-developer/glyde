@@ -46,7 +46,7 @@ object Notifications {
             .setContentText(text)
             .setOngoing(true)
             .setOnlyAlertOnce(true)
-            .setColor(0xFF27B35A.toInt())
+            .setColor(0xFF19A7CE.toInt())
             .setContentIntent(open)
             .addAction(0, context.getString(R.string.action_disconnect), stop)
             .setForegroundServiceBehavior(NotificationCompat.FOREGROUND_SERVICE_IMMEDIATE)

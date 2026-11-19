@@ -39,20 +39,21 @@ import gpr.greentune.unblock.core.EngineStatus
 import gpr.greentune.unblock.core.Presets
 import gpr.greentune.unblock.core.Tuner
 import gpr.greentune.unblock.data.SettingsStore
+import gpr.greentune.unblock.system.Fx
 import gpr.greentune.unblock.data.TuneStore
 import gpr.greentune.unblock.net.Geo
 import gpr.greentune.unblock.ui.aero.Aero
 import gpr.greentune.unblock.ui.aero.AeroButton
 import gpr.greentune.unblock.ui.aero.AeroProgressBar
 import gpr.greentune.unblock.ui.aero.GlassPanel
-import gpr.greentune.unblock.ui.aero.Orb
+import gpr.greentune.unblock.ui.aero.Orb3D
 import gpr.greentune.unblock.ui.aero.OrbState
 import gpr.greentune.unblock.ui.aero.StatusDot
 import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun HomeScreen(onConnect: () -> Unit, onDisconnect: () -> Unit, onOpenTune: () -> Unit) {
+fun HomeScreen(onConnect: () -> Unit, onDisconnect: () -> Unit, onOpenTune: () -> Unit, onOpenServices: () -> Unit) {
     val c = Aero.colors
     val context = LocalContext.current
     val status by Engine.status.collectAsStateWithLifecycle()
@@ -89,10 +90,12 @@ fun HomeScreen(onConnect: () -> Unit, onDisconnect: () -> Unit, onOpenTune: () -
     ScreenColumn(null) {
         Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
             Spacer(Modifier.height(4.dp))
-            Orb(
+            Orb3D(
                 state = orbState,
+                effects = settings.effects3d,
                 description = title,
                 onClick = {
+                    if (settings.sound) Fx.tap(context)
                     if (Engine.isActive()) onDisconnect() else onConnect()
                 }
             )
@@ -143,8 +146,9 @@ fun HomeScreen(onConnect: () -> Unit, onDisconnect: () -> Unit, onOpenTune: () -
                 }
                 Spacer(Modifier.height(10.dp))
                 val choices = result?.choices.orEmpty().associateBy { it.serviceId }
+                val active = Presets.active(presets, settings).services
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    for (s in presets.services) {
+                    for (s in active.take(14)) {
                         val ch = choices[s.id]
                         val color = when {
                             ch == null -> c.subText
@@ -153,6 +157,9 @@ fun HomeScreen(onConnect: () -> Unit, onDisconnect: () -> Unit, onOpenTune: () -
                             else -> c.danger
                         }
                         ServiceChip(s.name, Color(s.color), color)
+                    }
+                    if (active.size > 14) {
+                        Text("+${active.size - 14}", fontSize = 13.sp, color = c.subText, modifier = Modifier.padding(horizontal = 6.dp, vertical = 6.dp))
                     }
                 }
                 Spacer(Modifier.height(12.dp))
@@ -164,7 +171,7 @@ fun HomeScreen(onConnect: () -> Unit, onDisconnect: () -> Unit, onOpenTune: () -
                         enabled = !tune.running,
                         modifier = Modifier.weight(1f)
                     )
-                    AeroButton(stringResource(R.string.details), onClick = onOpenTune, modifier = Modifier.weight(1f))
+                    AeroButton(stringResource(R.string.services_edit), onClick = onOpenServices, modifier = Modifier.weight(1f))
                 }
             }
         }

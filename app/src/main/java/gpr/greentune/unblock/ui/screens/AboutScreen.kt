@@ -60,7 +60,7 @@ fun AboutScreen(onDonate: () -> Unit, onFeedback: () -> Unit) {
                     }
                 )
                 Spacer(Modifier.height(6.dp))
-                Badge(stringResource(R.string.unofficial_port))
+                Badge("by GREENTUNE", color = Aero.colors.accent)
                 Spacer(Modifier.height(10.dp))
                 Text(stringResource(R.string.about_text), fontSize = 14.sp, color = c.text, textAlign = TextAlign.Center)
                 Spacer(Modifier.height(4.dp))

@@ -36,7 +36,7 @@ fun AeroDialog(
                         cornerRadius = CornerRadius(14.dp.toPx())
                     )
                 }
-                .glass(c, 14.dp)
+                .glass(c, 24.dp)
                 .padding(18.dp)
         ) {
             Text(title, fontSize = 18.sp, fontWeight = FontWeight.SemiBold, color = c.text)
