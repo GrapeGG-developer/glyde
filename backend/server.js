@@ -106,8 +106,46 @@ function gh(path) {
   });
 }
 
+const ABIS = ['arm64-v8a', 'armeabi-v7a', 'x86_64', 'x86', 'universal'];
+
+function decodeEntities(t) {
+  return t.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&amp;/g, '&');
+}
+
+async function releasesFromAtom() {
+  const r = await fetch(`https://github.com/${REPO}/releases.atom`, { headers: { 'User-Agent': 'gt-unblock-api' } });
+  if (!r.ok) throw new Error('atom ' + r.status);
+  const xml = await r.text();
+  const entries = [...xml.matchAll(/<entry>([\s\S]*?)<\/entry>/g)].map(m => m[1]);
+  return entries.map(e => {
+    const link = (e.match(/<link[^>]*href="([^"]+)"/) || [])[1] || '';
+    const tag = decodeURIComponent(link.split('/tag/')[1] || '');
+    const html = decodeEntities((e.match(/<content[^>]*>([\s\S]*?)<\/content>/) || [])[1] || '');
+    const body = html.replace(/<li>/g, '- ').replace(/<\/(p|li|h\d)>/g, '\n').replace(/<br\s*\/?>/g, '\n').replace(/<[^>]+>/g, '').replace(/\n{3,}/g, '\n\n').trim();
+    const version = tag.replace(/^v/, '');
+    return {
+      tag_name: tag,
+      draft: false,
+      prerelease: version.includes('-'),
+      body,
+      published_at: (e.match(/<updated>([^<]+)<\/updated>/) || [])[1],
+      assets: ABIS.map(a => ({
+        name: `GT-Unblock-${version}-${a}.apk`,
+        browser_download_url: `https://github.com/${REPO}/releases/download/${tag}/GT-Unblock-${version}-${a}.apk`,
+        size: 0,
+      })),
+    };
+  }).filter(x => x.tag_name);
+}
+
 async function releases() {
-  return cached('releases', 10 * 60 * 1000, () => gh('/releases?per_page=20'));
+  return cached('releases', 15 * 60 * 1000, async () => {
+    try {
+      return await gh('/releases?per_page=20');
+    } catch (e) {
+      return await releasesFromAtom();
+    }
+  });
 }
 
 async function presets() {
