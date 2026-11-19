@@ -111,6 +111,7 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.drawscope.clipPath
 import gpr.greentune.unblock.ui.aero.GGV7
 import gpr.greentune.unblock.ui.aero.backdropBlur
 import gpr.greentune.unblock.ui.aero.backdropSource
@@ -517,7 +518,7 @@ private fun Modifier.aeroShadow(): Modifier = this.drawBehind {
     val path = androidx.compose.ui.graphics.Path().apply {
         addRoundRect(androidx.compose.ui.geometry.RoundRect(0f, 0f, size.width, size.height, CornerRadius(r)))
     }
-    androidx.compose.ui.graphics.drawscope.clipPath(path, androidx.compose.ui.graphics.ClipOp.Difference) {
+    clipPath(path, androidx.compose.ui.graphics.ClipOp.Difference) {
         for (k in 1..8) {
             val g = k * 2.5.dp.toPx()
             drawRoundRect(
@@ -547,7 +548,7 @@ private fun Modifier.aeroFrame(c: gpr.greentune.unblock.ui.aero.AeroColors, alph
     val path = androidx.compose.ui.graphics.Path().apply {
         addRoundRect(androidx.compose.ui.geometry.RoundRect(0f, 0f, size.width, size.height, cr))
     }
-    androidx.compose.ui.graphics.drawscope.clipPath(path) {
+    clipPath(path) {
         val w = size.width
         val h = size.height
         for ((pos, wd, a) in listOf(Triple(0.12f, 0.10f, 0.16f), Triple(0.30f, 0.05f, 0.12f), Triple(0.58f, 0.14f, 0.10f), Triple(0.80f, 0.04f, 0.14f))) {

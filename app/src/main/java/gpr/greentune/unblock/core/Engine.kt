@@ -34,6 +34,8 @@ object Engine {
         if (status != EngineStatus.On) gpr.greentune.unblock.net.Live.socksPort = 0
         if (status == EngineStatus.On && SettingsStore.value.tgBridge) gpr.greentune.unblock.tg.TgBridge.start(context)
         if (status == EngineStatus.Off || status is EngineStatus.Error) gpr.greentune.unblock.tg.TgBridge.stop()
+        if (status == EngineStatus.On) Health.start(context)
+        if (status == EngineStatus.Off || status is EngineStatus.Error) Health.stop()
         val st = when (status) {
             EngineStatus.Off -> "off"
             EngineStatus.Starting -> "starting"
