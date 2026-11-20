@@ -79,9 +79,7 @@ pre{white-space:pre-wrap;word-break:break-word;background:rgba(0,0,0,.3);padding
 <body>
 <div id="login" class="glass login hidden">
   <div class="row" style="gap:12px;margin-bottom:12px"><div class="logo"></div><div><h2>Glyde</h2><div class="muted">Центр управления</div></div></div>
-  <input id="pw" type="password" placeholder="Пароль" autocomplete="current-password">
-  <input id="otp" inputmode="numeric" maxlength="6" placeholder="Код из приложения-аутентификатора" autocomplete="one-time-code">
-  <div class="row" style="margin-top:10px"><button class="btn pri" id="loginBtn">Войти</button><span id="loginErr" class="muted"></span></div>
+  <div class="muted">Ссылка недействительна или устарела. Откройте панель по актуальной ссылке.</div>
 </div>
 
 <div id="app" class="hidden">
@@ -92,7 +90,6 @@ pre{white-space:pre-wrap;word-break:break-word;background:rgba(0,0,0,.3);padding
   <span class="pill"><span class="dot" id="liveDot"></span><b id="onlineNow">0</b>&nbsp;онлайн</span>
   <span class="pill" id="siegePill" style="display:none;border-color:#ff8f9a">⚠ Осада</span>
   <button class="btn sm" id="refreshBtn">Обновить релизы</button>
-  <button class="btn sm" id="logoutBtn">Выйти</button>
 </header>
 <nav id="nav"></nav>
 <main id="main"></main>
@@ -363,12 +360,7 @@ async function start() {
   renderNav(); render(); stream();
   setInterval(() => { if (['overview', 'online'].includes(current) && !$('#modal').classList.contains('show') && document.visibilityState === 'visible') render(); }, 15000);
 }
-$('#loginBtn').onclick = async () => {
-  const r = await fetch('/admin/api/login', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ password: $('#pw').value, code: $('#otp').value }) });
-  if (r.ok) start(); else $('#loginErr').textContent = r.status === 429 ? 'Слишком много попыток, подождите 15 минут' : 'Неверный пароль или код';
-};
-$('#otp').onkeydown = e => { if (e.key === 'Enter') $('#loginBtn').click(); };
-$('#logoutBtn').onclick = async () => { await fetch('/admin/api/logout', { credentials: 'same-origin' }); showLogin(); };
+$('#logoutBtn')?.remove();
 $('#refreshBtn').onclick = async () => { const r = await api('refresh', {}); toast('Обновлено, разослано: ' + r.sent); render(); };
 start();
 </script>

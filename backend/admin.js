@@ -7,7 +7,8 @@ import * as live from './live.js';
 const ADMIN_KEY = process.env.ADMIN_KEY || '';
 const ADMIN_PASS = process.env.ADMIN_PASS || '';
 const ADMIN_TOTP = process.env.ADMIN_TOTP || '';
-const SECRET = crypto.createHash('sha256').update('glyde-session:' + ADMIN_KEY + ':' + ADMIN_PASS).digest();
+const ADMIN_LINK = process.env.ADMIN_LINK || '';
+const SECRET = crypto.createHash('sha256').update('glyde-session:' + ADMIN_KEY + ':' + ADMIN_PASS + ':' + (process.env.ADMIN_LINK || '')).digest();
 const fails = new Map();
 let panel = '';
 try {
@@ -380,35 +381,24 @@ async function strategies() {
 export async function handleAdmin(req, res, url, readJson) {
   const p = url.pathname;
   const ip = live.clientIp(req);
-  if (req.method === 'GET' && (p === '/admin' || p === '/admin/')) {
+  const linkPath = ADMIN_LINK ? '/admin/' + ADMIN_LINK : '';
+  if (req.method === 'GET' && linkPath && (p === linkPath || p === linkPath + '/')) {
+    const exp = String(Date.now() + 30 * DAY);
+    live.logEvent('admin_open', 'info', ip, null, {});
     res.writeHead(200, {
       'Content-Type': 'text/html; charset=utf-8',
       'Cache-Control': 'no-store',
       'X-Frame-Options': 'DENY',
       'Referrer-Policy': 'no-referrer',
+      'X-Robots-Tag': 'noindex, nofollow',
+      'Set-Cookie': `gs=${encodeURIComponent(exp + '.' + sign(exp))}; Path=/admin; HttpOnly; Secure; SameSite=Strict; Max-Age=${30 * 86400}`,
       'Content-Security-Policy': "default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'",
     });
     return res.end(panel);
   }
-  if (req.method === 'POST' && p === '/admin/api/login') {
-    const f = fails.get(ip) || { n: 0, t: 0 };
-    if (f.n >= 5 && Date.now() - f.t < 15 * 60000) {
-      live.logEvent('admin_locked', 'alert', ip, null, {});
-      return json(res, 429, { error: 'locked' });
-    }
-    const b = await readJson(req);
-    if (passOk(b.password) && totpOk(b.code)) {
-      fails.delete(ip);
-      const exp = String(Date.now() + 12 * 3600000);
-      live.logEvent('admin_login', 'info', ip, null, {});
-      return json(res, 200, { ok: true }, { 'Set-Cookie': `gs=${encodeURIComponent(exp + '.' + sign(exp))}; Path=/admin; HttpOnly; Secure; SameSite=Strict; Max-Age=43200` });
-    }
-    fails.set(ip, { n: (Date.now() - f.t > 15 * 60000 ? 0 : f.n) + 1, t: Date.now() });
-    live.logEvent('admin_fail', 'alert', ip, null, {});
-    return json(res, 403, { error: 'bad credentials' });
-  }
-  if (p === '/admin/api/logout') {
-    return json(res, 200, { ok: true }, { 'Set-Cookie': 'gs=; Path=/admin; HttpOnly; Secure; SameSite=Strict; Max-Age=0' });
+  if (!p.startsWith('/admin/api/')) {
+    res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8', 'Cache-Control': 'no-store' });
+    return res.end('Not found');
   }
   const who = authed(req);
   if (!who) return json(res, 401, { error: 'unauthorized' });
