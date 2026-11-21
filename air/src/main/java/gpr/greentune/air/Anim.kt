@@ -3,6 +3,7 @@ package gpr.greentune.air
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.runtime.Composable
@@ -23,7 +24,7 @@ object AirSpec {
     const val glassAlphaFallback = 0.9f
     const val contentAlpha = 0.50f
     const val contentAlphaFallback = 0.95f
-    const val staggerMs = 38L
+    const val staggerMs = 30L
 }
 
 @Composable
@@ -32,23 +33,24 @@ fun Modifier.staggerIn(index: Int, enabled: Boolean = true): Modifier {
     LaunchedEffect(Unit) {
         if (enabled) {
             delay(AirSpec.staggerMs * index)
-            a.animateTo(1f, spring(dampingRatio = 0.62f, stiffness = 240f))
+            a.animateTo(1f, tween(360, easing = androidx.compose.animation.core.FastOutSlowInEasing))
         }
     }
     return graphicsLayer {
         val v = a.value
         alpha = v.coerceIn(0f, 1f)
-        translationY = (1f - v) * 26.dp.toPx()
-        val s = 0.88f + 0.12f * v
+        translationY = (1f - v) * 10.dp.toPx()
+        val s = 0.98f + 0.02f * v
         scaleX = s
         scaleY = s
     }
 }
 
 @Composable
-fun Modifier.pressBounce(source: MutableInteractionSource, depth: Float = 0.94f): Modifier {
+fun Modifier.pressBounce(source: MutableInteractionSource, depth: Float = 0.97f): Modifier {
     val pressed by source.collectIsPressedAsState()
-    val s by animateFloatAsState(if (pressed) depth else 1f, spring(dampingRatio = 0.42f, stiffness = 520f), label = "pb")
+    val target = 1f - (1f - depth) * 0.5f
+    val s by animateFloatAsState(if (pressed) target else 1f, spring(dampingRatio = 1f, stiffness = 900f), label = "pb")
     return graphicsLayer {
         scaleX = s
         scaleY = s

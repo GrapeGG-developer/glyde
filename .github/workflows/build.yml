@@ -63,12 +63,12 @@ jobs:
           GT_KEY_PASSWORD: ${{ secrets.GT_KEY_PASSWORD }}
         run: |
           chmod +x gradlew
-          ./gradlew --no-daemon --stacktrace assembleRelease -PversionName=${{ steps.ver.outputs.name }} -PversionCode=${{ steps.ver.outputs.code }} "-Pcodename=${{ steps.ver.outputs.codename }}" "-PcodenameKind=${{ steps.ver.outputs.kind }}" "-PglydeDisplay=${{ steps.ver.outputs.display }}" "-Pring=${{ steps.ver.outputs.ring }}"
+          ./gradlew --no-daemon --stacktrace assembleRelease "-PversionName=${{ steps.ver.outputs.version }}" -PversionCode=${{ steps.ver.outputs.code }} "-Pcodename=${{ steps.ver.outputs.codename }}" "-PreleaseTag=${{ steps.ver.outputs.name }}" "-PreleaseYear=${{ steps.ver.outputs.year }}" "-PglydeDisplay=${{ steps.ver.outputs.display }}" "-Pring=${{ steps.ver.outputs.ring }}"
 
       - name: Collect APKs
         run: |
           mkdir -p dist
-          V=${{ steps.ver.outputs.name }}
+          V=${{ steps.ver.outputs.version }}
           for f in app/build/outputs/apk/release/*.apk; do
             b=$(basename "$f" .apk)
             abi=${b#app-}

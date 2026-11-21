@@ -87,13 +87,14 @@ fun rememberShaderTime(fps: Int = 60): State<Float> {
     val state = remember { mutableFloatStateOf(0f) }
     LaunchedEffect(fps) {
         val start = withFrameNanos { it }
+        val startOffset = (System.currentTimeMillis() % 3_600_000L) * 1_000_000L
         var last = 0L
         val step = 1_000_000_000L / fps - 2_000_000L
         while (true) {
             withFrameNanos { now ->
                 if (now - last >= step) {
                     last = now
-                    state.floatValue = ((now - start) / 1_000_000_000.0 % 3600.0).toFloat()
+                    state.floatValue = ((now - start + startOffset) / 1_000_000_000.0 % 3600.0).toFloat()
                 }
             }
         }

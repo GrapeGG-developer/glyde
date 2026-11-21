@@ -27,12 +27,11 @@ export function dropCache(key) {
   cache.delete(key);
 }
 
-const WEEKLY = [["Astra", "star"], ["Orbis", "planet"], ["Pinwheel", "galaxy"], ["Halley", "comet"], ["Selene", "moon"], ["Orion", "nebula"], ["Vega", "star"], ["Kepler", "planet"], ["Triangulum", "galaxy"], ["Encke", "comet"], ["Luna", "moon"], ["Carina", "nebula"], ["Sirius", "star"], ["Titan", "planet"], ["Sombrero", "galaxy"], ["Hale", "comet"], ["Phoebe", "moon"], ["Lyra", "nebula"], ["Polaris", "star"], ["Gliese", "planet"], ["Whirlpool", "galaxy"], ["Tempel", "comet"], ["Europa", "moon"], ["Helix", "nebula"]];
+const NAMES = ["Achtototam", "Brisgalor", "Celestrae", "Draventis", "Eluvion", "Fenrisar", "Galvadi", "Helionyx", "Ithrana", "Jovarre", "Kestralis", "Lumarion", "Myrrhavel", "Nyxalor", "Orrevane", "Pyralith", "Quorvane", "Rhessidon", "Sylvaris", "Tharsion", "Uvarion", "Vespertil", "Wyrrhen", "Xandaris", "Yrradis", "Zephyrion", "Aurelion", "Borvexa", "Cyrrhae", "Duvarnis", "Exaltar", "Fyrnwald", "Gossamyr", "Halcyra", "Ildraven", "Jessavor", "Korvaxis", "Lyraveth", "Marnovae", "Novaquil", "Ophirion", "Prismora", "Qeltharn", "Rovanthe", "Selvaris", "Tyrrhenon", "Ulvessa", "Varkonis", "Wendrix", "Xyloris", "Yvanthar", "Zorrimel"];
 
 export function weeklyFor(y, m, w) {
-  const n = WEEKLY.length;
-  const i = ((((y - 26) * 12 + (m - 11)) * 5 + (w - 2)) % n + n) % n;
-  return { codename: WEEKLY[i][0], kind: WEEKLY[i][1] };
+  const i = ((y - 26) * 12 + (m - 11)) * 5 + (w - 3);
+  return { codename: i < 0 ? 'Astra' : NAMES[i % NAMES.length] };
 }
 
 export function codenameFor(y, m) {
@@ -47,7 +46,13 @@ export function parseVersion(v) {
     let stage = (n3[5] || 'release').toLowerCase();
     if (stage === 'rc') stage = 'beta';
     const wk = weeklyFor(y, mo, w);
-    return { fresh: true, weekly: true, major: y, minor: mo, week: w, patch: b, build: b, stage, n: +(n3[6] || 0), codename: wk.codename, kind: wk.kind, code: 1e9 + y * 1e7 + mo * 1e5 + w * 1e4 + Math.min(b, 9999), s };
+    return { fresh: true, weekly: true, major: y, minor: mo, week: w, patch: b, build: b, stage, n: +(n3[6] || 0), codename: wk.codename, code: 1e9 + y * 1e7 + mo * 1e5 + w * 1e4 + Math.min(b, 9999), s };
+  }
+  const sh = s.match(/^(\d{1,2})\.(\d)\.(\d+)-([A-Z][a-z]+)(?:-(insider|beta|rc|dev)(\d+)?)?$/);
+  if (sh) {
+    let stage = (sh[5] || 'release').toLowerCase();
+    if (stage === 'rc') stage = 'beta';
+    return { fresh: true, short: true, minor: +sh[1], week: +sh[2], patch: +sh[3], build: +sh[3], stage, n: +(sh[6] || 0), codename: sh[4], code: 0, s };
   }
   const n2 = s.match(/^Y(\d+)\.M(\d+)\.W(\d+)\.B(\d+)(?:-([A-Z][a-z]+))?(?:-(Insider|Beta|Dev|RC))?$/i);
   if (n2) {
@@ -79,10 +84,11 @@ export function displayName(version, codename) {
   const p = parseVersion(version);
   if (!p) return 'Glyde ' + version;
   if (p.weekly) {
-    let name = `Glyde ${p.major}.${p.minor}.${p.week}.${p.build} ${p.codename}`;
-    if (p.stage !== 'release') name += ' ' + p.stage[0].toUpperCase() + p.stage.slice(1) + (p.n ? ' ' + p.n : '');
+    let name = `Glyde ${p.minor}.${p.week}.${p.build}-${p.codename}`;
+    if (p.stage !== 'release') name += '-' + p.stage + (p.n || '');
     return name;
   }
+  if (p.short) return 'Glyde ' + p.s;
   if (p.fresh) return 'Glyde ' + p.s;
   if (p.major < 20) return 'GT Unblock ' + p.s;
   let name = `Glyde ${p.major}.${String(p.minor).padStart(2, '0')}`;

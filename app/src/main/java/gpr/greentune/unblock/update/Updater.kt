@@ -194,7 +194,12 @@ object Updater {
 
     private val weekly = Regex("^v?(\\d{2})\\.(\\d{1,2})\\.(\\d)\\.(\\d+)(-.*)?$")
 
-    fun codeOf(v: String): Long? = weekly.matchEntire(v)?.groupValues?.let {
+    private val short = Regex("^(\\d{1,2})\\.(\\d)\\.(\\d+)-[A-Za-z]+(-.*)?$")
+
+    fun codeOf(v: String): Long? = short.matchEntire(v)?.groupValues?.let {
+        val y = (BuildConfig.RELEASE_YEAR.toLongOrNull() ?: 2026L) % 100
+        1_000_000_000L + y * 10_000_000 + it[1].toLong() * 100_000 + it[2].toLong() * 10_000 + minOf(it[3].toLong(), 9999)
+    } ?: weekly.matchEntire(v)?.groupValues?.let {
         1_000_000_000L + it[1].toLong() * 10_000_000 + it[2].toLong() * 100_000 + it[3].toLong() * 10_000 + minOf(it[4].toLong(), 9999)
     } ?: fresh.matchEntire(v)?.groupValues?.let {
         it[1].toLong() * 10_000_000 + it[2].toLong() * 100_000 + it[3].toLong() * 10_000 + minOf(it[4].toLong(), 9999)

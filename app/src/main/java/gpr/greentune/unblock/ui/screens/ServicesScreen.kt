@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -76,7 +77,7 @@ import java.util.Locale
 
 @OptIn(ExperimentalLayoutApi::class, ExperimentalFoundationApi::class)
 @Composable
-fun ServicesScreen(onOpenDiag: () -> Unit) {
+fun ServicesScreen(onOpenDiag: () -> Unit, onOpenTelegram: () -> Unit = {}, onOpenApps: () -> Unit = {}) {
     val c = Air.colors
     val context = LocalContext.current
     val presets by Presets.data.collectAsStateWithLifecycle()
@@ -101,6 +102,11 @@ fun ServicesScreen(onOpenDiag: () -> Unit) {
     }
 
     ScreenColumn(stringResource(R.string.services_title)) {
+        val tg by gpr.greentune.unblock.tg.TgBridge.stats.collectAsStateWithLifecycle()
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+            ShortcutCard(R.drawable.ic_v3_telegram, "Telegram", stringResource(if (tg.running) R.string.tg_ready else R.string.tg_link_sub), if (tg.running) c.ok else null, Modifier.weight(1f), onOpenTelegram)
+            ShortcutCard(R.drawable.ic_menu_apps, stringResource(R.string.nav_apps), stringResource(R.string.apps_short), null, Modifier.weight(1f), onOpenApps)
+        }
         GlassPanel(Modifier.fillMaxWidth()) {
             Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                 Text(stringResource(R.string.services_explain), fontSize = 13.5.sp, color = c.subText)
@@ -395,6 +401,32 @@ private fun CustomSitesPanel() {
                     SettingsStore.update { it.copy(customDomains = emptyList()) }
                 })
             }
+        }
+    }
+}
+
+@Composable
+private fun ShortcutCard(icon: Int, title: String, sub: String, dot: androidx.compose.ui.graphics.Color?, modifier: Modifier, onClick: () -> Unit) {
+    val c = Air.colors
+    Row(
+        modifier
+            .glass(c, 18.dp)
+            .clip(androidx.compose.foundation.shape.RoundedCornerShape(18.dp))
+            .clickable(onClick = onClick)
+            .padding(horizontal = 12.dp, vertical = 10.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        androidx.compose.foundation.Image(androidx.compose.ui.res.painterResource(icon), null, Modifier.size(34.dp))
+        Spacer(Modifier.width(10.dp))
+        Column(Modifier.weight(1f)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(title, fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = c.text, maxLines = 1)
+                if (dot != null) {
+                    Spacer(Modifier.width(6.dp))
+                    gpr.greentune.air.StatusDot(dot, size = 7.dp)
+                }
+            }
+            Text(sub, fontSize = 11.5.sp, lineHeight = 14.sp, color = c.subText, maxLines = 2, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis)
         }
     }
 }

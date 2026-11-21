@@ -128,12 +128,33 @@ def ding(notes, d, decay, name, gain, lp):
     finish(x, name, gain, lp=lp)
 
 
+def tine(f, d, decay):
+    t = t_of(d)
+    body = np.sin(2 * np.pi * f * t) + 0.28 * np.sin(2 * np.pi * f * 2 * t + 0.4) * np.exp(-t / (decay * 0.5))
+    body += 0.08 * np.sin(2 * np.pi * f * 3 * t + 1.1) * np.exp(-t / (decay * 0.3))
+    strike = np.sin(2 * np.pi * f * 7.0 * t) * np.exp(-t / 0.018) * 0.12
+    e = np.minimum(1.0, t / 0.009) ** 1.2 * np.exp(-np.maximum(0, t - 0.009) / decay)
+    return (body + strike) * e
+
+
+def soft_chord(notes, d, strum, decay, name, gain, lp, mix):
+    buf = np.zeros(int(SR * d))
+    for i, n in enumerate(notes):
+        f = note(n)
+        sig = tine(f, d - i * strum, decay) * 0.7 + pad(f, d - i * strum, 0.05, decay * 1.2) * 0.12
+        place(buf, sig, i * strum, 1.0 - i * 0.12)
+    x = reverb(buf, mix, 0.9)
+    n = int(0.16 * SR)
+    x[-n:] *= np.linspace(1, 0, n) ** 2
+    finish(x, name, gain, lp=lp)
+
+
 def chime_on():
-    ding((88, 95), 0.4, 0.11, "chime_on", 0.38, 6500)
+    soft_chord((72, 76, 79, 84), 0.68, 0.07, 0.26, "chime_on", 0.42, 5200, 0.22)
 
 
 def chime_off():
-    ding((83, 76), 0.36, 0.09, "chime_off", 0.3, 4500)
+    soft_chord((79, 72), 0.48, 0.08, 0.2, "chime_off", 0.32, 4200, 0.18)
 
 
 def tune_done():
@@ -156,11 +177,12 @@ def error():
 
 
 def tap():
-    d = 0.18
+    d = 0.09
     buf = np.zeros(int(SR * d))
-    place(buf, bubble(380, 1100, 0.06, 1.0), 0.0)
-    place(buf, glass(note(93), 0.15, 0.06) * 0.25, 0.015)
-    finish(reverb(buf, 0.15, 0.5), "tap", 0.5)
+    t = t_of(d)
+    sig = (np.sin(2 * np.pi * 1760 * t) + 0.3 * np.sin(2 * np.pi * 2640 * t)) * np.exp(-t / 0.014) * np.minimum(1, t / 0.002)
+    place(buf, sig, 0.0)
+    finish(reverb(buf, 0.1, 0.4), "tap", 0.35, lp=6000)
 
 
 for f in (chime_on, chime_off, tune_done, error, tap):

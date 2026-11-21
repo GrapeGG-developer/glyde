@@ -44,7 +44,7 @@ import gpr.greentune.air.GlassPanel
 import gpr.greentune.air.StatusDot
 
 @Composable
-fun DiagScreen() {
+fun DiagScreen(onRetune: (android.content.Context) -> Unit = {}) {
     val c = Air.colors
     val context = LocalContext.current
     val clipboard = LocalClipboardManager.current
@@ -60,6 +60,8 @@ fun DiagScreen() {
                     AirButton(stringResource(R.string.cancel), modifier = Modifier.fillMaxWidth(), onClick = { Diag.cancel() })
                 } else {
                     AirButton(stringResource(R.string.diag_start), primary = true, modifier = Modifier.fillMaxWidth(), onClick = { Diag.start(context) })
+                    val tune by gpr.greentune.unblock.core.Tuner.progress.collectAsStateWithLifecycle()
+                    AirButton(stringResource(R.string.retune), enabled = !tune.running, modifier = Modifier.fillMaxWidth(), onClick = { onRetune(context) })
                 }
                 st.error?.let { Text(it, fontSize = 12.sp, color = c.danger) }
             }

@@ -57,8 +57,12 @@ fun AboutScreen(onDonate: () -> Unit, onFeedback: () -> Unit) {
                 EggLogo(120)
                 Text(stringResource(R.string.app_name), fontSize = 26.sp, fontWeight = FontWeight.SemiBold, color = c.text)
                 Text(
-                    BuildConfig.DISPLAY_NAME,
-                    fontSize = 14.sp, color = c.subText,
+                    BuildConfig.RELEASE_YEAR,
+                    fontSize = 15.sp, fontWeight = FontWeight.Light, letterSpacing = 4.sp, color = c.subText
+                )
+                Spacer(Modifier.height(6.dp))
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.clickable(remember { MutableInteractionSource() }, null) {
                         taps++
                         if (taps == 7) {
@@ -68,13 +72,17 @@ fun AboutScreen(onDonate: () -> Unit, onFeedback: () -> Unit) {
                             Toast.makeText(context, R.string.insider_copied, Toast.LENGTH_LONG).show()
                         }
                     }
-                )
+                ) {
+                    gpr.greentune.unblock.ui.brand.CosmicMark(BuildConfig.CODENAME, Modifier.size(22.dp))
+                    Spacer(Modifier.width(8.dp))
+                    Text(versionCaption(), fontSize = 14.sp, color = c.subText)
+                }
                 if (showCode) {
                     Spacer(Modifier.height(4.dp))
                     Badge(gpr.greentune.unblock.net.Device.code, color = Air.colors.tint)
                 }
                 Spacer(Modifier.height(6.dp))
-                Badge("by GREENTUNE", color = Air.colors.accent)
+                Badge("© " + BuildConfig.RELEASE_YEAR + " GREENTUNE", color = Air.colors.accent)
                 Spacer(Modifier.height(10.dp))
                 Text(stringResource(R.string.about_text), fontSize = 14.sp, color = c.text, textAlign = TextAlign.Center)
                 Spacer(Modifier.height(4.dp))

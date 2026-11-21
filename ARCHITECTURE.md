@@ -39,15 +39,16 @@ apps → VpnService (TUN) → hev-socks5-tunnel → ciadpi → network
 `tools/version.py` turns a tag into everything the build needs:
 
 ```
-python3 tools/version.py 26.11.2.2
-name=26.11.2.2
-code=1261120002
-codename=Astra
-kind=star
-display=Glyde 26.11.2.2 Astra
+python3 tools/version.py 26.11.3.1
+name=26.11.3.1
+version=11.3.1-Achtototam
+year=2026
+code=1261130001
+codename=Achtototam
+display=Glyde 11.3.1-Achtototam
 ```
 
-`code = 1e9 + yy·1e7 + mm·1e5 + week·1e4 + build`. The weekly name and icon come from the `WEEKLY` table; the same table lives in `backend/services/releases.js`.
+Tags carry the year (`26.11.3.1`), the app shows `11.3.1-Achtototam`. `code = 1e9 + yy·1e7 + mm·1e5 + week·1e4 + build`, week is `day // 7`. Weekly names come from `NAMES` (the same list lives in `backend/services/releases.js`). The icon is generated from the name by `ui/brand/Cosmic.kt`; `tools/cosmic.py` renders the same icon to PNG.
 
 ## Backend
 

@@ -50,7 +50,7 @@ object Authenticity {
             if (!certOk(context)) return@run BuildCheck.Modified
             val v = BuildConfig.VERSION_NAME
             if (v == "1.0.0" || v.contains("dev")) return@run BuildCheck.Dev
-            tag = if (v.startsWith("Y") || v.count { it == '.' } >= 3) v else "v$v"
+            tag = BuildConfig.RELEASE_TAG.ifBlank { if (v.startsWith("Y")) v else "v$v" }
             val sha = try { apkSha(context) } catch (_: Exception) { return@run BuildCheck.Unknown }
             val sums = fetchSums(tag) ?: return@run BuildCheck.Unknown
             if (sums.containsValue(sha)) BuildCheck.Genuine else BuildCheck.Modified

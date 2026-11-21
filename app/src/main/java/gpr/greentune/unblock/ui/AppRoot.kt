@@ -96,7 +96,7 @@ fun AppRoot(
         else -> 0f
     }
 
-    TiltSensor(settings.tilt && !lite)
+    TiltSensor(!lite)
     ProvideBackdrop {
     val speed by gpr.greentune.unblock.system.Traffic.speed.collectAsStateWithLifecycle()
     LaunchedEffect(status) {

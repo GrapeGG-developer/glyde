@@ -13,5 +13,5 @@ object Perf {
         else -> weak
     }
 
-    fun effects(s: AppSettings): Boolean = s.effects3d && !lite(s)
+    fun effects(s: AppSettings): Boolean = !lite(s)
 }

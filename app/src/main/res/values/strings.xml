@@ -251,7 +251,7 @@
     <string name="tg_set_sub">Локальный прокси, который ведёт Telegram через WebSocket</string>
     <string name="retune">Подобрать заново</string>
     <string name="lite_mode">Лёгкий режим</string>
-    <string name="lite_sub">Меньше анимаций — для слабых телефонов и экономии батареи</string>
+    <string name="lite_sub">Без живого фона, параллакса и анимаций — для слабых телефонов и экономии батареи</string>
     <string name="lite_auto">Включён автоматически для этого телефона</string>
     <string name="nav_expert">Для экспертов</string>
     <string name="nav_more">Ещё</string>
@@ -296,4 +296,5 @@
     <string name="privacy_title">Какие данные собираются</string>
     <string name="privacy_text">Случайный ID устройства, IP-адрес (хранится 30 дней), страна и город по IP, оператор и ASN, модель телефона, версия Android и Glyde, статус обхода, выбранная стратегия, какие сервисы открываются, отчёты о вылетах. Историю сайтов и трафик Glyde не собирает.</string>
     <string name="nav_menu">Меню</string>
+    <string name="apps_short">Какие приложения идут через Glyde</string>
 </resources>

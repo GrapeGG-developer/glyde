@@ -24,12 +24,12 @@ Glyde (раньше GT Unblock) — самостоятельное прилож�
 - **Экспертный режим**: все параметры движка, конструктор команды, журнал.
 - **Выбор приложений**, SOCKS5 с авторизацией, DNS через HTTPS, блокировка QUIC.
 - **Обновления за секунды** по постоянному соединению, зеркала, поэтапная раскатка и проверка подлинности сборки.
-- **Лёгкий режим** одной кнопкой для слабых телефонов.
+- **Лёгкий режим** одной кнопкой: без живого фона, параллакса и анимаций.
 - **Дизайн [Air](https://github.com/GrapeGG-developer/air)**: стекло Aero, живой фон, который реагирует на подключение и скорость, наклон телефона, системная светлая и тёмная тема, шрифт Glyde Sans.
 
 ## Версии
 
-Формат: `ГГ.ММ.Н.С Имя`, например **26.11.2.2 Astra**: год, месяц, неделя месяца и номер сборки за неделю. Каждую неделю — новое космическое имя и значок. Сначала сборку получает Insider, затем Beta, затем все.
+Формат: `М.Н.С-Имя`, например **11.3.1-Achtototam**: месяц, неделя месяца и номер сборки за неделю. Каждую неделю — новое космическое имя по алфавиту и свой значок, который рисуется из имени. Год указан в «О приложении». Сначала сборку получает Insider, затем Beta, затем все.
 
 ## Как это работает
 
@@ -86,7 +86,7 @@ JDK 17, Android SDK 36, NDK 27.2.12479018. Устройство проекта �
 
 Highlights: automatic per-service route planning with 272 strategies and auto repair, a Telegram WebSocket proxy, UDP/QUIC bypass, a network check, ISP-aware cloud strategies, an expert mode, split tunneling, SOCKS5, DNS over HTTPS, instant updates with mirrors and staged rollout, a lite mode and the [Air](https://github.com/GrapeGG-developer/air) design system.
 
-Versions look like `26.11.2.2 Astra`: year, month, week of the month and build of the week, with a new cosmic name every week.
+Versions look like `11.3.1-Achtototam`: month, week of the month and build of the week, with a new alphabetical cosmic name and a generated icon every week.
 
 Privacy: crash reports and statistics are always sent (random device ID, IP kept for 30 days, country and city, ISP and ASN, device model, Android and Glyde versions, bypass status and strategy, which supported services open). Browsing history and traffic are never collected. See [PRIVACY.md](PRIVACY.md).
 

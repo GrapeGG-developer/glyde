@@ -4,6 +4,7 @@ import android.graphics.RuntimeShader
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
@@ -44,10 +45,10 @@ private fun ShaderBackground(energy: Float, pulse: Float, accent: Color, modifie
         }
     } ?: return AirWallpaper(modifier)
     val brush = remember(shader) { ShaderBrush(shader) }
-    val time by rememberShaderTime(45)
-    val e by animateFloatAsState(energy, tween(1200), label = "e")
-    val p by animateFloatAsState(pulse, tween(450), label = "p")
-    val ac by animateColorAsState(accent, tween(900), label = "ac")
+    val time by rememberShaderTime(30)
+    val e by animateFloatAsState(energy, tween(1600, easing = FastOutSlowInEasing), label = "e")
+    val p by animateFloatAsState(pulse, tween(1500), label = "p")
+    val ac by animateColorAsState(accent, tween(1600), label = "ac")
     Canvas(modifier.fillMaxSize()) {
         try {
             val tilt = Motion.tilt.value

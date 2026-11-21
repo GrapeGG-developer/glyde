@@ -57,48 +57,45 @@ fun Orb(state: OrbState, onClick: () -> Unit, description: String, modifier: Mod
     val lv by animateFloatAsState(level.coerceIn(0f, 1f), tween(420), label = "lv")
     val source = remember { MutableInteractionSource() }
     val pressed by source.collectIsPressedAsState()
-    val squashX by animateFloatAsState(if (pressed) 1.05f else 1f, spring(dampingRatio = 0.32f, stiffness = 420f), label = "sx")
-    val squashY by animateFloatAsState(if (pressed) 0.91f else 1f, spring(dampingRatio = 0.32f, stiffness = 420f), label = "sy")
+    val press by animateFloatAsState(if (pressed) 0.965f else 1f, spring(dampingRatio = 1f, stiffness = 700f), label = "pr")
+    val squashX = press
+    val squashY = press
     val pal = when (state) {
         OrbState.On -> PaletteOn
         OrbState.Error -> PaletteError
         else -> PaletteOff
     }
-    val top by animateColorAsState(pal.top, tween(700), label = "t")
-    val mid by animateColorAsState(pal.mid, tween(700), label = "m")
-    val bottom by animateColorAsState(pal.bottom, tween(700), label = "b")
-    val glow by animateColorAsState(pal.glow, tween(700), label = "g")
+    val top by animateColorAsState(pal.top, tween(1100), label = "t")
+    val mid by animateColorAsState(pal.mid, tween(1100), label = "m")
+    val bottom by animateColorAsState(pal.bottom, tween(1100), label = "b")
+    val glow by animateColorAsState(pal.glow, tween(1100), label = "g")
     val energy by animateFloatAsState(
         when (state) {
             OrbState.On -> 1f
             OrbState.Starting -> 0.65f
             OrbState.Error -> 0.5f
             OrbState.Off -> 0.32f
-        }, tween(700), label = "e"
+        }, tween(1100), label = "e"
     )
-    val spinA by animateFloatAsState(if (state == OrbState.Starting) 1f else 0f, tween(300), label = "sa")
-    val onA by animateFloatAsState(if (state == OrbState.On) 1f else 0f, tween(900), label = "oa")
+    val spinA by animateFloatAsState(if (state == OrbState.Starting) 1f else 0f, tween(500), label = "sa")
+    val onA by animateFloatAsState(if (state == OrbState.On) 1f else 0f, tween(1200), label = "oa")
     val t = rememberInfiniteTransition(label = "orb")
-    val breathe by t.animateFloat(0.72f, 1f, infiniteRepeatable(tween(2100, easing = FastOutSlowInEasing), RepeatMode.Reverse), label = "br")
-    val spin by t.animateFloat(0f, 360f, infiniteRepeatable(tween(1100, easing = LinearEasing), RepeatMode.Restart), label = "sp")
-    val sweep by t.animateFloat(0f, 1f, infiniteRepeatable(tween(5200, easing = LinearEasing), RepeatMode.Restart), label = "sw")
-    val ripple by t.animateFloat(0f, 1f, infiniteRepeatable(tween(2600, easing = LinearEasing), RepeatMode.Restart), label = "rp")
-    val wobble by t.animateFloat(0f, 6.2832f, infiniteRepeatable(tween(4800, easing = LinearEasing), RepeatMode.Restart), label = "wb")
+    val breathe by t.animateFloat(0.9f, 1f, infiniteRepeatable(tween(4200, easing = FastOutSlowInEasing), RepeatMode.Reverse), label = "br")
+    val spin by t.animateFloat(0f, 360f, infiniteRepeatable(tween(1800, easing = LinearEasing), RepeatMode.Restart), label = "sp")
 
     Box(modifier.size(size * 1.35f), contentAlignment = Alignment.Center) {
         Canvas(Modifier.fillMaxSize()) {
             val r = size.toPx() / 2f
-            drawHalo(r, glow, ((energy + lv * 0.6f) * (if (state == OrbState.On || state == OrbState.Off) breathe else 1f)).coerceAtMost(1f), onA, ripple)
+            drawHalo(r, glow, ((energy + lv * 0.15f) * (if (state == OrbState.On) breathe else 1f)).coerceAtMost(1f), onA)
             drawShadow(r, squashX, glow, energy)
         }
         Canvas(
             Modifier.fillMaxSize().graphicsLayer {
-                scaleX = squashX * (1f + 0.012f * onA * kotlin.math.sin(wobble))
-                scaleY = squashY * (1f + 0.012f * onA * kotlin.math.cos(wobble))
-                transformOrigin = androidx.compose.ui.graphics.TransformOrigin(0.5f, 0.86f)
+                scaleX = squashX
+                scaleY = squashY
             }
         ) {
-            drawOrb(size.toPx() / 2f, top, mid, bottom, glow, energy * (if (state == OrbState.On) breathe else 1f), spinA, spin, pressed, sweep)
+            drawOrb(size.toPx() / 2f, top, mid, bottom, glow, energy, spinA, spin, pressed)
         }
         Box(
             Modifier
@@ -110,18 +107,14 @@ fun Orb(state: OrbState, onClick: () -> Unit, description: String, modifier: Mod
     }
 }
 
-private fun DrawScope.drawHalo(r: Float, glow: Color, energy: Float, onA: Float, ripple: Float) {
+private fun DrawScope.drawHalo(r: Float, glow: Color, energy: Float, onA: Float) {
     val c = center
     drawCircle(
-        Brush.radialGradient(0.62f to glow.copy(alpha = 0.42f * energy), 0.82f to glow.copy(alpha = 0.12f * energy), 1f to Color.Transparent, center = c, radius = r * 1.5f),
-        r * 1.5f, c
+        Brush.radialGradient(0.6f to glow.copy(alpha = 0.30f * energy), 0.8f to glow.copy(alpha = 0.08f * energy), 1f to Color.Transparent, center = c, radius = r * 1.45f),
+        r * 1.45f, c
     )
     if (onA > 0.01f) {
-        for (k in 0 until 3) {
-            val p = (ripple + k / 3f) % 1f
-            val rr = r * (1.0f + 0.48f * p)
-            drawCircle(glow.copy(alpha = 0.45f * (1f - p) * (1f - p) * onA), rr, c, style = Stroke(r * 0.025f * (1.2f - p)))
-        }
+        drawCircle(glow.copy(alpha = 0.16f * onA), r * 1.06f, c, style = Stroke(r * 0.012f))
     }
 }
 
@@ -136,7 +129,7 @@ private fun DrawScope.drawShadow(r: Float, sx: Float, glow: Color = Color.Transp
     }
 }
 
-private fun DrawScope.drawOrb(r: Float, top: Color, mid: Color, bottom: Color, glow: Color, energy: Float, spinA: Float, spin: Float, pressed: Boolean, sweep: Float) {
+private fun DrawScope.drawOrb(r: Float, top: Color, mid: Color, bottom: Color, glow: Color, energy: Float, spinA: Float, spin: Float, pressed: Boolean) {
     val c = center
     val tilt = Motion.tilt.value
     val lx = (-tilt.x * 0.10f).coerceIn(-0.18f, 0.18f)
@@ -178,14 +171,17 @@ private fun DrawScope.drawOrb(r: Float, top: Color, mid: Color, bottom: Color, g
         }
         if (spinA > 0.01f) {
             rotate(spin, c) {
-                for (i in 0 until 18) {
-                    val a = 1f - i / 18f
-                    drawArc(
-                        lerpColor(glow, Color.White, 0.5f).copy(alpha = 0.55f * a * spinA), -i * 7f, 7.5f, false,
-                        topLeft = Offset(c.x - r * 0.78f, c.y - r * 0.78f), size = Size(r * 1.56f, r * 1.56f),
-                        style = Stroke(r * 0.07f * a + r * 0.01f, cap = StrokeCap.Round)
-                    )
-                }
+                drawArc(
+                    Brush.sweepGradient(
+                        0f to Color.Transparent,
+                        0.7f to Color.Transparent,
+                        1f to lerpColor(glow, Color.White, 0.6f).copy(alpha = 0.6f * spinA),
+                        center = c
+                    ),
+                    0f, 360f, false,
+                    topLeft = Offset(c.x - r * 0.8f, c.y - r * 0.8f), size = Size(r * 1.6f, r * 1.6f),
+                    style = Stroke(r * 0.025f)
+                )
             }
         }
         drawPower(Offset(c.x - lx * r * 0.25f, c.y + r * 0.04f), r, glow, energy)
@@ -204,23 +200,14 @@ private fun DrawScope.drawOrb(r: Float, top: Color, mid: Color, bottom: Color, g
             Brush.verticalGradient(listOf(Color.Transparent, lerpColor(glow, Color.White, 0.7f).copy(alpha = 0.9f)), c.y + r * 0.2f, c.y + r),
             30f, 120f, false,
             topLeft = Offset(c.x - r * 0.9f, c.y - r * 0.9f), size = Size(r * 1.8f, r * 1.8f),
-            style = Stroke(r * 0.045f, cap = StrokeCap.Round)
+            style = Stroke(r * 0.03f, cap = StrokeCap.Round)
         )
-        val sx = c.x - r * 1.8f + sweep * r * 6f
-        if (sx < c.x + r * 1.8f) {
-            rotate(28f, c) {
-                drawRect(
-                    Brush.horizontalGradient(listOf(Color.Transparent, Color.White.copy(alpha = 0.16f), Color.Transparent), sx - r * 0.25f, sx + r * 0.25f),
-                    topLeft = Offset(sx - r * 0.25f, c.y - r * 1.6f), size = Size(r * 0.5f, r * 3.2f)
-                )
-            }
-        }
-        if (pressed) drawCircle(Color.Black.copy(alpha = 0.12f), r, c)
+        if (pressed) drawCircle(Color.Black.copy(alpha = 0.06f), r, c)
         val hx = c.x + lx * r
         val hy = c.y + ly * r
         drawOval(
             Brush.verticalGradient(
-                0f to Color.White.copy(alpha = 0.95f), 0.35f to Color.White.copy(alpha = 0.55f), 1f to Color.White.copy(alpha = 0f),
+                0f to Color.White.copy(alpha = 0.78f), 0.35f to Color.White.copy(alpha = 0.38f), 1f to Color.White.copy(alpha = 0f),
                 startY = hy - r * 0.93f, endY = hy - r * 0.05f
             ),
             topLeft = Offset(hx - r * 0.66f, hy - r * 0.93f),
@@ -231,7 +218,6 @@ private fun DrawScope.drawOrb(r: Float, top: Color, mid: Color, bottom: Color, g
             topLeft = Offset(hx - r * 0.54f, hy - r * 0.74f),
             size = Size(r * 0.4f, r * 0.24f)
         )
-        drawCircle(Color.White.copy(alpha = 0.9f), r * 0.035f, Offset(hx + r * 0.42f, hy - r * 0.5f))
     }
 }
 

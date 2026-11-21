@@ -54,7 +54,6 @@ import gpr.greentune.air.SectionTitle
 import gpr.greentune.air.Segmented
 import gpr.greentune.air.SettingRow
 import gpr.greentune.air.ToggleRow
-import gpr.greentune.air.AirFx
 import gpr.greentune.air.glass
 import gpr.greentune.unblock.update.UpdateState
 import gpr.greentune.unblock.update.Updater
@@ -159,20 +158,6 @@ fun SettingsScreen() {
                 }
                 Text(stringResource(R.string.set_tint_intensity), fontSize = 15.sp, color = c.text)
                 AirSlider(s.tintIntensity, { v -> SettingsStore.update { it.copy(tintIntensity = v) } })
-                ToggleRow(
-                    stringResource(R.string.set_effects),
-                    stringResource(if (AirFx.supported) R.string.set_effects_sub else R.string.set_effects_old),
-                    s.effects3d && AirFx.supported,
-                    { v -> change(false) { it.copy(effects3d = v) } },
-                    enabled = AirFx.supported
-                )
-                ToggleRow(
-                    stringResource(R.string.lite_mode),
-                    if (s.lite == "auto" && gpr.greentune.unblock.system.Perf.weak) stringResource(R.string.lite_auto) else stringResource(R.string.lite_sub),
-                    gpr.greentune.unblock.system.Perf.lite(s),
-                    { v -> change(false) { it.copy(lite = if (v) "on" else "off") } }
-                )
-                ToggleRow(stringResource(R.string.set_tilt), stringResource(R.string.set_tilt_sub), s.tilt, { v -> change(false) { it.copy(tilt = v) } })
                 ToggleRow(stringResource(R.string.set_sound), null, s.sound, { v -> change(false) { it.copy(sound = v) } })
                 ToggleRow(stringResource(R.string.set_haptics), null, s.haptics, { v -> change(false) { it.copy(haptics = v) } })
                 ToggleRow(stringResource(R.string.set_shake), stringResource(R.string.set_shake_sub), s.shake, { v -> change(false) { it.copy(shake = v) } })

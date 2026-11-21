@@ -5,11 +5,13 @@ import re
 import subprocess
 import sys
 
-WEEKLY = [
-    ("Astra", "star"), ("Orbis", "planet"), ("Pinwheel", "galaxy"), ("Halley", "comet"), ("Selene", "moon"), ("Orion", "nebula"),
-    ("Vega", "star"), ("Kepler", "planet"), ("Triangulum", "galaxy"), ("Encke", "comet"), ("Luna", "moon"), ("Carina", "nebula"),
-    ("Sirius", "star"), ("Titan", "planet"), ("Sombrero", "galaxy"), ("Hale", "comet"), ("Phoebe", "moon"), ("Lyra", "nebula"),
-    ("Polaris", "star"), ("Gliese", "planet"), ("Whirlpool", "galaxy"), ("Tempel", "comet"), ("Europa", "moon"), ("Helix", "nebula"),
+NAMES = [
+    "Achtototam", "Brisgalor", "Celestrae", "Draventis", "Eluvion", "Fenrisar", "Galvadi", "Helionyx", "Ithrana",
+    "Jovarre", "Kestralis", "Lumarion", "Myrrhavel", "Nyxalor", "Orrevane", "Pyralith", "Quorvane", "Rhessidon",
+    "Sylvaris", "Tharsion", "Uvarion", "Vespertil", "Wyrrhen", "Xandaris", "Yrradis", "Zephyrion",
+    "Aurelion", "Borvexa", "Cyrrhae", "Duvarnis", "Exaltar", "Fyrnwald", "Gossamyr", "Halcyra", "Ildraven",
+    "Jessavor", "Korvaxis", "Lyraveth", "Marnovae", "Novaquil", "Ophirion", "Prismora", "Qeltharn", "Rovanthe",
+    "Selvaris", "Tyrrhenon", "Ulvessa", "Varkonis", "Wendrix", "Xyloris", "Yvanthar", "Zorrimel",
 ]
 MONTHLY = ["Andromeda", "Betelgeuse", "Cassiopeia", "Draco", "Eridanus", "Fornax", "Gemini", "Hydra", "Izar", "Juno", "Kepler", "Lyra"]
 STAGES = {"insider": "insider", "beta": "beta", "dev": "dev", "rc": "beta"}
@@ -20,8 +22,13 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MSK = datetime.timezone(datetime.timedelta(hours=3))
 
 
+def week_index(y, m, w):
+    return ((y - 26) * 12 + (m - 11)) * 5 + (w - 3)
+
+
 def weekly(y, m, w):
-    return WEEKLY[(((y - 26) * 12 + (m - 11)) * 5 + (w - 2)) % len(WEEKLY)]
+    i = week_index(y, m, w)
+    return "Astra" if i < 0 else NAMES[i % len(NAMES)]
 
 
 def parse(v):
@@ -30,8 +37,8 @@ def parse(v):
     if m:
         y, mo, w, b = int(m[1]), int(m[2]), int(m[3]), int(m[4])
         stage = STAGES.get((m[5] or "").lower(), "release")
-        name, kind = weekly(y, mo, w)
-        return {"scheme": "week", "y": y, "m": mo, "w": w, "b": b, "stage": stage, "n": int(m[6] or 0), "codename": name, "kind": kind,
+        name = weekly(y, mo, w)
+        return {"scheme": "week", "y": y, "m": mo, "w": w, "b": b, "stage": stage, "n": int(m[6] or 0), "codename": name, "kind": "",
                 "code": 1_000_000_000 + y * 10_000_000 + mo * 100_000 + w * 10_000 + min(b, 9999)}
     m = YMWB.match(v)
     if m:
@@ -76,14 +83,18 @@ def next_name(stage=None):
     return name
 
 
+def short(p):
+    v = "%d.%d.%d-%s" % (p["m"], p["w"], p["b"], p["codename"])
+    if p["stage"] != "release":
+        v += "-" + p["stage"] + (str(p["n"]) if p["n"] else "")
+    return v
+
+
 def display(version):
     p = parse(version)
     clean = version.lstrip("v")
     if p["scheme"] == "week":
-        base = "Glyde %d.%d.%d.%d %s" % (p["y"], p["m"], p["w"], p["b"], p["codename"])
-        if p["stage"] != "release":
-            base += " " + p["stage"].capitalize() + (" %d" % p["n"] if p["n"] else "")
-        return base
+        return "Glyde " + short(p)
     if p["scheme"] == "ymwb":
         return "Glyde " + clean
     if p["y"] < 20:
@@ -103,7 +114,7 @@ def notes(version, changelog):
             if on:
                 break
             head = line[3:].strip().split()
-            if head and head[0].lstrip("v") == version.lstrip("v"):
+            if head and head[0].lstrip("v") in (version.lstrip("v"), app_version(version)):
                 on = True
                 continue
         elif on:
@@ -111,10 +122,17 @@ def notes(version, changelog):
     return "\n".join(out).strip()
 
 
+def app_version(version):
+    p = parse(version)
+    return short(p) if p["scheme"] == "week" else version.lstrip("v")
+
+
 def info(version):
     p = parse(version)
     return {
         "name": version.lstrip("v"),
+        "version": app_version(version),
+        "year": str(2000 + p["y"]) if p["scheme"] != "old" or p["y"] >= 20 else "2026",
         "code": p["code"],
         "codename": p["codename"],
         "kind": p["kind"],
@@ -131,7 +149,7 @@ if __name__ == "__main__":
         print(next_name(mode or None))
         raise SystemExit
     if arg == "codenames":
-        print(json.dumps(WEEKLY))
+        print(json.dumps(NAMES))
         raise SystemExit
     version = arg.lstrip("v")
     changelog = open(os.path.join(ROOT, "CHANGELOG.md"), encoding="utf-8").read()

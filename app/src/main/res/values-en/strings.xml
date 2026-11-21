@@ -250,7 +250,7 @@
     <string name="tg_set_sub">A local proxy that routes Telegram over WebSocket</string>
     <string name="retune">Retune</string>
     <string name="lite_mode">Lite mode</string>
-    <string name="lite_sub">Fewer animations for low-end phones and battery saving</string>
+    <string name="lite_sub">No live background, tilt or animations — for slower phones and battery saving</string>
     <string name="lite_auto">Turned on automatically for this phone</string>
     <string name="nav_expert">Expert</string>
     <string name="nav_more">More</string>
@@ -295,4 +295,5 @@
     <string name="privacy_title">What data is collected</string>
     <string name="privacy_text">A random device ID, IP address (kept for 30 days), country and city by IP, ISP and ASN, phone model, Android and Glyde versions, bypass status, chosen strategy, which services open, crash reports. Glyde never collects browsing history or traffic.</string>
     <string name="nav_menu">Menu</string>
+    <string name="apps_short">Choose which apps use Glyde</string>
 </resources>

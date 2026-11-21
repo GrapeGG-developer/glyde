@@ -134,6 +134,14 @@ object Pages {
     const val DONATE = "donate"
     const val FEEDBACK = "feedback"
     const val TELEGRAM = "telegram"
+
+    fun parent(page: String): String? = when (page) {
+        TELEGRAM, APPS -> SERVICES
+        TUNE -> DIAG
+        DONATE, FEEDBACK -> ABOUT
+        MENU, ABOUT -> null
+        else -> MENU
+    }
 }
 
 private fun lerp(a: Float, b: Float, t: Float) = a + (b - a) * t
@@ -187,7 +195,7 @@ fun GlydeHome(onConnect: () -> Unit, onDisconnect: () -> Unit) {
     }
 
     BackHandler(enabled = page != null) {
-        page = if (page != Pages.MENU) Pages.MENU else null
+        page = page?.let { Pages.parent(it) }
     }
 
     val open: (String?) -> Unit = { p ->
@@ -197,7 +205,7 @@ fun GlydeHome(onConnect: () -> Unit, onDisconnect: () -> Unit) {
 
     val lite = Perf.lite(settings)
     val winOpen = page != null
-    val homeScale by animateFloatAsState(if (winOpen) 0.93f else 1f, spring(dampingRatio = 0.8f, stiffness = 260f), label = "hs")
+    val homeScale by animateFloatAsState(if (winOpen) 0.965f else 1f, tween(320, easing = FastOutSlowInEasing), label = "hs")
     var appeared by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) { appeared = true }
     val intro by animateFloatAsState(if (appeared) 1f else 0f, tween(if (lite) 200 else 650, easing = FastOutSlowInEasing), label = "in")
@@ -212,14 +220,13 @@ fun GlydeHome(onConnect: () -> Unit, onDisconnect: () -> Unit) {
                 .graphicsLayer {
                     scaleX = homeScale
                     scaleY = homeScale
-                    rotationX = (1f - homeScale) / 0.07f * 6f
-                    cameraDistance = 18f * density
+                    alpha = 1f - (1f - homeScale) / 0.035f * 0.25f
                 }
                 .statusBarsPadding()
                 .navigationBarsPadding(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            TopBar(onHow = { showHow = true }, modifier = Modifier.graphicsLayer {
+            TopBar(onHow = { showHow = true }, onAbout = { open(Pages.ABOUT) }, modifier = Modifier.graphicsLayer {
                 val k = stage(intro, 0f, 0.5f)
                 alpha = k
                 translationY = (1f - k) * -24.dp.toPx()
@@ -229,7 +236,7 @@ fun GlydeHome(onConnect: () -> Unit, onDisconnect: () -> Unit) {
                 Modifier.size(orbSize * 1.2f).graphicsLayer {
                     val k = stage(intro, 0.05f, 0.75f)
                     alpha = k
-                    val sc = 0.6f + 0.4f * androidx.compose.animation.core.EaseOutBack.transform(k)
+                    val sc = 0.94f + 0.06f * k
                     scaleX = sc
                     scaleY = sc
                 },
@@ -259,8 +266,7 @@ fun GlydeHome(onConnect: () -> Unit, onDisconnect: () -> Unit) {
                 AnimatedContent(
                     targetState = title,
                     transitionSpec = {
-                        (fadeIn(tween(260)) + slideInVertically(spring(dampingRatio = 0.7f, stiffness = 320f)) { it / 2 }) togetherWith
-                            (fadeOut(tween(160)) + slideOutVertically(tween(200)) { -it / 2 })
+                        fadeIn(tween(320, 60)) togetherWith fadeOut(tween(180))
                     },
                     label = "title"
                 ) { tt ->
@@ -321,7 +327,7 @@ fun GlydeHome(onConnect: () -> Unit, onDisconnect: () -> Unit) {
             maxH = maxHeight,
             lite = lite,
             onClose = { page = null },
-            onBack = { page = Pages.MENU },
+            onBack = { page = page?.let { Pages.parent(it) } },
         ) { pg ->
             if (pg == Pages.MENU) Menu(onOpen = { page = it })
             else PageContent(pg, onOpen = { page = it })
@@ -332,10 +338,10 @@ fun GlydeHome(onConnect: () -> Unit, onDisconnect: () -> Unit) {
 }
 
 @Composable
-private fun versionCaption(): String {
+fun versionCaption(): String {
     val v = gpr.greentune.unblock.BuildConfig.VERSION_NAME
     val n = gpr.greentune.unblock.BuildConfig.CODENAME
-    return if (n.isBlank() || v.contains(n)) v else "$v $n"
+    return if (n.isBlank() || v.contains(n)) v else "$v-$n"
 }
 
 @Composable
@@ -352,7 +358,7 @@ private fun SpeedChip(arrow: String, value: String, color: Color) {
 }
 
 @Composable
-private fun TopBar(onHow: () -> Unit, modifier: Modifier = Modifier) {
+private fun TopBar(onHow: () -> Unit, onAbout: () -> Unit, modifier: Modifier = Modifier) {
     val c = Air.colors
     Row(
         modifier
@@ -361,6 +367,10 @@ private fun TopBar(onHow: () -> Unit, modifier: Modifier = Modifier) {
             .padding(horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
+        Row(
+            Modifier.clip(RoundedCornerShape(12.dp)).clickable(onClick = onAbout).padding(end = 6.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
         Image(painterResource(R.drawable.logo_glass), null, Modifier.size(36.dp))
         Spacer(Modifier.width(8.dp))
         Column(verticalArrangement = Arrangement.Center) {
@@ -370,13 +380,14 @@ private fun TopBar(onHow: () -> Unit, modifier: Modifier = Modifier) {
                 DpiBadge()
             }
             Row(verticalAlignment = Alignment.CenterVertically) {
-                gpr.greentune.unblock.ui.brand.CosmicMark(gpr.greentune.unblock.BuildConfig.CODENAME_KIND, Modifier.size(12.dp))
+                gpr.greentune.unblock.ui.brand.CosmicMark(gpr.greentune.unblock.BuildConfig.CODENAME, Modifier.size(13.dp))
                 Spacer(Modifier.width(4.dp))
                 Text(
                     versionCaption(), fontSize = 10.5.sp, lineHeight = 12.sp, color = c.subText, maxLines = 1,
                     overflow = TextOverflow.Ellipsis, letterSpacing = 0.3.sp
                 )
             }
+        }
         }
         Spacer(Modifier.weight(1f))
         val src = remember { MutableInteractionSource() }
@@ -487,19 +498,17 @@ private fun AirWindowHost(
     AnimatedVisibility(
         page != null,
         modifier = Modifier.fillMaxSize(),
-        enter = fadeIn(tween(200)) + scaleIn(spring(dampingRatio = 0.68f, stiffness = 360f), initialScale = 0.84f) +
-            slideInVertically(spring(dampingRatio = 0.75f, stiffness = 300f)) { it / 12 },
-        exit = fadeOut(tween(160)) + scaleOut(tween(180), targetScale = 0.9f) + slideOutVertically(tween(180)) { it / 16 }
+        enter = fadeIn(tween(240)) + scaleIn(tween(300, easing = FastOutSlowInEasing), initialScale = 0.94f),
+        exit = fadeOut(tween(180)) + scaleOut(tween(200), targetScale = 0.96f)
     ) {
         val open by transition.animateFloat(
-            transitionSpec = { spring(dampingRatio = 0.72f, stiffness = 240f) }, label = "wopen"
+            transitionSpec = { tween(320, easing = FastOutSlowInEasing) }, label = "wopen"
         ) { st -> if (st == androidx.compose.animation.EnterExitState.Visible) 1f else 0f }
         Box(
             Modifier.fillMaxSize().statusBarsPadding().navigationBarsPadding().padding(horizontal = 12.dp, vertical = 12.dp)
                 .graphicsLayer {
                     if (!lite) {
-                        rotationX = (1f - open) * 22f
-                        rotationY = (1f - open) * -8f
+                        rotationX = (1f - open) * 6f
                         cameraDistance = 16f * density
                         transformOrigin = androidx.compose.ui.graphics.TransformOrigin(0.5f, 1f)
                     }
@@ -549,7 +558,7 @@ private fun AirWindowHost(
                     ) { p ->
                         val back = pg == Pages.MENU
                         val k by transition.animateFloat(
-                            transitionSpec = { spring(dampingRatio = 0.8f, stiffness = 200f) }, label = "flip"
+                            transitionSpec = { tween(340, easing = FastOutSlowInEasing) }, label = "flip"
                         ) { st ->
                             when (st) {
                                 androidx.compose.animation.EnterExitState.PreEnter -> 1f
@@ -563,10 +572,9 @@ private fun AirWindowHost(
                                     val dir = if (back) -1f else 1f
                                     val kk = k * dir
                                     cameraDistance = 12f * density
-                                    rotationY = -kk * 48f
-                                    translationX = kk * size.width * 0.42f
-                                    translationY = kotlin.math.abs(k) * -size.height * 0.04f
-                                    val sc = 1f - 0.22f * kotlin.math.abs(k)
+                                    rotationY = -kk * 16f
+                                    translationX = kk * size.width * 0.12f
+                                    val sc = 1f - 0.05f * kotlin.math.abs(k)
                                     scaleX = sc
                                     scaleY = sc
                                     transformOrigin = androidx.compose.ui.graphics.TransformOrigin(if (kk > 0) 0f else 1f, 0.5f)
@@ -776,24 +784,17 @@ private fun Menu(onOpen: (String) -> Unit) {
         verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-            Tile(R.drawable.ic_menu_services, stringResource(R.string.nav_services), Modifier.weight(1f).staggerIn(0, !lite)) { onOpen(Pages.SERVICES) }
-            Tile(R.drawable.ic_v3_telegram, "Telegram", Modifier.weight(1f).staggerIn(1, !lite), active = tg.running, badge = settings.tgBridge && !settings.tgLinked) { onOpen(Pages.TELEGRAM) }
-            Tile(R.drawable.ic_v3_retune, stringResource(R.string.retune), Modifier.weight(1f).staggerIn(2, !lite), enabled = !tune.running) { Tuner.start(context, full = false) }
+            Tile(R.drawable.ic_menu_services, stringResource(R.string.nav_services), Modifier.weight(1f).staggerIn(0, !lite), active = tg.running, badge = settings.tgBridge && !settings.tgLinked) { onOpen(Pages.SERVICES) }
+            Tile(R.drawable.ic_v3_network, stringResource(R.string.diag_title), Modifier.weight(1f).staggerIn(1, !lite)) { onOpen(Pages.DIAG) }
         }
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-            Tile(R.drawable.ic_v3_lite, stringResource(R.string.lite_mode), Modifier.weight(1f).staggerIn(3, !lite), active = lite) {
+            Tile(R.drawable.ic_v3_lite, stringResource(R.string.lite_mode), Modifier.weight(1f).staggerIn(2, !lite), active = lite) {
                 if (settings.haptics) Fx.haptic(view)
                 SettingsStore.update { it.copy(lite = if (lite) "off" else "on") }
             }
-            Tile(R.drawable.ic_v3_network, stringResource(R.string.diag_title), Modifier.weight(1f).staggerIn(4, !lite)) { onOpen(Pages.DIAG) }
-            Tile(R.drawable.ic_menu_apps, stringResource(R.string.nav_apps), Modifier.weight(1f).staggerIn(5, !lite)) { onOpen(Pages.APPS) }
+            Tile(R.drawable.ic_v3_expert, stringResource(R.string.nav_settings), Modifier.weight(1f).staggerIn(3, !lite)) { onOpen(Pages.SETTINGS) }
         }
-        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-            Tile(R.drawable.ic_v3_expert, stringResource(R.string.nav_settings), Modifier.weight(1f).staggerIn(6, !lite)) { onOpen(Pages.SETTINGS) }
-            Tile(R.drawable.ic_menu_feedback, stringResource(R.string.nav_feedback), Modifier.weight(1f).staggerIn(7, !lite)) { onOpen(Pages.FEEDBACK) }
-            Tile(R.drawable.ic_v3_shield, stringResource(R.string.nav_about), Modifier.weight(1f).staggerIn(8, !lite)) { onOpen(Pages.ABOUT) }
-        }
-        Box(Modifier.staggerIn(9, !lite)) { DonateRow { onOpen(Pages.DONATE) } }
+        Box(Modifier.staggerIn(4, !lite)) { DonateRow { onOpen(Pages.DONATE) } }
     }
 }
 
@@ -822,9 +823,9 @@ private fun DonateRow(onClick: () -> Unit) {
 private fun PageContent(page: String, onOpen: (String) -> Unit) {
     CompositionLocalProvider(LocalHideTitle provides true) {
         when (page) {
-            Pages.SERVICES -> ServicesScreen(onOpenDiag = { onOpen(Pages.DIAG) })
+            Pages.SERVICES -> ServicesScreen(onOpenDiag = { onOpen(Pages.DIAG) }, onOpenTelegram = { onOpen(Pages.TELEGRAM) }, onOpenApps = { onOpen(Pages.APPS) })
             Pages.TUNE -> TuneScreen()
-            Pages.DIAG -> DiagScreen()
+            Pages.DIAG -> DiagScreen(onRetune = { Tuner.start(it, full = false) })
             Pages.APPS -> AppsScreen()
             Pages.SETTINGS -> SettingsScreen()
             Pages.ABOUT -> AboutScreen(onDonate = { onOpen(Pages.DONATE) }, onFeedback = { onOpen(Pages.FEEDBACK) })

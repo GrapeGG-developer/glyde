@@ -14,42 +14,42 @@ uniform float pulse;
 half4 main(float2 fc) {
     float2 uv = fc / size;
     float asp = size.x / size.y;
+    float ph = time * 6.2831853 / 3600.0;
     float3 tc = float3(tint.rgb);
     float3 ac = float3(accent.rgb);
-    float3 hue = mix(tc, ac, energy * 0.55);
-    float t = time * (0.32 + 0.35 * energy + 0.5 * pulse);
+    float3 hue = mix(tc, ac, energy * 0.6);
 
-    float3 topL = mix(float3(0.82, 0.94, 1.0), tc, 0.22);
-    float3 botL = mix(float3(0.16, 0.42, 0.66), tc * 0.8, 0.45);
-    float3 topD = mix(float3(0.02, 0.08, 0.14), tc * 0.35, 0.3);
-    float3 botD = float3(0.0, 0.012, 0.03);
+    float3 topL = mix(float3(0.86, 0.95, 1.0), hue, 0.18);
+    float3 botL = mix(float3(0.20, 0.46, 0.68), hue * 0.85, 0.40);
+    float3 topD = mix(float3(0.03, 0.09, 0.15), hue * 0.30, 0.35);
+    float3 botD = float3(0.005, 0.015, 0.03);
     float3 col = mix(mix(topL, botL, uv.y), mix(topD, botD, uv.y), dark);
 
-    float x = uv.x * asp + tilt.x * 0.10;
-    float3 rib = float3(0.0);
-    for (int i = 0; i < 4; i++) {
+    float x = uv.x * asp + tilt.x * 0.02;
+    float3 light = float3(0.0);
+    for (int i = 0; i < 3; i++) {
         float fi = float(i);
-        float base = 0.50 + fi * 0.09 - tilt.y * 0.04;
-        float y = base + 0.10 * sin(x * (1.2 + fi * 0.23) + t * (0.55 + fi * 0.12) + fi * 1.7)
-            + 0.045 * sin(x * 3.1 - t * 0.8 + fi * 2.1)
-            - 0.20 * (uv.x - 0.5) * (1.0 + fi * 0.18);
-        float w = 0.035 + 0.075 * (0.5 + 0.5 * sin(x * 1.6 + t * 0.6 + fi * 2.3));
-        float d = abs(uv.y - y);
-        float g = exp(-d * d / (w * w)) * 0.42 + exp(-d / (w * 0.06)) * 0.22;
-        float3 rc = mix(hue, float3(0.80, 0.96, 1.0), fi / 4.0);
-        rib += rc * g * (0.32 + 0.05 * fi);
+        float y = 0.56 + fi * 0.1 - tilt.y * 0.01
+            + 0.07 * sin(x * (1.1 + fi * 0.3) + ph * (40.0 + fi * 15.0) + fi * 2.0)
+            - 0.22 * (uv.x - 0.5);
+        float w = 0.06 + 0.03 * sin(x * 0.9 + ph * (25.0 + fi * 10.0) + fi);
+        float d = uv.y - y;
+        float band = exp(-d * d / (w * w));
+        float sheen = exp(-abs(d) / (w * 0.12));
+        light += mix(hue, float3(0.85, 0.97, 1.0), 0.35 + fi * 0.15) * (band * 0.22 + sheen * 0.16);
     }
-    col += rib * mix(0.50, 0.70, dark) * (0.8 + 0.6 * pulse);
+    col += light * mix(0.55, 0.8, dark) * (0.85 + 0.25 * energy + 0.06 * pulse);
 
-    float au = 0.5 + 0.5 * sin(uv.x * 3.6 + t * 0.35) * sin(uv.x * 1.7 - t * 0.22 + 1.1);
-    col += hue * au * smoothstep(0.55, 0.0, uv.y) * mix(0.10, 0.16, dark) * (0.6 + 0.4 * energy + 0.3 * pulse);
+    float glare = smoothstep(0.45, 0.0, uv.y) * (0.5 + 0.5 * sin(uv.x * 2.4 + ph * 30.0));
+    col += mix(float3(1.0), hue, 0.5) * glare * mix(0.06, 0.05, dark);
 
-    float glowY = 0.42;
-    float2 gp = float2((uv.x - 0.5) * asp, uv.y - glowY);
-    col += hue * exp(-dot(gp, gp) * 7.0) * (0.05 + 0.12 * energy + 0.15 * pulse);
+    float2 gp = float2((uv.x - 0.5) * asp, uv.y - 0.42);
+    col += hue * exp(-dot(gp, gp) * 6.0) * (0.03 + 0.10 * energy);
 
-    float vig = smoothstep(1.3, 0.3, length((uv - 0.5) * float2(1.0, 1.2)));
-    col *= mix(0.72, 1.0, vig);
+    float vig = smoothstep(1.35, 0.35, length((uv - 0.5) * float2(1.0, 1.2)));
+    col *= mix(0.78, 1.0, vig);
+    float n = fract(sin(dot(fc, float2(12.9898, 78.233))) * 43758.5453);
+    col += (n - 0.5) / 255.0;
     return half4(half3(clamp(col, 0.0, 1.0)), 1.0);
 }
 """
