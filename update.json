@@ -1,29 +1,29 @@
 {
- "version": "Y26.M11.W2.B21-Andromeda",
- "code": 261120021,
- "codename": "Andromeda",
- "display": "Glyde Y26.M11.W2.B21-Andromeda",
+ "version": "26.11.2.2",
+ "code": 1261120002,
+ "codename": "Astra",
+ "display": "Glyde 26.11.2.2 Astra",
  "ring": "stable",
- "changelog": "Новое имя версий, настоящее стекло и анимации в стиле Windows 7.\n\n- Новая схема версий: Y26.M11.W2.B21-Andromeda — год, месяц, неделя месяца, номер сборки и космическое имя\n- Исправлена подпись версии: больше нет «project ':app'», версия видна под кнопкой и под названием Glyde\n- Кнопка питания — цельный стеклянный шар-леденец: объёмная заливка, преломление, каустика внизу, блики и значок питания внутри стекла, без хромированного ободка\n- Окно меню — настоящее размытие Aero: фон с пузырями виден сквозь рамку и содержимое, убраны искусственные блики\n- Значок DPI стал ярким и контрастным\n- Пузыри при подключении остаются пузырями: плывут быстрее и зеленеют, проходя «фильтр», без полос и линий\n- Тихий короткий стеклянный «дзынь» при подключении (0,4 секунды)\n- Переключение разделов в стиле Flip 3D, объёмное открытие окна и наклон главного экрана за ним\n- Загрузочная анимация как в Windows 7: четыре цветных огонька слетаются в логотип Glyde (касание пропускает)\n- Telegram-прокси продолжает работать, даже когда обход выключен, и поднимается сам при запуске приложения",
+ "changelog": "Astra. Дизайн Air, быстрый запуск и больше обходов.\n\n- Новые имена версий: 26.11.2.2 Astra — год, месяц, неделя и сборка; каждую неделю новое космическое имя и значок\n- Дизайн Air: живой фон с лентами света, который реагирует на подключение и скорость, наклон телефона и сферу-кнопку\n- Убрана загрузочная анимация: приложение открывается сразу\n- Убраны пузыри\n- Версия показывается только под логотипом\n- Пока обход включён, под кнопкой видна текущая скорость загрузки и отдачи\n- 120 сервисов и 272 стратегии: добавлены Zello, imo, SimpleX, Jami, AO3, Wattpad, AnimeGO, Jut.su, MangaLib, ReManga, Google Новости и другие; расширены списки адресов YouTube, Discord, WhatsApp, Instagram и X\n- Код разделён на модули: air, core:common, core:data, core:native, feature:telegram",
  "assets": {
-  "Glyde-Y26.M11.W2.B21-Andromeda-arm64-v8a.apk": "https://github.com/GrapeGG-developer/glyde/releases/download/Y26.M11.W2.B21-Andromeda/Glyde-Y26.M11.W2.B21-Andromeda-arm64-v8a.apk",
-  "Glyde-Y26.M11.W2.B21-Andromeda-armeabi-v7a.apk": "https://github.com/GrapeGG-developer/glyde/releases/download/Y26.M11.W2.B21-Andromeda/Glyde-Y26.M11.W2.B21-Andromeda-armeabi-v7a.apk",
-  "Glyde-Y26.M11.W2.B21-Andromeda-universal.apk": "https://github.com/GrapeGG-developer/glyde/releases/download/Y26.M11.W2.B21-Andromeda/Glyde-Y26.M11.W2.B21-Andromeda-universal.apk",
-  "Glyde-Y26.M11.W2.B21-Andromeda-x86.apk": "https://github.com/GrapeGG-developer/glyde/releases/download/Y26.M11.W2.B21-Andromeda/Glyde-Y26.M11.W2.B21-Andromeda-x86.apk",
-  "Glyde-Y26.M11.W2.B21-Andromeda-x86_64.apk": "https://github.com/GrapeGG-developer/glyde/releases/download/Y26.M11.W2.B21-Andromeda/Glyde-Y26.M11.W2.B21-Andromeda-x86_64.apk"
+  "Glyde-26.11.2.2-arm64-v8a.apk": "https://github.com/GrapeGG-developer/glyde/releases/download/v26.11.2.2/Glyde-26.11.2.2-arm64-v8a.apk",
+  "Glyde-26.11.2.2-armeabi-v7a.apk": "https://github.com/GrapeGG-developer/glyde/releases/download/v26.11.2.2/Glyde-26.11.2.2-armeabi-v7a.apk",
+  "Glyde-26.11.2.2-universal.apk": "https://github.com/GrapeGG-developer/glyde/releases/download/v26.11.2.2/Glyde-26.11.2.2-universal.apk",
+  "Glyde-26.11.2.2-x86.apk": "https://github.com/GrapeGG-developer/glyde/releases/download/v26.11.2.2/Glyde-26.11.2.2-x86.apk",
+  "Glyde-26.11.2.2-x86_64.apk": "https://github.com/GrapeGG-developer/glyde/releases/download/v26.11.2.2/Glyde-26.11.2.2-x86_64.apk"
  },
  "sizes": {
-  "Glyde-Y26.M11.W2.B21-Andromeda-arm64-v8a.apk": 4829573,
-  "Glyde-Y26.M11.W2.B21-Andromeda-armeabi-v7a.apk": 4806059,
-  "Glyde-Y26.M11.W2.B21-Andromeda-universal.apk": 5420317,
-  "Glyde-Y26.M11.W2.B21-Andromeda-x86.apk": 4844479,
-  "Glyde-Y26.M11.W2.B21-Andromeda-x86_64.apk": 4836312
+  "Glyde-26.11.2.2-arm64-v8a.apk": 4824449,
+  "Glyde-26.11.2.2-armeabi-v7a.apk": 4800947,
+  "Glyde-26.11.2.2-universal.apk": 5415181,
+  "Glyde-26.11.2.2-x86.apk": 4839335,
+  "Glyde-26.11.2.2-x86_64.apk": 4831188
  },
  "sums": {
-  "Glyde-Y26.M11.W2.B21-Andromeda-arm64-v8a.apk": "49407c2aa48c97595a6203cf397a612881b580fc87576b915ce9c49a5854cac3",
-  "Glyde-Y26.M11.W2.B21-Andromeda-armeabi-v7a.apk": "9222fbb2a6f009744cc45f60cfb82cdf46e93359527b6b56ac42ef345a075829",
-  "Glyde-Y26.M11.W2.B21-Andromeda-universal.apk": "080dfc29adbecd26f9f9458ed0c1c7d2dcb207a29b80d9aa75b6e427d3b20470",
-  "Glyde-Y26.M11.W2.B21-Andromeda-x86.apk": "c8187afd6cfce585e4690a1dc823ea5a0e2ea953b413551f7aa4b73f435c8f2a",
-  "Glyde-Y26.M11.W2.B21-Andromeda-x86_64.apk": "d2fc3e3eb6bfbf2ab06cb507b618e862f524db6713fb68ddf2d9c0b8c2ff19ba"
+  "Glyde-26.11.2.2-arm64-v8a.apk": "0acea35afd7fc6088a3a32ba372b37b2955a5e26681529ec203c42fce8cdcfee",
+  "Glyde-26.11.2.2-armeabi-v7a.apk": "d741a06479507aa22a97678c36cc3a63a27b2f8033f90d1a5f64de446d2f5fa6",
+  "Glyde-26.11.2.2-universal.apk": "7798642ed59e20ccf2f7beaa6bffc78742f9962b4551b69f33183e8900d59de0",
+  "Glyde-26.11.2.2-x86.apk": "a6b6e03d351b770db8baf797dcd326ae56935f3f22dd948a20b0431b14f071e3",
+  "Glyde-26.11.2.2-x86_64.apk": "20da8ef19be118bf037a1d315e9212d08870af25845d8bacdcd0ed51154d72ec"
  }
 }
