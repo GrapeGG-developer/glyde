@@ -11,28 +11,25 @@
 
 ---
 
-Glyde (раньше GT Unblock) — самостоятельное приложение с открытым кодом для обхода DPI-блокировок. Оно возвращает более 100 сервисов: Telegram, YouTube, Discord, WhatsApp, Instagram, X, Twitch, Signal, TikTok, GitHub, rutracker и другие. Подключается одной кнопкой, но **это не VPN**: серверов нет, трафик идёт напрямую к сайтам. Glyde меняет только форму пакетов, чтобы фильтр провайдера их не узнал.
+Glyde (раньше GT Unblock) — самостоятельное приложение с открытым кодом для обхода DPI-блокировок. Оно возвращает 120 сервисов: Telegram, YouTube, Discord, WhatsApp, Instagram, X, Twitch, Signal, TikTok, GitHub, rutracker и другие. Подключается одной кнопкой, но **это не VPN**: серверов нет, трафик идёт напрямую к сайтам. Glyde меняет только форму пакетов, чтобы фильтр провайдера их не узнал.
 
 ## Возможности
 
-- **Одна кнопка, один экран.** Объёмная Aqua-кнопка и «Меню»: все разделы открываются в прозрачных окнах Aero с размытием. Для обычного пользователя настраивать ничего не нужно.
-- **Автоподбор маршрутов и автопочинка.** Glyde сам проверяет, что заблокировано в вашей сети, решает, что пускать напрямую, что через обход DPI, а что через прокси, проверяет итоговую схему и подбирает заново, если провайдер что-то поменял. Более 200 стратегий.
-- **Ускорение Telegram.** Встроенный локальный прокси ведёт Telegram через WebSocket. Подключается одной кнопкой.
-- **Звонки и игры.** Обход для UDP и QUIC помогает голосовым каналам Discord и звонкам.
-- **Более 100 сервисов по категориям**, свои сайты и импорт хостлистов.
-- **Проверка сети**: подмена DNS, блокировка по IP или DPI. Отчётом можно поделиться.
-- **Обмен настройкой** через короткий код или QR-код и облачная база стратегий по оператору (ASN).
-- **Экспертный режим** со всеми параметрами движка: конструктор команды, ручной выбор стратегий, свои параметры, журнал движка.
-- **Выбор приложений**, режим «только прокси» (SOCKS5 с авторизацией), DNS через HTTPS, блокировка QUIC.
-- **Мгновенные обновления** по постоянному соединению с сервером, зеркала на случай блокировки, поэтапная раскатка (Insider → Beta → Release) и проверка подлинности сборки.
-- **Лёгкий режим** для слабых телефонов включается сам, плюс одна кнопка.
-- **Aqua Aero в реальном времени.** Жидкая стеклянная сфера, каустика на GPU-шейдерах AGSL, живые пузыри с физикой (не слипаются, разлетаются от пальца, реагируют на наклон), глянцевые Aero-иконки, светлая и тёмная тема по системе.
-- **Собственный шрифт Glyde Sans.** Геометричный шрифт с клиновидными засечками и волнами, латиница и кириллица (SIL OFL 1.1, исходники в `tools/font`).
-- **Звуки-аккорды**, синтезированные в `tools/sound`.
+- **Одна кнопка.** Нажали — заработало. Glyde сам проверяет сеть, подбирает обход для каждого сервиса и чинит его, если провайдер что-то поменял.
+- **272 стратегии и 120 сервисов**: мессенджеры, соцсети, видео, музыка, игры, новости, файлы. Свои сайты и импорт хостлистов.
+- **Telegram через WebSocket.** Встроенный локальный прокси работает даже при выключенном обходе.
+- **Звонки и игры.** Обход для UDP и QUIC.
+- **Проверка сети**: подмена DNS, блокировка по IP или DPI, отчёт одной ссылкой.
+- **Облачная база стратегий** по оператору (ASN) и обмен настройкой через код или QR.
+- **Экспертный режим**: все параметры движка, конструктор команды, журнал.
+- **Выбор приложений**, SOCKS5 с авторизацией, DNS через HTTPS, блокировка QUIC.
+- **Обновления за секунды** по постоянному соединению, зеркала, поэтапная раскатка и проверка подлинности сборки.
+- **Лёгкий режим** одной кнопкой для слабых телефонов.
+- **Дизайн [Air](https://github.com/GrapeGG-developer/air)**: стекло Aero, живой фон, который реагирует на подключение и скорость, наклон телефона, системная светлая и тёмная тема, шрифт Glyde Sans.
 
 ## Версии
 
-Версии называются `Glyde ГГ.ММ <Созвездие>`: Andromeda, Betelgeuse, Cassiopeia и дальше по алфавиту. Сначала сборку получает Insider, потом Beta, потом все, а исправления выходят как Patch. Первая версия — **Glyde 26.11 Andromeda**.
+Формат: `ГГ.ММ.Н.С Имя`, например **26.11.2.2 Astra**: год, месяц, неделя месяца и номер сборки за неделю. Каждую неделю — новое космическое имя и значок. Сначала сборку получает Insider, затем Beta, затем все.
 
 ## Как это работает
 
@@ -40,18 +37,18 @@ Glyde (раньше GT Unblock) — самостоятельное прилож�
 Приложения → VpnService (TUN) → hev-socks5-tunnel → ciadpi (byedpi) → интернет
 ```
 
-1. Android VpnService перехватывает трафик устройства на локальном TUN-интерфейсе. Root не нужен.
+1. VpnService перехватывает трафик на локальном TUN-интерфейсе. Root не нужен.
 2. [hev-socks5-tunnel](https://github.com/heiher/hev-socks5-tunnel) превращает пакеты в соединения и передаёт их локальному SOCKS5.
-3. [byedpi](https://github.com/hufrea/byedpi) (ciadpi) меняет начало соединений по выбранной стратегии: разбивает, переупорядочивает и подмешивает фейковые пакеты, чтобы DPI не распознал заблокированный адрес.
-4. Для каждого сервиса используется своя стратегия, подобранная автоматически.
+3. [byedpi](https://github.com/hufrea/byedpi) меняет начало соединений: разбивает, переупорядочивает и подмешивает фейковые пакеты, чтобы DPI не узнал адрес.
+4. Для каждого сервиса используется своя стратегия.
 
 ## Установка
 
 1. Откройте [последний релиз](https://github.com/GrapeGG-developer/glyde/releases/latest).
-2. Скачайте APK для своего процессора. Обычно подходит `arm64-v8a`. Если не уверены, берите `universal`.
+2. Скачайте APK для своего процессора. Обычно подходит `arm64-v8a`, если не уверены — `universal`.
 3. Установите и разрешите VPN-подключение при первом включении.
 
-Требуется Android 10 или новее.
+Нужен Android 10 или новее.
 
 ## Сборка
 
@@ -61,7 +58,7 @@ cd glyde
 ./gradlew assembleRelease
 ```
 
-Нужны JDK 17, Android SDK 36 и NDK 27.2.12479018. Релизы собираются и подписываются в GitHub Actions по тегу `v*`.
+JDK 17, Android SDK 36, NDK 27.2.12479018. Устройство проекта описано в [ARCHITECTURE.md](ARCHITECTURE.md), правила для изменений — в [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Конфиденциальность
 
@@ -69,28 +66,30 @@ cd glyde
 
 ## Поддержать проект
 
-Приложение бесплатное. Если оно вам помогает, можно [поддержать разработку](https://pay.cloudtips.ru/p/c9e9cb6d).
+Приложение бесплатное. Если оно помогает, можно [поддержать разработку](https://pay.cloudtips.ru/p/c9e9cb6d).
 
 ## Благодарности
 
 - [byedpi](https://github.com/hufrea/byedpi) от hufrea (MIT)
 - [hev-socks5-tunnel](https://github.com/heiher/hev-socks5-tunnel) от heiher (MIT)
-- [ZXing](https://github.com/zxing/zxing) (Apache-2.0), генерация QR-кодов
+- [ZXing](https://github.com/zxing/zxing) (Apache-2.0)
 
 ## Лицензия
 
-[GPL-3.0](LICENSE). Сторонние компоненты распространяются под своими лицензиями, см. `app/src/main/jni/*/LICENSE`.
+[GPL-3.0](LICENSE). Сторонние компоненты распространяются под своими лицензиями, см. `core/native/src/main/jni/*/LICENSE`. Шрифт Glyde Sans — SIL OFL 1.1.
 
 ---
 
 ## English
 
-**Glyde** (formerly GT Unblock) by GREENTUNE is an open-source DPI bypass app for Android. It brings back 100+ services (Telegram, YouTube, Discord, WhatsApp, Instagram, X, Twitch, Signal, TikTok, GitHub and more) with one tap. **It is not a VPN**: there is no server, traffic goes straight to websites and only the shape of packets changes.
+**Glyde** by GREENTUNE is an open-source DPI bypass app for Android. One tap brings back 120 services: Telegram, YouTube, Discord, WhatsApp, Instagram, X, Twitch, Signal, TikTok, GitHub and more. **It is not a VPN**: there is no server, traffic goes straight to websites and only the shape of packets changes.
 
-Features: a single screen with a 3D Aqua button and blurred Aero windows, zero settings for regular users, automatic per-service route planning (direct, DPI bypass or proxy) with 200+ strategies and auto repair, a Telegram WebSocket boost, UDP/QUIC bypass for calls and games, 100+ services and custom hostlists, a network check, setup sharing via code or QR, ISP-aware cloud strategies, an expert mode with every engine option and a command builder, split tunneling, SOCKS5 mode with auth, DNS over HTTPS, instant updates over a persistent connection with mirrors and staged rollout (Insider, Beta, Release), build authenticity check, an automatic lite mode, a real-time Aqua Aero design with physics bubbles, the custom Glyde Sans typeface and chord sounds.
+Highlights: automatic per-service route planning with 272 strategies and auto repair, a Telegram WebSocket proxy, UDP/QUIC bypass, a network check, ISP-aware cloud strategies, an expert mode, split tunneling, SOCKS5, DNS over HTTPS, instant updates with mirrors and staged rollout, a lite mode and the [Air](https://github.com/GrapeGG-developer/air) design system.
 
-Versions are named `Glyde YY.MM <Constellation>`, starting with **Glyde 26.11 Andromeda**.
+Versions look like `26.11.2.2 Astra`: year, month, week of the month and build of the week, with a new cosmic name every week.
 
 Privacy: crash reports and statistics are always sent (random device ID, IP kept for 30 days, country and city, ISP and ASN, device model, Android and Glyde versions, bypass status and strategy, which supported services open). Browsing history and traffic are never collected. See [PRIVACY.md](PRIVACY.md).
 
-Licensed under GPL-3.0. The Glyde Sans font is licensed under SIL OFL 1.1.
+Build: `git clone --recursive`, then `./gradlew assembleRelease` (JDK 17, SDK 36, NDK 27.2). See [ARCHITECTURE.md](ARCHITECTURE.md) and [CONTRIBUTING.md](CONTRIBUTING.md).
+
+Licensed under GPL-3.0. Glyde Sans is licensed under SIL OFL 1.1.

@@ -1,8 +1,8 @@
 import crypto from 'node:crypto';
 import { readFileSync } from 'node:fs';
-import { sql, sqlSafe } from './db.js';
-import { releaseList, dropCache, bucket, displayName } from './releases.js';
-import * as live from './live.js';
+import { sql, sqlSafe } from '../lib/db.js';
+import { releaseList, dropCache, bucket, displayName } from '../services/releases.js';
+import * as live from '../services/live.js';
 
 const ADMIN_KEY = process.env.ADMIN_KEY || '';
 const ADMIN_PASS = process.env.ADMIN_PASS || '';

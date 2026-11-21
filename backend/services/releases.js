@@ -1,5 +1,5 @@
 import crypto from 'node:crypto';
-import { sqlSafe } from './db.js';
+import { sqlSafe } from '../lib/db.js';
 
 export const REPO = process.env.GITHUB_REPO || 'GrapeGG-developer/glyde';
 const GH_TOKEN = process.env.GH_TOKEN || '';

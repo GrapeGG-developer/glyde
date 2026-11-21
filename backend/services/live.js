@@ -1,4 +1,4 @@
-import { sql, sqlSafe } from './db.js';
+import { sql, sqlSafe } from '../lib/db.js';
 import { offerFor, offerPayload, parseVersion, displayName } from './releases.js';
 
 export const conns = new Map();
