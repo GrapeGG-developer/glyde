@@ -1,29 +1,29 @@
 {
- "version": "26.11.2.2",
- "code": 1261120002,
- "codename": "Astra",
- "display": "Glyde 26.11.2.2 Astra",
+ "version": "26.11.3.1",
+ "code": 1261130001,
+ "codename": "Achtototam",
+ "display": "Glyde 11.3.1-Achtototam",
  "ring": "stable",
- "changelog": "Astra. Дизайн Air, быстрый запуск и больше обходов.\n\n- Новые имена версий: 26.11.2.2 Astra — год, месяц, неделя и сборка; каждую неделю новое космическое имя и значок\n- Дизайн Air: живой фон с лентами света, который реагирует на подключение и скорость, наклон телефона и сферу-кнопку\n- Убрана загрузочная анимация: приложение открывается сразу\n- Убраны пузыри\n- Версия показывается только под логотипом\n- Пока обход включён, под кнопкой видна текущая скорость загрузки и отдачи\n- 120 сервисов и 272 стратегии: добавлены Zello, imo, SimpleX, Jami, AO3, Wattpad, AnimeGO, Jut.su, MangaLib, ReManga, Google Новости и другие; расширены списки адресов YouTube, Discord, WhatsApp, Instagram и X\n- Код разделён на модули: air, core:common, core:data, core:native, feature:telegram",
+ "changelog": "Проще и спокойнее.\n\n- Версии теперь выглядят так: 11.3.1-Achtototam — месяц, неделя и сборка. Каждую неделю новое космическое имя по алфавиту и свой уникальный значок; год перенесён в «О приложении»\n- Меню из четырёх разделов: Сервисы, Проверка сети, Лёгкий режим, Настройки\n- Telegram и выбор приложений теперь внутри «Сервисов», «Подобрать заново» — в «Проверке сети», «О приложении» открывается касанием логотипа\n- Лёгкий режим одной кнопкой выключает живой фон, параллакс, размытие и анимации\n- Фон Air переделан: спокойные мягкие полосы света, без рывков и скачков при включении обхода\n- Сфера, окна и переходы стали сдержаннее: без пружинных подскоков, кругов и вращающихся следов\n- Новый звук подключения: мягкий короткий аккорд; тише и чище звук касания",
  "assets": {
-  "Glyde-26.11.2.2-arm64-v8a.apk": "https://github.com/GrapeGG-developer/glyde/releases/download/v26.11.2.2/Glyde-26.11.2.2-arm64-v8a.apk",
-  "Glyde-26.11.2.2-armeabi-v7a.apk": "https://github.com/GrapeGG-developer/glyde/releases/download/v26.11.2.2/Glyde-26.11.2.2-armeabi-v7a.apk",
-  "Glyde-26.11.2.2-universal.apk": "https://github.com/GrapeGG-developer/glyde/releases/download/v26.11.2.2/Glyde-26.11.2.2-universal.apk",
-  "Glyde-26.11.2.2-x86.apk": "https://github.com/GrapeGG-developer/glyde/releases/download/v26.11.2.2/Glyde-26.11.2.2-x86.apk",
-  "Glyde-26.11.2.2-x86_64.apk": "https://github.com/GrapeGG-developer/glyde/releases/download/v26.11.2.2/Glyde-26.11.2.2-x86_64.apk"
+  "Glyde-11.3.1-Achtototam-arm64-v8a.apk": "https://github.com/GrapeGG-developer/glyde/releases/download/26.11.3.1/Glyde-11.3.1-Achtototam-arm64-v8a.apk",
+  "Glyde-11.3.1-Achtototam-armeabi-v7a.apk": "https://github.com/GrapeGG-developer/glyde/releases/download/26.11.3.1/Glyde-11.3.1-Achtototam-armeabi-v7a.apk",
+  "Glyde-11.3.1-Achtototam-universal.apk": "https://github.com/GrapeGG-developer/glyde/releases/download/26.11.3.1/Glyde-11.3.1-Achtototam-universal.apk",
+  "Glyde-11.3.1-Achtototam-x86.apk": "https://github.com/GrapeGG-developer/glyde/releases/download/26.11.3.1/Glyde-11.3.1-Achtototam-x86.apk",
+  "Glyde-11.3.1-Achtototam-x86_64.apk": "https://github.com/GrapeGG-developer/glyde/releases/download/26.11.3.1/Glyde-11.3.1-Achtototam-x86_64.apk"
  },
  "sizes": {
-  "Glyde-26.11.2.2-arm64-v8a.apk": 4824449,
-  "Glyde-26.11.2.2-armeabi-v7a.apk": 4800947,
-  "Glyde-26.11.2.2-universal.apk": 5415181,
-  "Glyde-26.11.2.2-x86.apk": 4839335,
-  "Glyde-26.11.2.2-x86_64.apk": 4831188
+  "Glyde-11.3.1-Achtototam-arm64-v8a.apk": 4780205,
+  "Glyde-11.3.1-Achtototam-armeabi-v7a.apk": 4756699,
+  "Glyde-11.3.1-Achtototam-universal.apk": 5370933,
+  "Glyde-11.3.1-Achtototam-x86.apk": 4795087,
+  "Glyde-11.3.1-Achtototam-x86_64.apk": 4786940
  },
  "sums": {
-  "Glyde-26.11.2.2-arm64-v8a.apk": "0acea35afd7fc6088a3a32ba372b37b2955a5e26681529ec203c42fce8cdcfee",
-  "Glyde-26.11.2.2-armeabi-v7a.apk": "d741a06479507aa22a97678c36cc3a63a27b2f8033f90d1a5f64de446d2f5fa6",
-  "Glyde-26.11.2.2-universal.apk": "7798642ed59e20ccf2f7beaa6bffc78742f9962b4551b69f33183e8900d59de0",
-  "Glyde-26.11.2.2-x86.apk": "a6b6e03d351b770db8baf797dcd326ae56935f3f22dd948a20b0431b14f071e3",
-  "Glyde-26.11.2.2-x86_64.apk": "20da8ef19be118bf037a1d315e9212d08870af25845d8bacdcd0ed51154d72ec"
+  "Glyde-11.3.1-Achtototam-arm64-v8a.apk": "b98113352450190f4c89e08c8441c5da61a26bdb992810acb75f0d0c42c6d271",
+  "Glyde-11.3.1-Achtototam-armeabi-v7a.apk": "43396656118b4a016d9726cac9fa53b7b5c1ea1652f45953cc20d3ce980f57cc",
+  "Glyde-11.3.1-Achtototam-universal.apk": "84308d40dc567a6429899e6b814096707e3514cdc6ba8155593c915c20bec1e3",
+  "Glyde-11.3.1-Achtototam-x86.apk": "bc6fcb3b4f55675dbb2337433b3cd5da3905b3d2e4315ec478d40c543e00d7fa",
+  "Glyde-11.3.1-Achtototam-x86_64.apk": "9148466e3f5e810c8d2bf48d99ad2c2d3cb22ed6fe98321db1747ec81deb94a5"
  }
 }
