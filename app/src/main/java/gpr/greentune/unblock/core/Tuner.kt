@@ -80,7 +80,7 @@ object Tuner {
         }
         _progress.value = TuneProgress(true, full, 0, 0, context.getString(R.string.tune_phase_network))
         val geo = Geo.lookup()
-        val key = NetKey.key(context, geo)
+        val key = NetKey.key(context, geo?.asn)
         val label = geo?.label ?: NetKey.transport(context)
 
         _progress.value = TuneProgress(true, full, 0, 0, context.getString(R.string.tune_phase_baseline))

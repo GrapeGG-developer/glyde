@@ -20,6 +20,6 @@ object NetKey {
         }
     }
 
-    fun key(context: Context, geo: GeoInfo?): String =
-        if (geo?.asn != null) "AS${geo.asn}" else transport(context)
+    fun key(context: Context, asn: String?): String =
+        if (asn != null) "AS$asn" else transport(context)
 }
