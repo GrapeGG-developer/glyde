@@ -37,15 +37,15 @@ import gpr.greentune.unblock.R
 import gpr.greentune.unblock.core.Diag
 import gpr.greentune.unblock.core.DiagItem
 import gpr.greentune.unblock.core.Verdict
-import gpr.greentune.unblock.ui.aero.Aero
-import gpr.greentune.unblock.ui.aero.AeroButton
-import gpr.greentune.unblock.ui.aero.AeroProgressBar
-import gpr.greentune.unblock.ui.aero.GlassPanel
-import gpr.greentune.unblock.ui.aero.StatusDot
+import gpr.greentune.air.Air
+import gpr.greentune.air.AirButton
+import gpr.greentune.air.AirProgressBar
+import gpr.greentune.air.GlassPanel
+import gpr.greentune.air.StatusDot
 
 @Composable
 fun DiagScreen() {
-    val c = Aero.colors
+    val c = Air.colors
     val context = LocalContext.current
     val clipboard = LocalClipboardManager.current
     val st by Diag.state.collectAsStateWithLifecycle()
@@ -56,10 +56,10 @@ fun DiagScreen() {
                 Text(stringResource(R.string.diag_explain), fontSize = 13.5.sp, color = c.subText)
                 if (st.running) {
                     Text(stringResource(R.string.diag_running, st.done, st.total), fontSize = 14.sp, color = c.text)
-                    AeroProgressBar(if (st.total > 0 && st.done < st.total) st.done.toFloat() / st.total else null)
-                    AeroButton(stringResource(R.string.cancel), modifier = Modifier.fillMaxWidth(), onClick = { Diag.cancel() })
+                    AirProgressBar(if (st.total > 0 && st.done < st.total) st.done.toFloat() / st.total else null)
+                    AirButton(stringResource(R.string.cancel), modifier = Modifier.fillMaxWidth(), onClick = { Diag.cancel() })
                 } else {
-                    AeroButton(stringResource(R.string.diag_start), primary = true, modifier = Modifier.fillMaxWidth(), onClick = { Diag.start(context) })
+                    AirButton(stringResource(R.string.diag_start), primary = true, modifier = Modifier.fillMaxWidth(), onClick = { Diag.start(context) })
                 }
                 st.error?.let { Text(it, fontSize = 12.sp, color = c.danger) }
             }
@@ -83,11 +83,11 @@ fun DiagScreen() {
                     for (i in st.items) DiagRow(i)
                     AnimatedVisibility(!st.running) {
                         Row(Modifier.padding(top = 10.dp), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                            AeroButton(stringResource(R.string.diag_copy), modifier = Modifier.weight(1f), onClick = {
+                            AirButton(stringResource(R.string.diag_copy), modifier = Modifier.weight(1f), onClick = {
                                 clipboard.setText(AnnotatedString(Diag.report(context)))
                                 Toast.makeText(context, R.string.copied, Toast.LENGTH_SHORT).show()
                             })
-                            AeroButton(stringResource(R.string.diag_share), modifier = Modifier.weight(1f), onClick = {
+                            AirButton(stringResource(R.string.diag_share), modifier = Modifier.weight(1f), onClick = {
                                 val send = Intent(Intent.ACTION_SEND).setType("text/plain").putExtra(Intent.EXTRA_TEXT, Diag.report(context))
                                 try {
                                     context.startActivity(Intent.createChooser(send, null).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
@@ -121,7 +121,7 @@ fun DiagScreen() {
                         }
                     }
                 }
-                AeroButton(
+                AirButton(
                     stringResource(R.string.diag_speed_start),
                     enabled = !st.speedRunning,
                     modifier = Modifier.fillMaxWidth(),
@@ -134,7 +134,7 @@ fun DiagScreen() {
 
 @Composable
 private fun DiagRow(i: DiagItem) {
-    val c = Aero.colors
+    val c = Air.colors
     val context = LocalContext.current
     val color = when (i.verdict) {
         Verdict.Ok -> c.ok
@@ -163,7 +163,7 @@ private fun DiagRow(i: DiagItem) {
 
 @Composable
 private fun SpeedGauge(mbps: Double, progress: Float?) {
-    val c = Aero.colors
+    val c = Air.colors
     val frac = (kotlin.math.ln(1.0 + mbps) / kotlin.math.ln(1.0 + 500.0)).toFloat().coerceIn(0f, 1f)
     Box(Modifier.size(110.dp), contentAlignment = Alignment.Center) {
         Canvas(Modifier.size(110.dp)) {

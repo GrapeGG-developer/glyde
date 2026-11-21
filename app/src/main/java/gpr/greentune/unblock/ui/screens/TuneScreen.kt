@@ -9,7 +9,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import gpr.greentune.unblock.core.ShareCode
-import gpr.greentune.unblock.ui.aero.AeroDialog
+import gpr.greentune.air.AirDialog
 import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -58,14 +58,14 @@ import gpr.greentune.unblock.data.ServiceChoice
 import gpr.greentune.unblock.data.SettingsStore
 import gpr.greentune.unblock.data.TuneResult
 import gpr.greentune.unblock.data.TuneStore
-import gpr.greentune.unblock.ui.aero.Aero
-import gpr.greentune.unblock.ui.aero.AeroButton
-import gpr.greentune.unblock.ui.aero.AeroProgressBar
-import gpr.greentune.unblock.ui.aero.GlassPanel
-import gpr.greentune.unblock.ui.aero.SectionTitle
-import gpr.greentune.unblock.ui.aero.StatusDot
-import gpr.greentune.unblock.ui.aero.ToggleRow
-import gpr.greentune.unblock.ui.aero.glass
+import gpr.greentune.air.Air
+import gpr.greentune.air.AirButton
+import gpr.greentune.air.AirProgressBar
+import gpr.greentune.air.GlassPanel
+import gpr.greentune.air.SectionTitle
+import gpr.greentune.air.StatusDot
+import gpr.greentune.air.ToggleRow
+import gpr.greentune.air.glass
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 import java.text.DateFormat
@@ -73,7 +73,7 @@ import java.util.Date
 
 @Composable
 fun TuneScreen() {
-    val c = Aero.colors
+    val c = Air.colors
     val context = LocalContext.current
     val tune by Tuner.progress.collectAsStateWithLifecycle()
     val result by TuneStore.current.collectAsStateWithLifecycle()
@@ -86,12 +86,12 @@ fun TuneScreen() {
                 Text(stringResource(R.string.tune_explain), fontSize = 13.5.sp, color = c.subText)
                 if (tune.running) {
                     Text(tune.label, fontSize = 14.sp, color = c.text)
-                    AeroProgressBar(tune.fraction)
-                    AeroButton(stringResource(R.string.cancel), onClick = { Tuner.cancel() }, modifier = Modifier.fillMaxWidth())
+                    AirProgressBar(tune.fraction)
+                    AirButton(stringResource(R.string.cancel), onClick = { Tuner.cancel() }, modifier = Modifier.fillMaxWidth())
                 } else {
                     Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                        AeroButton(stringResource(R.string.tune_quick), onClick = { Tuner.start(context, false) }, primary = true, modifier = Modifier.weight(1f))
-                        AeroButton(stringResource(R.string.tune_full), onClick = { Tuner.start(context, true) }, modifier = Modifier.weight(1f))
+                        AirButton(stringResource(R.string.tune_quick), onClick = { Tuner.start(context, false) }, primary = true, modifier = Modifier.weight(1f))
+                        AirButton(stringResource(R.string.tune_full), onClick = { Tuner.start(context, true) }, modifier = Modifier.weight(1f))
                     }
                     if (tune.message != null) Text(tune.message ?: "", fontSize = 13.sp, color = c.text)
                 }
@@ -138,7 +138,7 @@ fun TuneScreen() {
 
 @Composable
 private fun SharePanel() {
-    val c = Aero.colors
+    val c = Air.colors
     val context = LocalContext.current
     val clipboard = LocalClipboardManager.current
     val result by TuneStore.current.collectAsStateWithLifecycle()
@@ -157,21 +157,21 @@ private fun SharePanel() {
                 )
             }
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                AeroButton(stringResource(R.string.share_send), primary = true, enabled = code != null, modifier = Modifier.weight(1f), onClick = {
-                    val cd = code ?: return@AeroButton
+                AirButton(stringResource(R.string.share_send), primary = true, enabled = code != null, modifier = Modifier.weight(1f), onClick = {
+                    val cd = code ?: return@AirButton
                     val send = Intent(Intent.ACTION_SEND).setType("text/plain").putExtra(Intent.EXTRA_TEXT, cd)
                     try {
                         context.startActivity(Intent.createChooser(send, null).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
                     } catch (_: Exception) {
                     }
                 })
-                AeroButton("QR", enabled = code != null, onClick = { showQr = true })
-                AeroButton(stringResource(R.string.diag_copy), enabled = code != null, onClick = {
+                AirButton("QR", enabled = code != null, onClick = { showQr = true })
+                AirButton(stringResource(R.string.diag_copy), enabled = code != null, onClick = {
                     clipboard.setText(AnnotatedString(code ?: ""))
                     Toast.makeText(context, R.string.copied, Toast.LENGTH_SHORT).show()
                 })
             }
-            AeroButton(stringResource(R.string.share_import), modifier = Modifier.fillMaxWidth(), onClick = {
+            AirButton(stringResource(R.string.share_import), modifier = Modifier.fillMaxWidth(), onClick = {
                 val text = clipboard.getText()?.text
                 if (ShareCode.looksLike(text) && ShareCode.apply(text!!)) {
                     Engine.reload(context)
@@ -183,10 +183,10 @@ private fun SharePanel() {
         }
     }
     if (showQr && code != null) {
-        AeroDialog(
+        AirDialog(
             title = stringResource(R.string.share_code),
             onDismiss = { showQr = false },
-            buttons = { AeroButton(stringResource(R.string.close), onClick = { showQr = false }) }
+            buttons = { AirButton(stringResource(R.string.close), onClick = { showQr = false }) }
         ) {
             val matrix = remember(code) { ShareCode.qr(code) }
             Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
@@ -214,7 +214,7 @@ private fun SharePanel() {
 
 @Composable
 private fun ResultRow(name: String, ch: ServiceChoice?, expert: Boolean, strategies: List<String>, onPick: (String?) -> Unit) {
-    val c = Aero.colors
+    val c = Air.colors
     var open by remember { mutableStateOf(false) }
     val state = when {
         ch == null -> c.subText
@@ -263,7 +263,7 @@ private fun ResultRow(name: String, ch: ServiceChoice?, expert: Boolean, strateg
 
 @Composable
 private fun ExpertPanel() {
-    val c = Aero.colors
+    val c = Air.colors
     val context = LocalContext.current
     val clipboard = LocalClipboardManager.current
     val settings by SettingsStore.state.collectAsStateWithLifecycle()
@@ -277,7 +277,7 @@ private fun ExpertPanel() {
     GlassPanel(Modifier.fillMaxWidth()) {
         Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
             Box {
-                AeroButton(stringResource(R.string.expert_pick_default), onClick = { defaultOpen = true }, modifier = Modifier.fillMaxWidth())
+                AirButton(stringResource(R.string.expert_pick_default), onClick = { defaultOpen = true }, modifier = Modifier.fillMaxWidth())
                 DropdownMenu(expanded = defaultOpen, onDismissRequest = { defaultOpen = false }) {
                     for (st in presets.strategies) {
                         DropdownMenuItem(
@@ -304,7 +304,7 @@ private fun ExpertPanel() {
                 modifier = Modifier.fillMaxWidth().heightIn(min = 90.dp).glass(c, 14.dp, glossFraction = 0.2f).padding(10.dp)
             )
             Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                AeroButton(stringResource(R.string.save), primary = true, modifier = Modifier.weight(1f), onClick = {
+                AirButton(stringResource(R.string.save), primary = true, modifier = Modifier.weight(1f), onClick = {
                     scope.launch {
                         val ok = Ciadpi.validate(context, Args.tokenize(Args.withSni(args, presets.fakeSni)))
                         if (ok) {
@@ -316,18 +316,18 @@ private fun ExpertPanel() {
                         }
                     }
                 })
-                AeroButton(stringResource(R.string.expert_from_current), modifier = Modifier.weight(1f), onClick = {
+                AirButton(stringResource(R.string.expert_from_current), modifier = Modifier.weight(1f), onClick = {
                     args = Engine.currentArgs().joinToString(" ") { if (it.contains(' ')) "\"$it\"" else it }
                 })
             }
             Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                AeroButton(stringResource(R.string.expert_export), modifier = Modifier.weight(1f), onClick = {
+                AirButton(stringResource(R.string.expert_export), modifier = Modifier.weight(1f), onClick = {
                     val o = JSONObject().put("gtunblock", 1).put("args", args)
                     TuneStore.current.value?.let { o.put("tune", it.toJson()) }
                     clipboard.setText(AnnotatedString(o.toString()))
                     Toast.makeText(context, R.string.copied, Toast.LENGTH_SHORT).show()
                 })
-                AeroButton(stringResource(R.string.expert_import), modifier = Modifier.weight(1f), onClick = {
+                AirButton(stringResource(R.string.expert_import), modifier = Modifier.weight(1f), onClick = {
                     val text = clipboard.getText()?.text ?: ""
                     try {
                         val o = JSONObject(text)
@@ -346,10 +346,10 @@ private fun ExpertPanel() {
                 })
             }
             Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                AeroButton(stringResource(R.string.expert_log), modifier = Modifier.weight(1f), onClick = {
+                AirButton(stringResource(R.string.expert_log), modifier = Modifier.weight(1f), onClick = {
                     log = if (log == null) Logs.tail(context) else null
                 })
-                AeroButton(stringResource(R.string.expert_reset), danger = true, modifier = Modifier.weight(1f), onClick = {
+                AirButton(stringResource(R.string.expert_reset), danger = true, modifier = Modifier.weight(1f), onClick = {
                     TuneStore.clear()
                     Engine.reload(context)
                 })

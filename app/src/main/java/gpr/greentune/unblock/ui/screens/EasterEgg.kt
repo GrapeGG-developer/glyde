@@ -42,8 +42,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import gpr.greentune.unblock.R
 import gpr.greentune.unblock.system.Fx
-import gpr.greentune.unblock.ui.aero.GlydeSans
-import gpr.greentune.unblock.ui.aero.Touch
+import gpr.greentune.air.GlydeSans
 import kotlinx.coroutines.launch
 
 private val Iridescent = listOf(
@@ -78,8 +77,6 @@ fun EggLogo(size: Int = 120) {
                     }
                     if (taps >= 5 && !open) {
                         open = true
-                        Touch.burstAt.value = Offset(view.width / 2f, view.height * 0.3f)
-                        Touch.burst.value = System.nanoTime()
                         scope.launch {
                             spin.animateTo(720f, tween(1400))
                             spin.snapTo(0f)

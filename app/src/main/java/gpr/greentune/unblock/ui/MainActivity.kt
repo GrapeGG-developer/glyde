@@ -20,7 +20,7 @@ import gpr.greentune.unblock.core.Tuner
 import gpr.greentune.unblock.data.SettingsStore
 import gpr.greentune.unblock.data.TuneStore
 import gpr.greentune.unblock.system.ShakeDetector
-import gpr.greentune.unblock.ui.aero.AeroTheme
+import gpr.greentune.air.AirTheme
 import gpr.greentune.unblock.update.Updater
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.delay
@@ -54,7 +54,7 @@ class MainActivity : ComponentActivity() {
         handleIntent(intent)
         setContent {
             val s by SettingsStore.state.collectAsStateWithLifecycle()
-            AeroTheme(s.theme, Color(s.tint), s.tintIntensity) {
+            AirTheme(s.theme, Color(s.tint), s.tintIntensity) {
                 AppRoot(
                     onConnect = ::connect,
                     onDisconnect = { Engine.stop(this) },

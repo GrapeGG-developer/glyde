@@ -18,13 +18,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import gpr.greentune.unblock.ui.aero.Aero
+import gpr.greentune.air.Air
 
 val LocalHideTitle = androidx.compose.runtime.staticCompositionLocalOf { false }
 
 @Composable
 fun ScreenColumn(title: String?, content: @Composable ColumnScope.() -> Unit) {
-    val c = Aero.colors
+    val c = Air.colors
     Column(
         Modifier
             .fillMaxSize()

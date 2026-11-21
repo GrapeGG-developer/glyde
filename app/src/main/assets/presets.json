@@ -1,6 +1,6 @@
 {
- "version": 3,
- "updated": "2026-11-17",
+ "version": 4,
+ "updated": "2026-11-21",
  "fakeSni": "google.com",
  "categories": [
   {
@@ -95,9 +95,19 @@
     "discord.new",
     "dis.gd",
     "discordstatus.com",
-    "discord-attachments-uploads-prd.storage.googleapis.com"
+    "discord-attachments-uploads-prd.storage.googleapis.com",
+    "discord-activities.com",
+    "discordactivities.com",
+    "discordsays.com",
+    "discordsez.com",
+    "discordmerch.com",
+    "discord.store",
+    "discord.design"
    ],
-   "ipset": [],
+   "ipset": [
+    "162.159.128.0/19",
+    "66.22.192.0/18"
+   ],
    "tests": [
     "https://discord.com/",
     "https://cdn.discordapp.com/embed/avatars/0.png"
@@ -114,7 +124,9 @@
     "whatsapp.net",
     "wa.me",
     "whatsapp.biz",
-    "wl.co"
+    "wl.co",
+    "static.whatsapp.net",
+    "mmg.whatsapp.net"
    ],
    "ipset": [],
    "tests": [
@@ -205,7 +217,8 @@
     "instagram.com",
     "cdninstagram.com",
     "ig.me",
-    "instagr.am"
+    "instagr.am",
+    "fbcdn.net"
    ],
    "ipset": [],
    "tests": [
@@ -224,7 +237,11 @@
     "twimg.com",
     "t.co",
     "pscp.tv",
-    "periscope.tv"
+    "periscope.tv",
+    "twitter.co",
+    "twttr.com",
+    "ads-twitter.com",
+    "twitpic.com"
    ],
    "ipset": [],
    "tests": [
@@ -392,7 +409,13 @@
     "youtube-nocookie.com",
     "yt.be",
     "youtubekids.com",
-    "jnn-pa.googleapis.com"
+    "jnn-pa.googleapis.com",
+    "music.youtube.com",
+    "youtube.googleapis.com",
+    "youtubeembeddedplayer.googleapis.com",
+    "wide-youtube.l.google.com",
+    "yt3.ggpht.com",
+    "yt3.googleusercontent.com"
    ],
    "ipset": [],
    "tests": [
@@ -1723,6 +1746,294 @@
    "tests": [
     "https://f-droid.org/"
    ]
+  },
+  {
+   "id": "animego",
+   "name": "AnimeGO",
+   "color": "#E53935",
+   "domains": [
+    "animego.org",
+    "animego.me",
+    "animego.club"
+   ],
+   "ipset": [],
+   "tests": [
+    "https://animego.org/"
+   ],
+   "cat": "video",
+   "def": false
+  },
+  {
+   "id": "jutsu",
+   "name": "Jut.su",
+   "color": "#FF7043",
+   "domains": [
+    "jut.su"
+   ],
+   "ipset": [],
+   "tests": [
+    "https://jut.su/"
+   ],
+   "cat": "video",
+   "def": false
+  },
+  {
+   "id": "kinogo",
+   "name": "Kinogo",
+   "color": "#5C6BC0",
+   "domains": [
+    "kinogo.biz",
+    "kinogo.cc",
+    "kinogo.inc"
+   ],
+   "ipset": [],
+   "tests": [
+    "https://kinogo.biz/"
+   ],
+   "cat": "video",
+   "def": false
+  },
+  {
+   "id": "mangalib",
+   "name": "MangaLib",
+   "color": "#FF6F00",
+   "domains": [
+    "mangalib.me",
+    "mangalib.org",
+    "lib.social",
+    "imglib.info"
+   ],
+   "ipset": [],
+   "tests": [
+    "https://mangalib.me/"
+   ],
+   "cat": "files",
+   "def": false
+  },
+  {
+   "id": "remanga",
+   "name": "ReManga",
+   "color": "#7E57C2",
+   "domains": [
+    "remanga.org",
+    "reimg.org"
+   ],
+   "ipset": [],
+   "tests": [
+    "https://remanga.org/"
+   ],
+   "cat": "files",
+   "def": false
+  },
+  {
+   "id": "ao3",
+   "name": "Archive of Our Own",
+   "color": "#990000",
+   "domains": [
+    "archiveofourown.org",
+    "ao3.org"
+   ],
+   "ipset": [],
+   "tests": [
+    "https://archiveofourown.org/"
+   ],
+   "cat": "files",
+   "def": false
+  },
+  {
+   "id": "wattpad",
+   "name": "Wattpad",
+   "color": "#FF500A",
+   "domains": [
+    "wattpad.com",
+    "wattpad.net"
+   ],
+   "ipset": [],
+   "tests": [
+    "https://www.wattpad.com/"
+   ],
+   "cat": "files",
+   "def": false
+  },
+  {
+   "id": "currenttime",
+   "name": "Настоящее Время",
+   "color": "#E1251B",
+   "domains": [
+    "currenttime.tv"
+   ],
+   "ipset": [],
+   "tests": [
+    "https://www.currenttime.tv/"
+   ],
+   "cat": "news",
+   "def": false
+  },
+  {
+   "id": "republic",
+   "name": "Republic",
+   "color": "#D32F2F",
+   "domains": [
+    "republic.ru"
+   ],
+   "ipset": [],
+   "tests": [
+    "https://republic.ru/"
+   ],
+   "cat": "news",
+   "def": false
+  },
+  {
+   "id": "agents",
+   "name": "Агентство",
+   "color": "#212121",
+   "domains": [
+    "agents.media"
+   ],
+   "ipset": [],
+   "tests": [
+    "https://www.agents.media/"
+   ],
+   "cat": "news",
+   "def": false
+  },
+  {
+   "id": "verstka",
+   "name": "Вёрстка",
+   "color": "#000000",
+   "domains": [
+    "verstka.media"
+   ],
+   "ipset": [],
+   "tests": [
+    "https://verstka.media/"
+   ],
+   "cat": "news",
+   "def": false
+  },
+  {
+   "id": "ovd",
+   "name": "ОВД-Инфо",
+   "color": "#1565C0",
+   "domains": [
+    "ovd.info",
+    "ovdinfo.org",
+    "ovd.news"
+   ],
+   "ipset": [],
+   "tests": [
+    "https://ovd.info/"
+   ],
+   "cat": "news",
+   "def": false
+  },
+  {
+   "id": "googlenews",
+   "name": "Google Новости",
+   "color": "#4285F4",
+   "domains": [
+    "news.google.com"
+   ],
+   "ipset": [],
+   "tests": [
+    "https://news.google.com/"
+   ],
+   "cat": "news",
+   "def": false
+  },
+  {
+   "id": "zello",
+   "name": "Zello",
+   "color": "#F7A600",
+   "domains": [
+    "zello.com",
+    "zellowork.com",
+    "zello.io"
+   ],
+   "ipset": [],
+   "tests": [
+    "https://zello.com/"
+   ],
+   "cat": "msg",
+   "def": false
+  },
+  {
+   "id": "imo",
+   "name": "imo",
+   "color": "#1E88E5",
+   "domains": [
+    "imo.im",
+    "imoim.net",
+    "imoim.app"
+   ],
+   "ipset": [],
+   "tests": [
+    "https://imo.im/"
+   ],
+   "cat": "msg",
+   "def": false
+  },
+  {
+   "id": "simplex",
+   "name": "SimpleX Chat",
+   "color": "#2196F3",
+   "domains": [
+    "simplex.chat",
+    "simplexonflux.com"
+   ],
+   "ipset": [],
+   "tests": [
+    "https://simplex.chat/"
+   ],
+   "cat": "msg",
+   "def": false
+  },
+  {
+   "id": "jami",
+   "name": "Jami",
+   "color": "#0DB2C1",
+   "domains": [
+    "jami.net"
+   ],
+   "ipset": [],
+   "tests": [
+    "https://jami.net/"
+   ],
+   "cat": "msg",
+   "def": false
+  },
+  {
+   "id": "x1337",
+   "name": "1337x",
+   "color": "#F14E13",
+   "domains": [
+    "1337x.to",
+    "1337x.st",
+    "1337xx.to",
+    "x1337x.ws"
+   ],
+   "ipset": [],
+   "tests": [
+    "https://1337x.to/"
+   ],
+   "cat": "files",
+   "def": false
+  },
+  {
+   "id": "tgx",
+   "name": "TorrentGalaxy",
+   "color": "#2E7D32",
+   "domains": [
+    "torrentgalaxy.to",
+    "tgx.rs",
+    "torrentgalaxy.mx"
+   ],
+   "ipset": [],
+   "tests": [
+    "https://torrentgalaxy.to/"
+   ],
+   "cat": "files",
+   "def": false
   }
  ],
  "generalTests": [
@@ -2577,6 +2888,246 @@
   {
    "id": "g147",
    "args": "-s1+s -m4 -r1+s -a1"
+  },
+  {
+   "id": "s213",
+   "args": "-s3+s -d4+s -r1+s -f-1 -t7 -a1"
+  },
+  {
+   "id": "s214",
+   "args": "-s1+s -d1+s -r2+s -f-1 -t5 -a1"
+  },
+  {
+   "id": "s215",
+   "args": "-s2+s -d1+s -r1+s -f-1 -t5 -a1"
+  },
+  {
+   "id": "s216",
+   "args": "-s1+s -d1+s -r2+s -f-1 -t7 -a1"
+  },
+  {
+   "id": "s217",
+   "args": "-n {sni} -Qr -f1+nm -t7 -d1 -s4+s -r2+s -a1"
+  },
+  {
+   "id": "s218",
+   "args": "-s3+s -d4+s -r5+s -f-1 -t3 -a1"
+  },
+  {
+   "id": "s219",
+   "args": "-s2+s -d2+s -r1+s -f-1 -t3 -a1"
+  },
+  {
+   "id": "s220",
+   "args": "-s3+s -d4+s -r5+s -f-1 -t5 -a1"
+  },
+  {
+   "id": "s221",
+   "args": "-s1+s -d1+s -r5+s -f-1 -t3 -a1"
+  },
+  {
+   "id": "s222",
+   "args": "-s1+s -d2+s -r2+s -f-1 -t7 -a1"
+  },
+  {
+   "id": "s223",
+   "args": "-s2+s -d1+s -r1+s -f-1 -t3 -a1"
+  },
+  {
+   "id": "s224",
+   "args": "-s3+s -d4+s -r1+s -f-1 -t5 -a1"
+  },
+  {
+   "id": "s225",
+   "args": "-s1+s -d2+s -r1+s -f-1 -t3 -a1"
+  },
+  {
+   "id": "s226",
+   "args": "-s3+s -d4+s -r2+s -f-1 -t3 -a1"
+  },
+  {
+   "id": "s227",
+   "args": "-s1+s -d2+s -r5+s -f-1 -t5 -a1"
+  },
+  {
+   "id": "s228",
+   "args": "-s3+s -d4+s -r1+s -f-1 -t3 -a1"
+  },
+  {
+   "id": "s229",
+   "args": "-s1+s -d4+s -r2+s -f-1 -t7 -a1"
+  },
+  {
+   "id": "s230",
+   "args": "-s1+s -d1+s -r2+s -f-1 -t3 -a1"
+  },
+  {
+   "id": "s231",
+   "args": "-s3+s -d1+s -r2+s -f-1 -t5 -a1"
+  },
+  {
+   "id": "s232",
+   "args": "-s2+s -d4+s -r2+s -f-1 -t3 -a1"
+  },
+  {
+   "id": "s233",
+   "args": "-s3+s -d1+s -r1+s -f-1 -t5 -a1"
+  },
+  {
+   "id": "s234",
+   "args": "-s3+s -d2+s -r1+s -f-1 -t5 -a1"
+  },
+  {
+   "id": "s235",
+   "args": "-s3+s -d1+s -r5+s -f-1 -t7 -a1"
+  },
+  {
+   "id": "s236",
+   "args": "-s1+s -d2+s -r5+s -f-1 -t3 -a1"
+  },
+  {
+   "id": "s237",
+   "args": "-s2+s -d2+s -r1+s -f-1 -t5 -a1"
+  },
+  {
+   "id": "s238",
+   "args": "-s1+s -d4+s -r5+s -f-1 -t5 -a1"
+  },
+  {
+   "id": "s239",
+   "args": "-r1+s -r3+s -s1+s -d5+s -o2 -t5 -a1"
+  },
+  {
+   "id": "s240",
+   "args": "-s3+s -d1+s -r1+s -f-1 -t7 -a1"
+  },
+  {
+   "id": "s241",
+   "args": "-d1 -d4+s -s8+s -q12+s -r1+s -t8 -a1 -At,r,s,c -o1 -f-1 -a1"
+  },
+  {
+   "id": "s242",
+   "args": "-s2+s -d1+s -r5+s -f-1 -t7 -a1"
+  },
+  {
+   "id": "s243",
+   "args": "-s1+s -d2+s -r1+s -f-1 -t5 -a1"
+  },
+  {
+   "id": "s244",
+   "args": "-s2+s -d1+s -r2+s -f-1 -t5 -a1"
+  },
+  {
+   "id": "s245",
+   "args": "-s1+s -d4+s -r2+s -f-1 -t3 -a1"
+  },
+  {
+   "id": "s246",
+   "args": "-s3+s -d4+s -r2+s -f-1 -t7 -a1"
+  },
+  {
+   "id": "s247",
+   "args": "-o1 -s1+s -r5+s -f-1 -t3 -a1"
+  },
+  {
+   "id": "s248",
+   "args": "-s3+s -d1+s -r1+s -f-1 -t3 -a1"
+  },
+  {
+   "id": "s249",
+   "args": "-s2+s -d2+s -r5+s -f-1 -t3 -a1"
+  },
+  {
+   "id": "s250",
+   "args": "-s2:6+sm -d1 -r1+s -f-1 -t4 -Mh -a1"
+  },
+  {
+   "id": "s251",
+   "args": "-s3+s -d2+s -r2+s -f-1 -t7 -a1"
+  },
+  {
+   "id": "s252",
+   "args": "-s1+s -d1+s -r5+s -f-1 -t5 -a1"
+  },
+  {
+   "id": "s253",
+   "args": "-s1+s -d2+s -r2+s -f-1 -t5 -a1"
+  },
+  {
+   "id": "s254",
+   "args": "-s2+s -d4+s -r5+s -f-1 -t3 -a1"
+  },
+  {
+   "id": "s255",
+   "args": "-s3+s -d1+s -r5+s -f-1 -t3 -a1"
+  },
+  {
+   "id": "s256",
+   "args": "-s1+s -d1+s -r1+s -f-1 -t7 -a1"
+  },
+  {
+   "id": "s257",
+   "args": "-s1+s -d4+s -r1+s -f-1 -t7 -a1"
+  },
+  {
+   "id": "s258",
+   "args": "-s3+s -d4+s -r2+s -f-1 -t5 -a1"
+  },
+  {
+   "id": "s259",
+   "args": "-s1+s -d2+s -r1+s -f-1 -t7 -a1"
+  },
+  {
+   "id": "s260",
+   "args": "-s2+s -d4+s -r5+s -f-1 -t5 -a1"
+  },
+  {
+   "id": "s261",
+   "args": "-s2+s -d1+s -r5+s -f-1 -t3 -a1"
+  },
+  {
+   "id": "s262",
+   "args": "-s2+s -d2+s -r5+s -f-1 -t7 -a1"
+  },
+  {
+   "id": "s263",
+   "args": "-s2+s -d4+s -r1+s -f-1 -t3 -a1"
+  },
+  {
+   "id": "s264",
+   "args": "-s2+s -d4+s -r1+s -f-1 -t5 -a1"
+  },
+  {
+   "id": "s265",
+   "args": "-s1+s -d2+s -r2+s -f-1 -t3 -a1"
+  },
+  {
+   "id": "s266",
+   "args": "-s2+s -d4+s -r1+s -f-1 -t7 -a1"
+  },
+  {
+   "id": "s267",
+   "args": "-s2+s -d2+s -r2+s -f-1 -t3 -a1"
+  },
+  {
+   "id": "s268",
+   "args": "-s3+s -d2+s -r5+s -f-1 -t7 -a1"
+  },
+  {
+   "id": "s269",
+   "args": "-s2+s -d1+s -r2+s -f-1 -t7 -a1"
+  },
+  {
+   "id": "s270",
+   "args": "-s1+s -d2+s -r5+s -f-1 -t7 -a1"
+  },
+  {
+   "id": "s271",
+   "args": "-s3+s -d1+s -r2+s -f-1 -t7 -a1"
+  },
+  {
+   "id": "s272",
+   "args": "-f-1 -t3 -s1+sm -d2+sm -r1+s -a1 -At,r,s,c -o1 -f-1 -t6 -a1"
   }
  ]
 }

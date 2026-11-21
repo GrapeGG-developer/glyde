@@ -24,15 +24,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import gpr.greentune.unblock.ui.aero.Aero
-import gpr.greentune.unblock.ui.aero.AeroButton
-import gpr.greentune.unblock.ui.aero.Segmented
-import gpr.greentune.unblock.ui.aero.ToggleRow
-import gpr.greentune.unblock.ui.aero.glass
+import gpr.greentune.air.Air
+import gpr.greentune.air.AirButton
+import gpr.greentune.air.Segmented
+import gpr.greentune.air.ToggleRow
+import gpr.greentune.air.glass
 
 @Composable
 fun ExpertBuilder(onBuild: (String) -> Unit) {
-    val c = Aero.colors
+    val c = Air.colors
     var method by rememberSaveable { mutableStateOf("disorder") }
     var pos by rememberSaveable { mutableStateOf("1") }
     var flag by rememberSaveable { mutableStateOf("s") }
@@ -169,18 +169,18 @@ fun ExpertBuilder(onBuild: (String) -> Unit) {
         ToggleRow("Drop SACK", "-Y", dropSack, { dropSack = it })
         ToggleRow("TCP Fast Open", "-F", tfo, { tfo = it })
         ToggleRow("Запасная стратегия", "-A: при сбросе или ошибке TLS пробовать disorder", auto, { auto = it })
-        AeroButton("Собрать команду", primary = true, modifier = Modifier.fillMaxWidth(), onClick = { onBuild(build()) })
+        AirButton("Собрать команду", primary = true, modifier = Modifier.fillMaxWidth(), onClick = { onBuild(build()) })
     }
 }
 
 @Composable
 private fun Label(text: String) {
-    Text(text, fontSize = 12.5.sp, color = Aero.colors.subText, modifier = Modifier.padding(top = 2.dp))
+    Text(text, fontSize = 12.5.sp, color = Air.colors.subText, modifier = Modifier.padding(top = 2.dp))
 }
 
 @Composable
 private fun Field(label: String, value: String, onChange: (String) -> Unit, modifier: Modifier, number: Boolean = false) {
-    val c = Aero.colors
+    val c = Air.colors
     Column(modifier) {
         Text(label, fontSize = 11.5.sp, color = c.subText)
         BasicTextField(

@@ -3,7 +3,7 @@ name: Build
 on:
   push:
     branches: [main]
-    tags: ['v*', 'Y*']
+    tags: ['v*', 'Y*', '2[0-9].*']
     paths-ignore: ['**.md', 'presets/**', 'backend/**']
   workflow_dispatch:
 
@@ -63,7 +63,7 @@ jobs:
           GT_KEY_PASSWORD: ${{ secrets.GT_KEY_PASSWORD }}
         run: |
           chmod +x gradlew
-          ./gradlew --no-daemon --stacktrace assembleRelease -PversionName=${{ steps.ver.outputs.name }} -PversionCode=${{ steps.ver.outputs.code }} "-Pcodename=${{ steps.ver.outputs.codename }}" "-PglydeDisplay=${{ steps.ver.outputs.display }}" "-Pring=${{ steps.ver.outputs.ring }}"
+          ./gradlew --no-daemon --stacktrace assembleRelease -PversionName=${{ steps.ver.outputs.name }} -PversionCode=${{ steps.ver.outputs.code }} "-Pcodename=${{ steps.ver.outputs.codename }}" "-PcodenameKind=${{ steps.ver.outputs.kind }}" "-PglydeDisplay=${{ steps.ver.outputs.display }}" "-Pring=${{ steps.ver.outputs.ring }}"
 
       - name: Collect APKs
         run: |

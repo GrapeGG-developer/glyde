@@ -63,12 +63,12 @@ import gpr.greentune.unblock.core.Service
 import gpr.greentune.unblock.core.Tuner
 import gpr.greentune.unblock.data.SettingsStore
 import gpr.greentune.unblock.data.TuneStore
-import gpr.greentune.unblock.ui.aero.Aero
-import gpr.greentune.unblock.ui.aero.AeroButton
-import gpr.greentune.unblock.ui.aero.GlydeSans
-import gpr.greentune.unblock.ui.aero.GlassPanel
-import gpr.greentune.unblock.ui.aero.StatusDot
-import gpr.greentune.unblock.ui.aero.glass
+import gpr.greentune.air.Air
+import gpr.greentune.air.AirButton
+import gpr.greentune.air.GlydeSans
+import gpr.greentune.air.GlassPanel
+import gpr.greentune.air.StatusDot
+import gpr.greentune.air.glass
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -77,7 +77,7 @@ import java.util.Locale
 @OptIn(ExperimentalLayoutApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun ServicesScreen(onOpenDiag: () -> Unit) {
-    val c = Aero.colors
+    val c = Air.colors
     val context = LocalContext.current
     val presets by Presets.data.collectAsStateWithLifecycle()
     val settings by SettingsStore.state.collectAsStateWithLifecycle()
@@ -109,13 +109,13 @@ fun ServicesScreen(onOpenDiag: () -> Unit) {
                     fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = c.text
                 )
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    AeroButton(stringResource(R.string.services_popular), modifier = Modifier.weight(1f), onClick = {
+                    AirButton(stringResource(R.string.services_popular), modifier = Modifier.weight(1f), onClick = {
                         setEnabled(presets.services.filter { it.default }.map { it.id }.toSet())
                     })
-                    AeroButton(stringResource(R.string.services_all), modifier = Modifier.weight(1f), onClick = {
+                    AirButton(stringResource(R.string.services_all), modifier = Modifier.weight(1f), onClick = {
                         setEnabled(presets.services.map { it.id }.toSet())
                     })
-                    AeroButton(stringResource(R.string.services_none), modifier = Modifier.weight(1f), onClick = {
+                    AirButton(stringResource(R.string.services_none), modifier = Modifier.weight(1f), onClick = {
                         setEnabled(emptySet())
                     })
                 }
@@ -175,7 +175,7 @@ fun ServicesScreen(onOpenDiag: () -> Unit) {
 
         CustomSitesPanel()
 
-        AeroButton(
+        AirButton(
             stringResource(R.string.services_retune),
             primary = true,
             enabled = !tune.running && (enabled.isNotEmpty() || settings.customDomains.isNotEmpty()),
@@ -199,7 +199,7 @@ private fun ServiceToggle(
     onCheck: () -> Unit,
     tuneEnabled: Boolean,
 ) {
-    val c = Aero.colors
+    val c = Air.colors
     val brand = Color(s.color)
     var menu by remember { mutableStateOf(false) }
     val a by animateFloatAsState(if (on) 1f else 0f, tween(220), label = "a")
@@ -266,7 +266,7 @@ private fun ServiceToggle(
 
 @Composable
 private fun SearchField(value: String, onChange: (String) -> Unit, hint: String) {
-    val c = Aero.colors
+    val c = Air.colors
     Box(Modifier.fillMaxWidth().glass(c, 22.dp, glossFraction = 0.3f).padding(horizontal = 16.dp, vertical = 11.dp)) {
         if (value.isEmpty()) Text(hint, fontSize = 14.sp, color = c.subText)
         BasicTextField(
@@ -283,7 +283,7 @@ private fun SearchField(value: String, onChange: (String) -> Unit, hint: String)
 @OptIn(ExperimentalLayoutApi::class, ExperimentalFoundationApi::class)
 @Composable
 private fun CustomSitesPanel() {
-    val c = Aero.colors
+    val c = Air.colors
     val context = LocalContext.current
     val clipboard = LocalClipboardManager.current
     val settings by SettingsStore.state.collectAsStateWithLifecycle()
@@ -343,16 +343,16 @@ private fun CustomSitesPanel() {
                         modifier = Modifier.fillMaxWidth()
                     )
                 }
-                AeroButton(stringResource(R.string.custom_add), primary = true, onClick = {
+                AirButton(stringResource(R.string.custom_add), primary = true, onClick = {
                     addAll(Presets.parseHostlist(input))
                     input = ""
                 })
             }
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                AeroButton(stringResource(R.string.custom_paste), modifier = Modifier.weight(1f), onClick = {
+                AirButton(stringResource(R.string.custom_paste), modifier = Modifier.weight(1f), onClick = {
                     addAll(Presets.parseHostlist(clipboard.getText()?.text ?: ""))
                 })
-                AeroButton(stringResource(R.string.custom_file), modifier = Modifier.weight(1f), onClick = {
+                AirButton(stringResource(R.string.custom_file), modifier = Modifier.weight(1f), onClick = {
                     try {
                         picker.launch(arrayOf("text/*", "application/octet-stream", "*/*"))
                     } catch (_: Exception) {
@@ -391,7 +391,7 @@ private fun CustomSitesPanel() {
                         Text("+${settings.customDomains.size - 60}", fontSize = 12.5.sp, color = c.subText, modifier = Modifier.padding(6.dp))
                     }
                 }
-                AeroButton(stringResource(R.string.custom_clear), danger = true, modifier = Modifier.fillMaxWidth(), onClick = {
+                AirButton(stringResource(R.string.custom_clear), danger = true, modifier = Modifier.fillMaxWidth(), onClick = {
                     SettingsStore.update { it.copy(customDomains = emptyList()) }
                 })
             }

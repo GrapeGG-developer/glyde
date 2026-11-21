@@ -27,14 +27,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import gpr.greentune.unblock.R
-import gpr.greentune.unblock.ui.aero.Aero
-import gpr.greentune.unblock.ui.aero.AeroButton
-import gpr.greentune.unblock.ui.aero.Badge
-import gpr.greentune.unblock.ui.aero.GlassPanel
+import gpr.greentune.air.Air
+import gpr.greentune.air.AirButton
+import gpr.greentune.air.Badge
+import gpr.greentune.air.GlassPanel
 
 @Composable
 fun OnboardingScreen(onDone: () -> Unit) {
-    val c = Aero.colors
+    val c = Air.colors
     Column(
         Modifier.fillMaxSize().statusBarsPadding().navigationBarsPadding().padding(vertical = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -42,7 +42,7 @@ fun OnboardingScreen(onDone: () -> Unit) {
     ) {
         Image(painterResource(R.drawable.logo_glass), null, Modifier.size(112.dp))
         Spacer(Modifier.height(6.dp))
-        Badge("by GREENTUNE", color = Aero.colors.accent)
+        Badge("by GREENTUNE", color = Air.colors.accent)
         Spacer(Modifier.height(14.dp))
         GlassPanel(Modifier.widthIn(max = 520.dp).fillMaxWidth().padding(horizontal = 16.dp), padding = 4.dp) {
             Column(Modifier.padding(vertical = 16.dp)) {

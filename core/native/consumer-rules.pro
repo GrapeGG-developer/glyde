@@ -1,0 +1,2 @@
+-keep class gpr.greentune.unblock.core.TProxyService { *; }
+-keepclassmembers class gpr.greentune.unblock.core.TProxyService { native <methods>; }

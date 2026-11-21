@@ -192,7 +192,11 @@ object Updater {
 
     private val fresh = Regex("^v?Y(\\d+)\\.M(\\d+)\\.W(\\d+)\\.B(\\d+).*", RegexOption.IGNORE_CASE)
 
-    fun codeOf(v: String): Long? = fresh.matchEntire(v)?.groupValues?.let {
+    private val weekly = Regex("^v?(\\d{2})\\.(\\d{1,2})\\.(\\d)\\.(\\d+)(-.*)?$")
+
+    fun codeOf(v: String): Long? = weekly.matchEntire(v)?.groupValues?.let {
+        1_000_000_000L + it[1].toLong() * 10_000_000 + it[2].toLong() * 100_000 + it[3].toLong() * 10_000 + minOf(it[4].toLong(), 9999)
+    } ?: fresh.matchEntire(v)?.groupValues?.let {
         it[1].toLong() * 10_000_000 + it[2].toLong() * 100_000 + it[3].toLong() * 10_000 + minOf(it[4].toLong(), 9999)
     }
 

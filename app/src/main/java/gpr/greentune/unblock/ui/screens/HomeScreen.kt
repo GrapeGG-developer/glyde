@@ -98,13 +98,13 @@ import gpr.greentune.unblock.data.TuneStore
 import gpr.greentune.unblock.system.Fx
 import gpr.greentune.unblock.system.Perf
 import gpr.greentune.unblock.tg.TgBridge
-import gpr.greentune.unblock.ui.aero.Aero
-import gpr.greentune.unblock.ui.aero.AeroButton
-import gpr.greentune.unblock.ui.aero.AeroProgressBar
-import gpr.greentune.unblock.ui.aero.Orb3D
-import gpr.greentune.unblock.ui.aero.OrbState
-import gpr.greentune.unblock.ui.aero.StatusDot
-import gpr.greentune.unblock.ui.aero.glass
+import gpr.greentune.air.Air
+import gpr.greentune.air.AirButton
+import gpr.greentune.air.AirProgressBar
+import gpr.greentune.air.Orb
+import gpr.greentune.air.OrbState
+import gpr.greentune.air.StatusDot
+import gpr.greentune.air.glass
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.animateFloatAsState
@@ -112,12 +112,12 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.drawscope.clipPath
-import gpr.greentune.unblock.ui.aero.GGV7
-import gpr.greentune.unblock.ui.aero.backdropBlur
-import gpr.greentune.unblock.ui.aero.backdropSource
-import gpr.greentune.unblock.ui.aero.pressBounce
-import gpr.greentune.unblock.ui.aero.stage
-import gpr.greentune.unblock.ui.aero.staggerIn
+import gpr.greentune.air.AirSpec
+import gpr.greentune.air.backdropBlur
+import gpr.greentune.air.backdropSource
+import gpr.greentune.air.pressBounce
+import gpr.greentune.air.stage
+import gpr.greentune.air.staggerIn
 import gpr.greentune.unblock.ui.openUrl
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -140,7 +140,7 @@ private fun lerp(a: Float, b: Float, t: Float) = a + (b - a) * t
 
 @Composable
 fun GlydeHome(onConnect: () -> Unit, onDisconnect: () -> Unit) {
-    val c = Aero.colors
+    val c = Air.colors
     val context = LocalContext.current
     val view = LocalView.current
     val status by Engine.status.collectAsStateWithLifecycle()
@@ -199,9 +199,9 @@ fun GlydeHome(onConnect: () -> Unit, onDisconnect: () -> Unit) {
     val winOpen = page != null
     val homeScale by animateFloatAsState(if (winOpen) 0.93f else 1f, spring(dampingRatio = 0.8f, stiffness = 260f), label = "hs")
     var appeared by remember { mutableStateOf(false) }
-    val booted = gpr.greentune.unblock.ui.aero.Boot.done.value
-    LaunchedEffect(booted) { if (booted) appeared = true }
-    val intro by animateFloatAsState(if (appeared) 1f else 0f, tween(if (lite) 300 else 1100, easing = FastOutSlowInEasing), label = "in")
+    LaunchedEffect(Unit) { appeared = true }
+    val intro by animateFloatAsState(if (appeared) 1f else 0f, tween(if (lite) 200 else 650, easing = FastOutSlowInEasing), label = "in")
+    val speed by gpr.greentune.unblock.system.Traffic.speed.collectAsStateWithLifecycle()
 
     BoxWithConstraints(Modifier.fillMaxSize()) {
         val orbSize = minOf(maxWidth * 0.62f, maxHeight * 0.36f, 300.dp)
@@ -235,9 +235,9 @@ fun GlydeHome(onConnect: () -> Unit, onDisconnect: () -> Unit) {
                 },
                 contentAlignment = Alignment.Center
             ) {
-                Orb3D(
+                Orb(
                     state = orbState,
-                    effects = Perf.effects(settings),
+                    level = if (status == EngineStatus.On) speed.level else 0f,
                     description = title,
                     size = orbSize / 1.35f * 1.2f,
                     onClick = {
@@ -278,20 +278,22 @@ fun GlydeHome(onConnect: () -> Unit, onDisconnect: () -> Unit) {
                         modifier = Modifier.padding(horizontal = 28.dp)
                     )
                 }
-                Spacer(Modifier.height(10.dp))
-                Text(
-                    versionCaption(), fontSize = 12.sp, color = c.subText.copy(alpha = 0.72f), maxLines = 1,
-                    letterSpacing = 0.4.sp
-                )
+                AnimatedVisibility(status == EngineStatus.On && !tune.running, enter = fadeIn() + expandVertically(), exit = fadeOut() + shrinkVertically()) {
+                    Row(Modifier.padding(top = 10.dp), verticalAlignment = Alignment.CenterVertically) {
+                        SpeedChip("↓", gpr.greentune.unblock.system.Traffic.format(speed.down), c.ok)
+                        Spacer(Modifier.width(8.dp))
+                        SpeedChip("↑", gpr.greentune.unblock.system.Traffic.format(speed.up), c.tint)
+                    }
+                }
             }
             AnimatedVisibility(tune.running, enter = fadeIn() + expandVertically(), exit = fadeOut() + shrinkVertically()) {
                 Row(
                     Modifier.widthIn(max = 420.dp).fillMaxWidth().padding(horizontal = 32.dp, vertical = 10.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Box(Modifier.weight(1f)) { AeroProgressBar(tune.fraction) }
+                    Box(Modifier.weight(1f)) { AirProgressBar(tune.fraction) }
                     Spacer(Modifier.width(10.dp))
-                    AeroButton(stringResource(R.string.cancel), onClick = { Tuner.cancel() })
+                    AirButton(stringResource(R.string.cancel), onClick = { Tuner.cancel() })
                 }
             }
             AnimatedVisibility(!tune.running && tune.message != null, enter = fadeIn() + expandVertically(), exit = fadeOut() + shrinkVertically()) {
@@ -300,7 +302,7 @@ fun GlydeHome(onConnect: () -> Unit, onDisconnect: () -> Unit) {
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(tune.message ?: "", fontSize = 13.sp, color = c.text, modifier = Modifier.weight(1f), maxLines = 2, overflow = TextOverflow.Ellipsis)
-                    AeroButton(stringResource(R.string.ok), onClick = { Tuner.clearMessage() })
+                    AirButton(stringResource(R.string.ok), onClick = { Tuner.clearMessage() })
                 }
             }
             Spacer(Modifier.weight(1f))
@@ -314,7 +316,7 @@ fun GlydeHome(onConnect: () -> Unit, onDisconnect: () -> Unit) {
             Spacer(Modifier.height(18.dp))
         }
 
-        AeroWindowHost(
+        AirWindowHost(
             page = page,
             maxH = maxHeight,
             lite = lite,
@@ -330,11 +332,28 @@ fun GlydeHome(onConnect: () -> Unit, onDisconnect: () -> Unit) {
 }
 
 @Composable
-private fun versionCaption(): String = gpr.greentune.unblock.BuildConfig.VERSION_NAME
+private fun versionCaption(): String {
+    val v = gpr.greentune.unblock.BuildConfig.VERSION_NAME
+    val n = gpr.greentune.unblock.BuildConfig.CODENAME
+    return if (n.isBlank() || v.contains(n)) v else "$v $n"
+}
+
+@Composable
+private fun SpeedChip(arrow: String, value: String, color: Color) {
+    val c = Air.colors
+    Row(
+        Modifier.glass(c, 14.dp, glossFraction = 0.5f).padding(horizontal = 12.dp, vertical = 6.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(arrow, fontSize = 13.sp, fontWeight = FontWeight.Bold, color = color)
+        Spacer(Modifier.width(6.dp))
+        Text(value, fontSize = 13.sp, color = c.text, maxLines = 1)
+    }
+}
 
 @Composable
 private fun TopBar(onHow: () -> Unit, modifier: Modifier = Modifier) {
-    val c = Aero.colors
+    val c = Air.colors
     Row(
         modifier
             .fillMaxWidth()
@@ -350,10 +369,14 @@ private fun TopBar(onHow: () -> Unit, modifier: Modifier = Modifier) {
                 Spacer(Modifier.width(7.dp))
                 DpiBadge()
             }
-            Text(
-                versionCaption(), fontSize = 10.5.sp, lineHeight = 12.sp, color = c.subText, maxLines = 1,
-                overflow = TextOverflow.Ellipsis, letterSpacing = 0.3.sp
-            )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                gpr.greentune.unblock.ui.brand.CosmicMark(gpr.greentune.unblock.BuildConfig.CODENAME_KIND, Modifier.size(12.dp))
+                Spacer(Modifier.width(4.dp))
+                Text(
+                    versionCaption(), fontSize = 10.5.sp, lineHeight = 12.sp, color = c.subText, maxLines = 1,
+                    overflow = TextOverflow.Ellipsis, letterSpacing = 0.3.sp
+                )
+            }
         }
         Spacer(Modifier.weight(1f))
         val src = remember { MutableInteractionSource() }
@@ -396,7 +419,7 @@ private fun DpiBadge() {
 
 @Composable
 private fun MenuButton(badge: Boolean, onClick: () -> Unit) {
-    val c = Aero.colors
+    val c = Air.colors
     val src = remember { MutableInteractionSource() }
     Box(Modifier.pressBounce(src, 0.93f)) {
         Row(
@@ -441,7 +464,7 @@ private fun MenuButton(badge: Boolean, onClick: () -> Unit) {
 
 @OptIn(androidx.compose.animation.ExperimentalAnimationApi::class)
 @Composable
-private fun AeroWindowHost(
+private fun AirWindowHost(
     page: String?,
     maxH: Dp,
     lite: Boolean,
@@ -449,7 +472,7 @@ private fun AeroWindowHost(
     onBack: () -> Unit,
     content: @Composable (String) -> Unit,
 ) {
-    val c = Aero.colors
+    val c = Air.colors
     val blur = !lite && android.os.Build.VERSION.SDK_INT >= 31
     AnimatedVisibility(page != null, enter = fadeIn(tween(220)), exit = fadeOut(tween(200))) {
         Box(
@@ -492,8 +515,8 @@ private fun AeroWindowHost(
                     .heightIn(max = maxH * 0.88f)
                     .then(if (sub) Modifier.fillMaxHeight() else Modifier)
                     .aeroShadow()
-                    .backdropBlur(GGV7.blur, GGV7.windowCorner, blur)
-                    .aeroFrame(c, if (blur) GGV7.glassAlpha else GGV7.glassAlphaFallback)
+                    .backdropBlur(AirSpec.blur, AirSpec.windowCorner, blur)
+                    .aeroFrame(c, if (blur) AirSpec.glassAlpha else AirSpec.glassAlphaFallback)
                     .clickable(interactionSource = remember { MutableInteractionSource() }, indication = null) {}
             ) {
                 WindowCaption(
@@ -508,7 +531,7 @@ private fun AeroWindowHost(
                         .then(if (sub) Modifier.weight(1f) else Modifier)
                         .fillMaxWidth()
                         .drawBehind {
-                            val a = if (blur) GGV7.contentAlpha else GGV7.contentAlphaFallback
+                            val a = if (blur) AirSpec.contentAlpha else AirSpec.contentAlphaFallback
                             drawRoundRect(if (c.dark) Color(0xFF071620).copy(alpha = a) else Color(0xFFF7FBFE).copy(alpha = a), cornerRadius = CornerRadius(10.dp.toPx()))
                             drawRoundRect(Color.White.copy(alpha = if (c.dark) 0.18f else 0.6f), cornerRadius = CornerRadius(10.dp.toPx()), style = Stroke(1.dp.toPx()))
                         }
@@ -558,7 +581,7 @@ private fun AeroWindowHost(
 }
 
 private fun Modifier.aeroShadow(): Modifier = this.drawBehind {
-    val r = GGV7.windowCorner.toPx()
+    val r = AirSpec.windowCorner.toPx()
     val path = androidx.compose.ui.graphics.Path().apply {
         addRoundRect(androidx.compose.ui.geometry.RoundRect(0f, 0f, size.width, size.height, CornerRadius(r)))
     }
@@ -576,8 +599,8 @@ private fun Modifier.aeroShadow(): Modifier = this.drawBehind {
     }
 }
 
-private fun Modifier.aeroFrame(c: gpr.greentune.unblock.ui.aero.AeroColors, alpha: Float): Modifier = this.drawBehind {
-    val r = GGV7.windowCorner.toPx()
+private fun Modifier.aeroFrame(c: gpr.greentune.air.AirColors, alpha: Float): Modifier = this.drawBehind {
+    val r = AirSpec.windowCorner.toPx()
     val cr = CornerRadius(r, r)
     drawRoundRect(
         Brush.verticalGradient(
@@ -608,7 +631,7 @@ private fun lerpC(a: Color, b: Color, t: Float) = Color(a.red + (b.red - a.red) 
 
 @Composable
 private fun WindowCaption(title: String, showBack: Boolean, onBack: () -> Unit, onClose: () -> Unit) {
-    val c = Aero.colors
+    val c = Air.colors
     Row(
         Modifier.fillMaxWidth().height(48.dp).padding(horizontal = 8.dp),
         verticalAlignment = Alignment.CenterVertically
@@ -672,7 +695,7 @@ private fun pageTitle(page: String): String = stringResource(
 
 @Composable
 private fun Chip(text: String, dot: Color?) {
-    val c = Aero.colors
+    val c = Air.colors
     Row(
         Modifier.glass(c, 14.dp, glossFraction = 0.5f).padding(horizontal = 10.dp, vertical = 5.dp),
         verticalAlignment = Alignment.CenterVertically
@@ -695,7 +718,7 @@ fun Tile(
     enabled: Boolean = true,
     onClick: () -> Unit,
 ) {
-    val c = Aero.colors
+    val c = Air.colors
     val src = remember { MutableInteractionSource() }
     val activeA by animateFloatAsState(if (active) 1f else 0f, tween(350), label = "ta")
     Column(
@@ -776,7 +799,7 @@ private fun Menu(onOpen: (String) -> Unit) {
 
 @Composable
 private fun DonateRow(onClick: () -> Unit) {
-    val c = Aero.colors
+    val c = Air.colors
     Row(
         Modifier
             .fillMaxWidth()
@@ -814,7 +837,7 @@ private fun PageContent(page: String, onOpen: (String) -> Unit) {
 
 @Composable
 fun TelegramScreen() {
-    val c = Aero.colors
+    val c = Air.colors
     val context = LocalContext.current
     val settings by SettingsStore.state.collectAsStateWithLifecycle()
     val tg by TgBridge.stats.collectAsStateWithLifecycle()
@@ -835,7 +858,7 @@ fun TelegramScreen() {
                     fontSize = 12.5.sp, color = c.subText
                 )
             }
-            AeroButton(
+            AirButton(
                 stringResource(R.string.tg_connect),
                 primary = true,
                 modifier = Modifier.fillMaxWidth(),
@@ -851,7 +874,7 @@ fun TelegramScreen() {
             Text(stringResource(R.string.tg_hint), fontSize = 12.5.sp, color = c.subText, textAlign = TextAlign.Center)
         }
         Column(Modifier.fillMaxWidth().glass(c, 22.dp).padding(horizontal = 14.dp, vertical = 4.dp)) {
-            gpr.greentune.unblock.ui.aero.ToggleRow(
+            gpr.greentune.air.ToggleRow(
                 stringResource(R.string.tg_set), stringResource(R.string.tg_set_sub), settings.tgBridge,
                 onChange = { on ->
                     SettingsStore.update { it.copy(tgBridge = on) }

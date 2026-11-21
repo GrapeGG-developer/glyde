@@ -19,14 +19,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import gpr.greentune.unblock.BuildConfig
 import gpr.greentune.unblock.R
-import gpr.greentune.unblock.ui.aero.Aero
-import gpr.greentune.unblock.ui.aero.AeroButton
-import gpr.greentune.unblock.ui.aero.GlassPanel
+import gpr.greentune.air.Air
+import gpr.greentune.air.AirButton
+import gpr.greentune.air.GlassPanel
 import gpr.greentune.unblock.ui.openUrl
 
 @Composable
 fun DonateScreen() {
-    val c = Aero.colors
+    val c = Air.colors
     val context = LocalContext.current
     ScreenColumn(stringResource(R.string.donate_title)) {
         GlassPanel(Modifier.fillMaxWidth()) {
@@ -37,7 +37,7 @@ fun DonateScreen() {
                 Spacer(Modifier.height(8.dp))
                 Text(stringResource(R.string.donate_text), fontSize = 14.sp, color = c.text, textAlign = TextAlign.Center)
                 Spacer(Modifier.height(16.dp))
-                AeroButton(stringResource(R.string.donate_button), primary = true, modifier = Modifier.fillMaxWidth(), onClick = { openUrl(context, BuildConfig.DONATE_URL) })
+                AirButton(stringResource(R.string.donate_button), primary = true, modifier = Modifier.fillMaxWidth(), onClick = { openUrl(context, BuildConfig.DONATE_URL) })
                 Spacer(Modifier.height(6.dp))
                 Text("CloudTips · Т-Банк", fontSize = 12.sp, color = c.subText)
             }

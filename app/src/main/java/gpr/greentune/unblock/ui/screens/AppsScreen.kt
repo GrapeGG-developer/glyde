@@ -41,13 +41,13 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import gpr.greentune.unblock.R
 import gpr.greentune.unblock.core.Engine
 import gpr.greentune.unblock.data.SettingsStore
-import gpr.greentune.unblock.ui.aero.Aero
-import gpr.greentune.unblock.ui.aero.AeroButton
-import gpr.greentune.unblock.ui.aero.AeroProgressBar
-import gpr.greentune.unblock.ui.aero.AeroToggle
-import gpr.greentune.unblock.ui.aero.GlassPanel
-import gpr.greentune.unblock.ui.aero.Segmented
-import gpr.greentune.unblock.ui.aero.glass
+import gpr.greentune.air.Air
+import gpr.greentune.air.AirButton
+import gpr.greentune.air.AirProgressBar
+import gpr.greentune.air.AirToggle
+import gpr.greentune.air.GlassPanel
+import gpr.greentune.air.Segmented
+import gpr.greentune.air.glass
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -85,7 +85,7 @@ private suspend fun loadApps(context: Context): List<AppEntry> = withContext(Dis
 
 @Composable
 fun AppsScreen() {
-    val c = Aero.colors
+    val c = Air.colors
     val context = LocalContext.current
     val settings by SettingsStore.state.collectAsStateWithLifecycle()
     var apps by remember { mutableStateOf<List<AppEntry>?>(null) }
@@ -132,7 +132,7 @@ fun AppsScreen() {
             fontSize = 12.5.sp, color = c.subText
         )
         if (dirty && Engine.isActive()) {
-            AeroButton(stringResource(R.string.apps_apply), primary = true, modifier = Modifier.fillMaxWidth(), onClick = {
+            AirButton(stringResource(R.string.apps_apply), primary = true, modifier = Modifier.fillMaxWidth(), onClick = {
                 Engine.reload(context)
                 dirty = false
             })
@@ -154,11 +154,11 @@ fun AppsScreen() {
                 Spacer(Modifier.width(10.dp))
                 Text(stringResource(R.string.apps_system), fontSize = 12.sp, color = c.subText)
                 Spacer(Modifier.width(6.dp))
-                AeroToggle(showSystem, { showSystem = it })
+                AirToggle(showSystem, { showSystem = it })
             }
             val list = apps
             if (list == null) {
-                AeroProgressBar(null)
+                AirProgressBar(null)
             } else {
                 val q = query.trim().lowercase()
                 val filtered = list.filter { (showSystem || !it.system || it.pkg in settings.apps) && (q.isEmpty() || it.label.lowercase().contains(q) || it.pkg.contains(q)) }
@@ -183,7 +183,7 @@ fun AppsScreen() {
                                     Text(app.label, fontSize = 14.5.sp, color = c.text, maxLines = 1)
                                     Text(app.pkg, fontSize = 11.sp, color = c.subText, maxLines = 1)
                                 }
-                                AeroToggle(checked && !locked, { v ->
+                                AirToggle(checked && !locked, { v ->
                                     SettingsStore.update { st -> st.copy(appsMode = if (st.appsMode == "all") "except" else st.appsMode, apps = if (v) st.apps + app.pkg else st.apps - app.pkg) }
                                     dirty = true
                                 })

@@ -12,7 +12,8 @@ val appVersionName = (findProperty("versionName") as String?) ?: "1.0.0"
 val appVersionCode = ((findProperty("versionCode") as String?) ?: "1").toInt()
 val serverUrl = (findProperty("serverUrl") as String?) ?: "https://gt-unblock-api.onrender.com"
 val backupUrls = (findProperty("backupUrls") as String?) ?: ""
-val appCodename = (findProperty("codename") as String?) ?: "Andromeda"
+val appCodename = (findProperty("codename") as String?) ?: "Astra"
+val appCodenameKind = (findProperty("codenameKind") as String?) ?: "star"
 val appDisplay = (findProperty("glydeDisplay") as String?) ?: "Glyde Dev"
 val appRing = (findProperty("ring") as String?) ?: "stable"
 val keystoreFile = System.getenv("GT_KEYSTORE_FILE")
@@ -32,6 +33,7 @@ android {
         buildConfigField("String", "GITHUB_REPO", "\"GrapeGG-developer/glyde\"")
         buildConfigField("String", "BACKUP_URLS", "\"$backupUrls\"")
         buildConfigField("String", "CODENAME", "\"$appCodename\"")
+        buildConfigField("String", "CODENAME_KIND", "\"$appCodenameKind\"")
         buildConfigField("String", "DISPLAY_NAME", "\"$appDisplay\"")
         buildConfigField("String", "RING", "\"$appRing\"")
         buildConfigField("String", "MIRRORS", "\"https://grapegg-developer.github.io/glyde/update.json|https://cdn.jsdelivr.net/gh/GrapeGG-developer/glyde@gh-pages/update.json|https://raw.githubusercontent.com/GrapeGG-developer/glyde/gh-pages/update.json\"")
@@ -81,7 +83,6 @@ android {
 
     sourceSets {
         getByName("main") {
-            jniLibs.srcDirs(layout.buildDirectory.dir("ndkLibs"))
             assets.srcDirs(layout.buildDirectory.dir("genAssets"))
         }
     }
@@ -130,43 +131,11 @@ dependencies {
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
     implementation("com.squareup.okhttp3:okhttp-dnsoverhttps:4.12.0")
     implementation("com.google.zxing:core:3.5.3")
-}
-
-val ndkOut = layout.buildDirectory.dir("ndkLibs")
-
-val runNdkBuild by tasks.registering(Exec::class) {
-    group = "build"
-    val ndkDir = android.ndkDirectory
-    val outDir = ndkOut.get().asFile
-    val workDir = layout.buildDirectory.dir("ndkBuild").get().asFile
-    inputs.dir("src/main/jni")
-    outputs.dir(outDir)
-    executable = File(ndkDir, "ndk-build").absolutePath
-    args(
-        "NDK_PROJECT_PATH=${workDir.absolutePath}",
-        "NDK_LIBS_OUT=${outDir.absolutePath}",
-        "APP_BUILD_SCRIPT=${file("src/main/jni/Android.mk").absolutePath}",
-        "NDK_APPLICATION_MK=${file("src/main/jni/Application.mk").absolutePath}",
-        "-j${Runtime.getRuntime().availableProcessors()}"
-    )
-    doLast {
-        outDir.listFiles()?.filter { it.isDirectory }?.forEach { abiDir ->
-            val exe = File(abiDir, "ciadpi")
-            if (exe.exists()) {
-                val target = File(abiDir, "libciadpi.so")
-                target.delete()
-                exe.copyTo(target, overwrite = true)
-                exe.delete()
-            }
-            File(abiDir, "hev-socks5-tunnel-bin").delete()
-            File(abiDir, "gdbserver").delete()
-            File(abiDir, "gdb.setup").delete()
-        }
-    }
-}
-
-tasks.named("preBuild") {
-    dependsOn(runNdkBuild)
+    implementation(project(":air"))
+    implementation(project(":core:common"))
+    implementation(project(":core:data"))
+    implementation(project(":core:native"))
+    implementation(project(":feature:telegram"))
 }
 
 val copyChangelog by tasks.registering(Copy::class) {

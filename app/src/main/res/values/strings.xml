@@ -135,7 +135,7 @@
     <string name="whats_new_title">Что нового в версии %1$s</string>
     <string name="whats_new_ok">Отлично</string>
     <string name="about_version">Версия %1$s</string>
-    <string name="about_text">Glyde — самостоятельное приложение для обхода DPI-замедлений и блокировок на Android. Это не VPN: трафик идёт напрямую к сайтам, без чужих серверов. Glyde меняет только форму пакетов, чтобы фильтр провайдера их не узнал. Автоподбор маршрутов, автопочинка, ускорение Telegram и стеклянный дизайн GGV7.</string>
+    <string name="about_text">Glyde — самостоятельное приложение для обхода DPI-замедлений и блокировок на Android. Это не VPN: трафик идёт напрямую к сайтам, без чужих серверов. Glyde меняет только форму пакетов, чтобы фильтр провайдера их не узнал. Автоподбор маршрутов, автопочинка, ускорение Telegram и стеклянный дизайн Air.</string>
     <string name="about_dev">Разработчик: GREENTUNE</string>
     <string name="about_links">Ссылки</string>
     <string name="about_source">Исходный код</string>

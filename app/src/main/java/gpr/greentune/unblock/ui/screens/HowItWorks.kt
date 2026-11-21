@@ -33,13 +33,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import gpr.greentune.unblock.R
-import gpr.greentune.unblock.ui.aero.Aero
-import gpr.greentune.unblock.ui.aero.AeroButton
-import gpr.greentune.unblock.ui.aero.AeroDialog
+import gpr.greentune.air.Air
+import gpr.greentune.air.AirButton
+import gpr.greentune.air.AirDialog
 
 @Composable
 fun FlowDiagram(modifier: Modifier = Modifier, height: Int = 120) {
-    val c = Aero.colors
+    val c = Air.colors
     val t = rememberInfiniteTransition(label = "flow")
     val phase by t.animateFloat(0f, 2f, infiniteRepeatable(tween(5200, easing = LinearEasing), RepeatMode.Restart), label = "ph")
     val you = stringResource(R.string.how_you)
@@ -117,11 +117,11 @@ private fun DrawScope.node(center: Offset, r: Float, color: Color, dark: Boolean
 
 @Composable
 fun HowItWorksDialog(onDismiss: () -> Unit) {
-    val c = Aero.colors
-    AeroDialog(
+    val c = Air.colors
+    AirDialog(
         title = stringResource(R.string.how_title),
         onDismiss = onDismiss,
-        buttons = { AeroButton(stringResource(R.string.how_got_it), onClick = onDismiss, primary = true) },
+        buttons = { AirButton(stringResource(R.string.how_got_it), onClick = onDismiss, primary = true) },
     ) {
         Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
             FlowDiagram()
@@ -132,7 +132,7 @@ fun HowItWorksDialog(onDismiss: () -> Unit) {
 
 @Composable
 fun OnboardingContent(onDone: () -> Unit) {
-    val c = Aero.colors
+    val c = Air.colors
     Column(
         Modifier.fillMaxWidth().padding(horizontal = 24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -143,6 +143,6 @@ fun OnboardingContent(onDone: () -> Unit) {
         Text(stringResource(R.string.onb_not_vpn), fontSize = 18.sp, fontWeight = FontWeight.SemiBold, color = c.text)
         FlowDiagram()
         Text(stringResource(R.string.how_note), fontSize = 12.5.sp, color = c.subText, textAlign = TextAlign.Center)
-        AeroButton(stringResource(R.string.onb_start), onClick = onDone, primary = true, modifier = Modifier.fillMaxWidth())
+        AirButton(stringResource(R.string.onb_start), onClick = onDone, primary = true, modifier = Modifier.fillMaxWidth())
     }
 }

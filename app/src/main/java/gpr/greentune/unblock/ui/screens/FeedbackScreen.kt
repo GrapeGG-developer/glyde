@@ -23,16 +23,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import gpr.greentune.unblock.R
 import gpr.greentune.unblock.net.Backend
-import gpr.greentune.unblock.ui.aero.Aero
-import gpr.greentune.unblock.ui.aero.AeroButton
-import gpr.greentune.unblock.ui.aero.GlassPanel
-import gpr.greentune.unblock.ui.aero.glass
+import gpr.greentune.air.Air
+import gpr.greentune.air.AirButton
+import gpr.greentune.air.GlassPanel
+import gpr.greentune.air.glass
 import gpr.greentune.unblock.ui.openUrl
 import kotlinx.coroutines.launch
 
 @Composable
 fun FeedbackScreen() {
-    val c = Aero.colors
+    val c = Air.colors
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     var text by remember { mutableStateOf("") }
@@ -46,7 +46,7 @@ fun FeedbackScreen() {
                 Text(stringResource(R.string.feedback_text), fontSize = 13.5.sp, color = c.subText)
                 Field(text, { text = it; result = null }, stringResource(R.string.feedback_hint), 140)
                 Field(contact, { contact = it }, stringResource(R.string.feedback_contact), 0)
-                AeroButton(
+                AirButton(
                     stringResource(if (sending) R.string.feedback_sending else R.string.feedback_send),
                     primary = true,
                     enabled = !sending && text.isNotBlank(),
@@ -65,7 +65,7 @@ fun FeedbackScreen() {
                     true -> Text(stringResource(R.string.feedback_ok), color = c.ok, fontSize = 14.sp)
                     false -> Column {
                         Text(stringResource(R.string.feedback_fail), color = c.danger, fontSize = 14.sp)
-                        AeroButton(stringResource(R.string.feedback_github), modifier = Modifier.fillMaxWidth(), onClick = { openUrl(context, Backend.repoUrl + "/issues/new") })
+                        AirButton(stringResource(R.string.feedback_github), modifier = Modifier.fillMaxWidth(), onClick = { openUrl(context, Backend.repoUrl + "/issues/new") })
                     }
                     null -> Unit
                 }
@@ -76,7 +76,7 @@ fun FeedbackScreen() {
 
 @Composable
 private fun Field(value: String, onChange: (String) -> Unit, hint: String, minHeight: Int) {
-    val c = Aero.colors
+    val c = Air.colors
     Box(Modifier.fillMaxWidth().heightIn(min = maxOf(44, minHeight).dp).glass(c, 14.dp, glossFraction = 0.2f).padding(12.dp)) {
         if (value.isEmpty()) Text(hint, color = c.subText, fontSize = 14.sp)
         BasicTextField(

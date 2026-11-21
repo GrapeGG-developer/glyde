@@ -24,13 +24,11 @@ import gpr.greentune.unblock.core.Tuner
 import gpr.greentune.unblock.data.SettingsStore
 import gpr.greentune.unblock.system.Fx
 import gpr.greentune.unblock.system.Perf
-import gpr.greentune.unblock.ui.aero.Aero
-import gpr.greentune.unblock.ui.aero.AquaBackground
-import gpr.greentune.unblock.ui.aero.Bubbles
-import gpr.greentune.unblock.ui.aero.ProvideBackdrop
-import gpr.greentune.unblock.ui.aero.backdropSource
-import gpr.greentune.unblock.ui.aero.TiltSensor
-import gpr.greentune.unblock.ui.aero.observeTouches
+import gpr.greentune.air.Air
+import gpr.greentune.air.AirBackground
+import gpr.greentune.air.ProvideBackdrop
+import gpr.greentune.air.backdropSource
+import gpr.greentune.air.TiltSensor
 import gpr.greentune.unblock.ui.screens.GlydeHome
 import gpr.greentune.unblock.ui.screens.OnboardingScreen
 import gpr.greentune.unblock.ui.screens.UpdateDialog
@@ -54,7 +52,7 @@ fun AppRoot(
     whatsNew: String? = null,
     onWhatsNewShown: () -> Unit = {},
 ) {
-    val c = Aero.colors
+    val c = Air.colors
     val context = LocalContext.current
     val view = LocalView.current
     val settings by SettingsStore.state.collectAsStateWithLifecycle()
@@ -100,10 +98,13 @@ fun AppRoot(
 
     TiltSensor(settings.tilt && !lite)
     ProvideBackdrop {
-    Box(Modifier.fillMaxSize().observeTouches()) {
+    val speed by gpr.greentune.unblock.system.Traffic.speed.collectAsStateWithLifecycle()
+    LaunchedEffect(status) {
+        if (status == EngineStatus.On) gpr.greentune.unblock.system.Traffic.start() else gpr.greentune.unblock.system.Traffic.stop()
+    }
+    Box(Modifier.fillMaxSize()) {
         Box(Modifier.fillMaxSize().backdropSource()) {
-            AquaBackground(effects, if (status == EngineStatus.On) 1f else 0f)
-            Bubbles(energy, lite, Modifier.fillMaxSize())
+            AirBackground(effects, energy, pulse = if (status == EngineStatus.On) speed.level else 0f)
         }
         if (!settings.onboarded) {
             OnboardingScreen(onDone = {
@@ -113,11 +114,8 @@ fun AppRoot(
             return@Box
         }
         GlydeHome(onConnect = onConnect, onDisconnect = onDisconnect)
-        if (gpr.greentune.unblock.ui.aero.Boot.done.value) {
-            if (whatsNew != null) WhatsNewDialog(BuildConfig.VERSION_NAME, whatsNew, onWhatsNewShown)
-            else if (showUpdate) UpdateDialog(onDismiss = onUpdateShown)
-        }
-        gpr.greentune.unblock.ui.aero.BootIntro(lite)
+        if (whatsNew != null) WhatsNewDialog(BuildConfig.VERSION_NAME, whatsNew, onWhatsNewShown)
+        else if (showUpdate) UpdateDialog(onDismiss = onUpdateShown)
     }
     }
 }

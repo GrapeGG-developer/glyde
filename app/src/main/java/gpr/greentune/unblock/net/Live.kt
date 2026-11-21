@@ -41,8 +41,11 @@ object Live {
     val ring: StateFlow<String> get() = _ring
     private val _siege = MutableStateFlow(false)
     val siege: StateFlow<Boolean> get() = _siege
-    @Volatile
-    var socksPort: Int = 0
+    var socksPort: Int
+        get() = Ports.socks
+        set(v) {
+            Ports.socks = v
+        }
 
     private var app: Context? = null
     private var sseJob: Job? = null

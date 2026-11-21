@@ -46,16 +46,16 @@ import gpr.greentune.unblock.core.Engine
 import gpr.greentune.unblock.data.AppSettings
 import gpr.greentune.unblock.data.SettingsStore
 import gpr.greentune.unblock.net.DnsProviders
-import gpr.greentune.unblock.ui.aero.Aero
-import gpr.greentune.unblock.ui.aero.AeroButton
-import gpr.greentune.unblock.ui.aero.AeroSlider
-import gpr.greentune.unblock.ui.aero.GlassPanel
-import gpr.greentune.unblock.ui.aero.SectionTitle
-import gpr.greentune.unblock.ui.aero.Segmented
-import gpr.greentune.unblock.ui.aero.SettingRow
-import gpr.greentune.unblock.ui.aero.ToggleRow
-import gpr.greentune.unblock.ui.aero.AquaFx
-import gpr.greentune.unblock.ui.aero.glass
+import gpr.greentune.air.Air
+import gpr.greentune.air.AirButton
+import gpr.greentune.air.AirSlider
+import gpr.greentune.air.GlassPanel
+import gpr.greentune.air.SectionTitle
+import gpr.greentune.air.Segmented
+import gpr.greentune.air.SettingRow
+import gpr.greentune.air.ToggleRow
+import gpr.greentune.air.AirFx
+import gpr.greentune.air.glass
 import gpr.greentune.unblock.update.UpdateState
 import gpr.greentune.unblock.update.Updater
 import kotlinx.coroutines.launch
@@ -68,7 +68,7 @@ val tintPalette = listOf(
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun SettingsScreen() {
-    val c = Aero.colors
+    val c = Air.colors
     val context = LocalContext.current
     val s by SettingsStore.state.collectAsStateWithLifecycle()
     val upd by Updater.state.collectAsStateWithLifecycle()
@@ -158,13 +158,13 @@ fun SettingsScreen() {
                     for (col in tintPalette) Swatch(Color(col), s.tint == col) { change(false) { it.copy(tint = col) } }
                 }
                 Text(stringResource(R.string.set_tint_intensity), fontSize = 15.sp, color = c.text)
-                AeroSlider(s.tintIntensity, { v -> SettingsStore.update { it.copy(tintIntensity = v) } })
+                AirSlider(s.tintIntensity, { v -> SettingsStore.update { it.copy(tintIntensity = v) } })
                 ToggleRow(
                     stringResource(R.string.set_effects),
-                    stringResource(if (AquaFx.supported) R.string.set_effects_sub else R.string.set_effects_old),
-                    s.effects3d && AquaFx.supported,
+                    stringResource(if (AirFx.supported) R.string.set_effects_sub else R.string.set_effects_old),
+                    s.effects3d && AirFx.supported,
                     { v -> change(false) { it.copy(effects3d = v) } },
-                    enabled = AquaFx.supported
+                    enabled = AirFx.supported
                 )
                 ToggleRow(
                     stringResource(R.string.lite_mode),
@@ -193,23 +193,23 @@ fun SettingsScreen() {
                     UpdateState.Idle -> ""
                 }
                 if (status.isNotBlank()) Text(status, fontSize = 13.sp, color = c.subText)
-                AeroButton(stringResource(R.string.update_check), modifier = Modifier.fillMaxWidth(), onClick = {
+                AirButton(stringResource(R.string.update_check), modifier = Modifier.fillMaxWidth(), onClick = {
                     scope.launch { Updater.check(context, manual = true) }
                 })
                 if (upd is UpdateState.Available) {
-                    AeroButton(stringResource(R.string.update_install), primary = true, modifier = Modifier.fillMaxWidth(), onClick = {
+                    AirButton(stringResource(R.string.update_install), primary = true, modifier = Modifier.fillMaxWidth(), onClick = {
                         UpdateFlow.start(context, scope, (upd as UpdateState.Available).info)
                     })
                 }
                 if (upd is UpdateState.ReadyToInstall) {
-                    AeroButton(stringResource(R.string.update_install), primary = true, modifier = Modifier.fillMaxWidth(), onClick = {
+                    AirButton(stringResource(R.string.update_install), primary = true, modifier = Modifier.fillMaxWidth(), onClick = {
                         Updater.install(context)
                     })
                 }
                 val news = remember { Updater.changelogFor(context, BuildConfig.VERSION_NAME) }
                 if (news != null) {
                     var showNews by remember { mutableStateOf(false) }
-                    AeroButton(stringResource(R.string.whats_new), modifier = Modifier.fillMaxWidth(), onClick = { showNews = true })
+                    AirButton(stringResource(R.string.whats_new), modifier = Modifier.fillMaxWidth(), onClick = { showNews = true })
                     if (showNews) WhatsNewDialog(BuildConfig.VERSION_NAME, news) { showNews = false }
                 }
             }

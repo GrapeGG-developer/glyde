@@ -19,10 +19,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import gpr.greentune.unblock.R
-import gpr.greentune.unblock.ui.aero.Aero
-import gpr.greentune.unblock.ui.aero.AeroButton
-import gpr.greentune.unblock.ui.aero.AeroDialog
-import gpr.greentune.unblock.ui.aero.AeroProgressBar
+import gpr.greentune.air.Air
+import gpr.greentune.air.AirButton
+import gpr.greentune.air.AirDialog
+import gpr.greentune.air.AirProgressBar
 import gpr.greentune.unblock.update.UpdateInfo
 import gpr.greentune.unblock.update.UpdateState
 import gpr.greentune.unblock.update.Updater
@@ -52,12 +52,12 @@ fun cleanChangelog(text: String): String = text.lines()
 
 @Composable
 fun WhatsNewDialog(version: String, text: String, onDismiss: () -> Unit) {
-    val c = Aero.colors
-    AeroDialog(
+    val c = Air.colors
+    AirDialog(
         title = stringResource(R.string.whats_new_title, version),
         onDismiss = onDismiss,
         buttons = {
-            AeroButton(stringResource(R.string.whats_new_ok), primary = true, onClick = onDismiss)
+            AirButton(stringResource(R.string.whats_new_ok), primary = true, onClick = onDismiss)
         }
     ) {
         Text(
@@ -71,7 +71,7 @@ fun WhatsNewDialog(version: String, text: String, onDismiss: () -> Unit) {
 
 @Composable
 fun UpdateDialog(onDismiss: () -> Unit) {
-    val c = Aero.colors
+    val c = Air.colors
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val st by Updater.state.collectAsStateWithLifecycle()
@@ -87,44 +87,44 @@ fun UpdateDialog(onDismiss: () -> Unit) {
         is UpdateState.Failed -> Updater.lastInfo
         else -> null
     }
-    AeroDialog(
+    AirDialog(
         title = if (info != null) stringResource(R.string.update_available_title, info.version) else stringResource(R.string.update_title),
         onDismiss = onDismiss,
         buttons = {
             when (val s = st) {
                 is UpdateState.Available -> {
-                    AeroButton(stringResource(R.string.update_skip), onClick = {
+                    AirButton(stringResource(R.string.update_skip), onClick = {
                         Updater.skip(s.info)
                         onDismiss()
                     })
-                    AeroButton(stringResource(R.string.update_install), primary = true, onClick = { Updater.startDownload(context, s.info) })
+                    AirButton(stringResource(R.string.update_install), primary = true, onClick = { Updater.startDownload(context, s.info) })
                 }
                 is UpdateState.ReadyToInstall -> {
-                    AeroButton(stringResource(R.string.later), onClick = onDismiss)
-                    AeroButton(stringResource(R.string.update_install), primary = true, onClick = { Updater.install(context) })
+                    AirButton(stringResource(R.string.later), onClick = onDismiss)
+                    AirButton(stringResource(R.string.update_install), primary = true, onClick = { Updater.install(context) })
                 }
-                is UpdateState.Downloading -> AeroButton(stringResource(R.string.later), onClick = onDismiss)
+                is UpdateState.Downloading -> AirButton(stringResource(R.string.later), onClick = onDismiss)
                 is UpdateState.Failed -> {
-                    AeroButton(stringResource(R.string.close), onClick = onDismiss)
+                    AirButton(stringResource(R.string.close), onClick = onDismiss)
                     val retry = Updater.lastInfo
                     if (retry != null) {
-                        AeroButton(stringResource(R.string.update_install), primary = true, onClick = { Updater.startDownload(context, retry) })
+                        AirButton(stringResource(R.string.update_install), primary = true, onClick = { Updater.startDownload(context, retry) })
                     } else {
-                        AeroButton(stringResource(R.string.update_check), primary = true, onClick = { scope.launch { Updater.check(context, manual = true) } })
+                        AirButton(stringResource(R.string.update_check), primary = true, onClick = { scope.launch { Updater.check(context, manual = true) } })
                     }
                 }
-                else -> AeroButton(stringResource(R.string.close), onClick = onDismiss)
+                else -> AirButton(stringResource(R.string.close), onClick = onDismiss)
             }
         }
     ) {
         Column {
             when (val s = st) {
-                UpdateState.Checking -> AeroProgressBar(null)
+                UpdateState.Checking -> AirProgressBar(null)
                 UpdateState.UpToDate -> Text(stringResource(R.string.update_latest), color = c.text)
                 is UpdateState.Failed -> Text(s.message, color = c.danger)
                 is UpdateState.Downloading -> {
                     Text(stringResource(R.string.update_downloading, (s.progress * 100).toInt()), color = c.text)
-                    AeroProgressBar(s.progress)
+                    AirProgressBar(s.progress)
                 }
                 is UpdateState.ReadyToInstall -> {
                     Text(stringResource(R.string.update_ready), color = c.text)

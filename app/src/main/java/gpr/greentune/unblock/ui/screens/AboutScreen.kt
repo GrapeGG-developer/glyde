@@ -35,17 +35,17 @@ import gpr.greentune.unblock.BuildConfig
 import gpr.greentune.unblock.R
 import gpr.greentune.unblock.data.SettingsStore
 import gpr.greentune.unblock.net.Backend
-import gpr.greentune.unblock.ui.aero.Aero
-import gpr.greentune.unblock.ui.aero.AeroButton
-import gpr.greentune.unblock.ui.aero.Badge
-import gpr.greentune.unblock.ui.aero.GlassPanel
-import gpr.greentune.unblock.ui.aero.SectionTitle
-import gpr.greentune.unblock.ui.aero.SettingRow
+import gpr.greentune.air.Air
+import gpr.greentune.air.AirButton
+import gpr.greentune.air.Badge
+import gpr.greentune.air.GlassPanel
+import gpr.greentune.air.SectionTitle
+import gpr.greentune.air.SettingRow
 import gpr.greentune.unblock.ui.openUrl
 
 @Composable
 fun AboutScreen(onDonate: () -> Unit, onFeedback: () -> Unit) {
-    val c = Aero.colors
+    val c = Air.colors
     val context = LocalContext.current
     var taps by remember { mutableIntStateOf(0) }
     var showCode by remember { mutableStateOf(false) }
@@ -71,10 +71,10 @@ fun AboutScreen(onDonate: () -> Unit, onFeedback: () -> Unit) {
                 )
                 if (showCode) {
                     Spacer(Modifier.height(4.dp))
-                    Badge(gpr.greentune.unblock.net.Device.code, color = Aero.colors.tint)
+                    Badge(gpr.greentune.unblock.net.Device.code, color = Air.colors.tint)
                 }
                 Spacer(Modifier.height(6.dp))
-                Badge("by GREENTUNE", color = Aero.colors.accent)
+                Badge("by GREENTUNE", color = Air.colors.accent)
                 Spacer(Modifier.height(10.dp))
                 Text(stringResource(R.string.about_text), fontSize = 14.sp, color = c.text, textAlign = TextAlign.Center)
                 Spacer(Modifier.height(4.dp))
@@ -111,13 +111,13 @@ fun AboutScreen(onDonate: () -> Unit, onFeedback: () -> Unit) {
                     }
                 }
                 if (build == gpr.greentune.unblock.system.BuildCheck.Genuine) {
-                    AeroButton(stringResource(R.string.build_log), onClick = { openUrl(context, gpr.greentune.unblock.system.Authenticity.releaseUrl()) })
+                    AirButton(stringResource(R.string.build_log), onClick = { openUrl(context, gpr.greentune.unblock.system.Authenticity.releaseUrl()) })
                 }
             }
         }
         Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-            AeroButton(stringResource(R.string.donate_title), primary = true, icon = painterResource(R.drawable.ic_menu_donate), onClick = onDonate, modifier = Modifier.weight(1f))
-            AeroButton(stringResource(R.string.nav_feedback), icon = painterResource(R.drawable.ic_menu_feedback), onClick = onFeedback, modifier = Modifier.weight(1f))
+            AirButton(stringResource(R.string.donate_title), primary = true, icon = painterResource(R.drawable.ic_menu_donate), onClick = onDonate, modifier = Modifier.weight(1f))
+            AirButton(stringResource(R.string.nav_feedback), icon = painterResource(R.drawable.ic_menu_feedback), onClick = onFeedback, modifier = Modifier.weight(1f))
         }
         SectionTitle(stringResource(R.string.about_links))
         GlassPanel(Modifier.fillMaxWidth()) {
