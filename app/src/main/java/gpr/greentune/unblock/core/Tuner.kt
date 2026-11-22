@@ -95,7 +95,7 @@ object Tuner {
         }
         val blocked = presets.services.filter { s ->
             val r = baseline[s.id].orEmpty()
-            r.isEmpty() || r.any { !it.ok }
+            s.force || r.isEmpty() || r.any { !it.ok }
         }
         val generalBlocked = only == null && generalBase.any { !it.ok }
         val directChoices = presets.services.filter { it !in blocked }.map { s ->
@@ -151,7 +151,35 @@ object Tuner {
             }
         }
 
-        val index = strategies.withIndex().associate { it.value.id to it.index }
+        fun solved(sid: String) = scores.values.any { (it[sid]?.ok ?: 0) >= (need[sid] ?: 1) }
+        val unsolved = blocked.map { it.id }.filter { !solved(it) }.toSet()
+        val rest = if (full) emptyList() else ordered.drop(strategies.size)
+        if (unsolved.isNotEmpty() && rest.isNotEmpty()) {
+            val probes2 = probes.filter { it.first in unsolved }
+            val total2 = total + rest.size
+            val done2 = AtomicInteger(total)
+            val sem2 = Semaphore(4)
+            coroutineScope {
+                for (st in rest) {
+                    launch(Dispatchers.IO) {
+                        sem2.withPermit {
+                            ensureActive()
+                            if (!unsolved.all { solved(it) }) {
+                                val m = testStrategy(context, presets, st, probes2, timeout)
+                                if (m != null) scores[st.id] = m
+                            }
+                            val d = done2.incrementAndGet()
+                            _progress.value = TuneProgress(
+                                true, full, d, total2,
+                                context.getString(R.string.tune_phase_strategy, st.id, d, total2)
+                            )
+                        }
+                    }
+                }
+            }
+        }
+
+        val index = ordered.withIndex().associate { it.value.id to it.index }
         fun bestFor(sid: String): Pair<String, Score>? = scores.entries
             .mapNotNull { (stId, m) -> m[sid]?.let { stId to it } }
             .filter { it.second.ok > 0 }

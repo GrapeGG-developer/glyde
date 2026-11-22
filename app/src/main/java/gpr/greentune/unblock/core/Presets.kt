@@ -20,6 +20,7 @@ data class Service(
     val tests: List<String>,
     val category: String = "other",
     val default: Boolean = false,
+    val force: Boolean = false,
 )
 
 data class Category(val id: String, val ru: String, val en: String)
@@ -126,6 +127,7 @@ object Presets {
                     tests = s.optJSONArray("tests").strings(),
                     category = s.optString("cat", "other"),
                     default = s.optBoolean("def", false),
+                    force = s.optBoolean("force", false),
                 )
             }
         }

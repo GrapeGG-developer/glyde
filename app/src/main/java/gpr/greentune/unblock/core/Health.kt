@@ -31,7 +31,12 @@ object Health {
         if (job?.isActive == true) return
         val app = context.applicationContext
         job = App.scope.launch {
-            delay(FIRST_DELAY)
+            delay(6_000L)
+            try {
+                repairForced(app)
+            } catch (_: Exception) {
+            }
+            delay(FIRST_DELAY - 6_000L)
             while (true) {
                 try {
                     check(app)
@@ -47,6 +52,19 @@ object Health {
         job?.cancel()
         job = null
         strikes.clear()
+    }
+
+    private fun repairForced(context: Context) {
+        if (Engine.status.value != EngineStatus.On || Tuner.isRunning()) return
+        val result = TuneStore.current.value ?: return
+        val now = System.currentTimeMillis()
+        val ids = Presets.active().services.filter { it.force }.map { it.id }.filter { id ->
+            result.choices.none { it.serviceId == id && !it.direct && it.ok } && now - (lastHeal[id] ?: 0L) > HEAL_COOLDOWN
+        }.toSet()
+        if (ids.isEmpty()) return
+        ids.forEach { lastHeal[it] = now }
+        Logs.append(context, "health: re-tune " + ids.joinToString(","))
+        Tuner.start(context, false, ids)
     }
 
     private suspend fun check(context: Context) {

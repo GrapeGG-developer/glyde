@@ -69,9 +69,13 @@ object Engine {
         if (r == null) {
             return Args.compose(presets, emptyMap(), emptySet(), presets.strategies.firstOrNull()?.id)
         }
+        val forced = presets.services.filter { it.force }.map { it.id }.toSet()
         val choices = r.choices.filter { !it.direct && it.strategyId != null }
-            .associate { it.serviceId to it.strategyId!! }
-        val direct = r.choices.filter { it.direct }.map { it.serviceId }.toSet()
+            .associate { it.serviceId to it.strategyId!! }.toMutableMap()
+        if (r.defaultStrategy == null) {
+            presets.strategies.firstOrNull()?.id?.let { first -> forced.forEach { if (it !in choices) choices[it] = first } }
+        }
+        val direct = r.choices.filter { it.direct && it.serviceId !in forced }.map { it.serviceId }.toSet()
         return Args.compose(presets, choices, direct, r.defaultStrategy)
     }
 
