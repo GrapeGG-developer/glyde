@@ -4,6 +4,7 @@ import android.content.Context
 import gpr.greentune.unblock.App
 import gpr.greentune.unblock.R
 import gpr.greentune.unblock.data.ServiceChoice
+import gpr.greentune.unblock.data.SettingsStore
 import gpr.greentune.unblock.data.TuneResult
 import gpr.greentune.unblock.data.TuneStore
 import gpr.greentune.unblock.net.Backend
