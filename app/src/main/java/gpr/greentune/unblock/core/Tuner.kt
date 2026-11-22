@@ -80,8 +80,9 @@ object Tuner {
         }
         _progress.value = TuneProgress(true, full, 0, 0, context.getString(R.string.tune_phase_network))
         val geo = Geo.lookup()
-        val key = NetKey.key(context, geo?.asn)
-        val label = geo?.label ?: NetKey.transport(context)
+        val profiles = SettingsStore.value.profiles
+        val key = if (profiles) NetKey.key(context, geo?.asn) else "shared"
+        val label = if (profiles) geo?.label ?: NetKey.transport(context) else context.getString(R.string.net_profile_shared)
 
         _progress.value = TuneProgress(true, full, 0, 0, context.getString(R.string.tune_phase_baseline))
         val direct = Prober.client(null, 5000)

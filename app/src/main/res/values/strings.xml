@@ -282,7 +282,8 @@
     <string name="hosts_black">Кроме списка</string>
     <string name="hosts_hint">По одному домену в строке</string>
     <string name="net_profiles">Профили сетей</string>
-    <string name="net_profiles_sub">Помнить настройки отдельно для каждой сети Wi‑Fi и мобильной сети</string>
+    <string name="net_profiles_sub">Хранить результаты отдельно по типу сети и оператору. Имя Wi‑Fi не читается</string>
+    <string name="net_profile_shared">Общий профиль</string>
     <string name="onb_hello">Добро пожаловать в Glyde</string>
     <string name="onb_one">Одна кнопка — и заблокированные сервисы снова открываются. Glyde сам подберёт настройки и будет чинить их, если провайдер что-то поменяет.</string>
     <string name="onb_not_vpn">Это не VPN</string>

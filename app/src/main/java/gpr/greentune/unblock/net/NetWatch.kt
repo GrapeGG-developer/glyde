@@ -53,6 +53,10 @@ object NetWatch {
         if (!Engine.isActive()) return
         val s = SettingsStore.value
         if (!s.tuneOnNetworkChange || s.customArgsEnabled && s.expert) return
+        if (!s.profiles) {
+            if (!Tuner.isRunning()) Tuner.start(context, full = false)
+            return
+        }
         val key = NetKey.key(context, geo?.asn)
         if (key == TuneStore.activeKey) return
         if (TuneStore.activate(key)) {

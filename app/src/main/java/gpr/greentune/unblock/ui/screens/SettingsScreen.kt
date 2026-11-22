@@ -43,6 +43,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import gpr.greentune.unblock.BuildConfig
 import gpr.greentune.unblock.R
 import gpr.greentune.unblock.core.Engine
+import gpr.greentune.unblock.core.Tuner
 import gpr.greentune.unblock.data.AppSettings
 import gpr.greentune.unblock.data.SettingsStore
 import gpr.greentune.unblock.net.DnsProviders
@@ -118,6 +119,10 @@ fun SettingsScreen() {
                 ToggleRow(stringResource(R.string.set_ipv6), stringResource(R.string.set_ipv6_sub), s.ipv6, { v -> change(true) { it.copy(ipv6 = v) } }, enabled = s.mode == "vpn")
                 ToggleRow(stringResource(R.string.set_autostart), stringResource(R.string.set_autostart_sub), s.autostart, { v -> change(false) { it.copy(autostart = v) } })
                 ToggleRow(stringResource(R.string.set_retune), stringResource(R.string.set_retune_sub), s.tuneOnNetworkChange, { v -> change(false) { it.copy(tuneOnNetworkChange = v) } })
+                ToggleRow(stringResource(R.string.net_profiles), stringResource(R.string.net_profiles_sub), s.profiles, { v ->
+                    SettingsStore.update { it.copy(profiles = v) }
+                    if (Engine.isActive()) Tuner.start(context, false)
+                })
                 ToggleRow(stringResource(R.string.auto_repair), stringResource(R.string.auto_repair_sub), s.autoRepair, { v -> change(false) { it.copy(autoRepair = v) } })
                 ToggleRow(stringResource(R.string.udp_bypass), stringResource(R.string.udp_bypass_sub), s.udpBypass, { v -> change(true) { it.copy(udpBypass = v) } })
                 ToggleRow(stringResource(R.string.tg_set), stringResource(R.string.tg_set_sub), s.tgBridge, { v -> change(false) { it.copy(tgBridge = v) } })

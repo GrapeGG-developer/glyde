@@ -281,7 +281,8 @@
     <string name="hosts_black">Except listed</string>
     <string name="hosts_hint">One domain per line</string>
     <string name="net_profiles">Network profiles</string>
-    <string name="net_profiles_sub">Remember settings separately for each Wi‑Fi and mobile network</string>
+    <string name="net_profiles_sub">Keep results by network type and ISP. Wi‑Fi names are never read</string>
+    <string name="net_profile_shared">Shared profile</string>
     <string name="onb_hello">Welcome to Glyde</string>
     <string name="onb_one">One button and blocked services open again. Glyde tunes itself and repairs the setup if your ISP changes something.</string>
     <string name="onb_not_vpn">This is not a VPN</string>
