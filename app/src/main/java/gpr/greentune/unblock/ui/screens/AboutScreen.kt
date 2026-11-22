@@ -73,9 +73,9 @@ fun AboutScreen(onDonate: () -> Unit, onFeedback: () -> Unit) {
                         }
                     }
                 ) {
-                    gpr.greentune.unblock.ui.brand.CosmicMark(BuildConfig.CODENAME, Modifier.size(22.dp))
-                    Spacer(Modifier.width(8.dp))
                     Text(versionCaption(), fontSize = 14.sp, color = c.subText)
+                    Spacer(Modifier.width(8.dp))
+                    gpr.greentune.unblock.ui.brand.CosmicMark(BuildConfig.CODENAME, Modifier.size(22.dp))
                 }
                 if (showCode) {
                     Spacer(Modifier.height(4.dp))

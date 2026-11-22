@@ -142,7 +142,7 @@
     <string name="about_privacy">Политика конфиденциальности</string>
     <string name="about_license">Лицензия</string>
     <string name="about_telemetry_title">Отчёты и статистика</string>
-    <string name="about_telemetry">Приложение отправляет анонимные отчёты о сбоях и минимальную статистику: версию приложения и Android, модель устройства, номер сети оператора (ASN) и какие стратегии сработали. IP-адрес, идентификаторы устройства, посещённые сайты и список приложений не собираются и не хранятся. Подробности в политике конфиденциальности.</string>
+    <string name="about_telemetry">Glyde передаёт техническую телеметрию: случайный ID, IP (до 30 дней), страну и город, оператора/ASN, модель и параметры устройства, тип сети, версию приложения, состояние соединения и результаты проверки поддерживаемых сервисов. Отчёты о сбоях помогают находить ошибки. История сайтов, DNS-запросы и содержимое трафика не собираются; список установленных приложений не отправляется. Подробности — в политике конфиденциальности.</string>
     <string name="about_credits">Компоненты</string>
     <string name="about_disclaimer">Движок обхода основан на byedpi (MIT). Шрифт Glyde Sans создан GREENTUNE специально для Glyde.</string>
     <string name="donate_title">Поддержать проект</string>
@@ -164,7 +164,7 @@
     <string name="onb_2_text">Приложение само подберёт рабочую стратегию для вашего оператора</string>
     <string name="onb_3_title">Гибкая настройка</string>
     <string name="onb_3_text">Более 40 сервисов, свои сайты, диагностика, выбор приложений и DNS через HTTPS</string>
-    <string name="onb_telemetry">Glyde всегда отправляет отчёты о сбоях и статистику: случайный ID, IP (30 дней), страну, оператора, модель телефона и статус обхода. Историю сайтов и трафик не собирает. Подробности в разделе «О приложении».</string>
+    <string name="onb_telemetry">Glyde передаёт технические отчёты: случайный ID, IP (до 30 дней), страну, оператора, параметры устройства, тип сети, состояние соединения, результаты тестов и сбои. История сайтов, DNS-запросы и содержимое трафика не собираются. Подробности — в разделе «О приложении».</string>
     <string name="onb_start">Начать</string>
     <string name="nav_services">Сервисы</string>
     <string name="nav_diag">Проверка</string>
@@ -294,7 +294,19 @@
     <string name="link_mirror">Зеркало обновлений</string>
     <string name="link_off">Нет связи с сервером</string>
     <string name="privacy_title">Какие данные собираются</string>
-    <string name="privacy_text">Случайный ID устройства, IP-адрес (хранится 30 дней), страна и город по IP, оператор и ASN, модель телефона, версия Android и Glyde, статус обхода, выбранная стратегия, какие сервисы открываются, отчёты о вылетах. Историю сайтов и трафик Glyde не собирает.</string>
+    <string name="privacy_text">Собираются: случайный ID устройства; IP (до 30 дней), страна/город; оператор и ASN; модель, производитель, архитектура и объём памяти; версия Android и Glyde; тип сети; режим и состояние соединения; выбранная стратегия и результаты проверки поддерживаемых сервисов; отчёты о сбоях. История сайтов, DNS-запросы, содержимое трафика, точная геолокация и список установленных приложений не собираются.</string>
+    <string name="network_snapshot_title">Снимок соединения</string>
+    <string name="network_wifi">Wi‑Fi</string>
+    <string name="network_mobile">Мобильная сеть</string>
+    <string name="network_ethernet">Ethernet</string>
+    <string name="network_none">Нет активной сети</string>
+    <string name="network_vpn">Внешний VPN</string>
+    <string name="network_other">Сеть</string>
+    <string name="network_server_live">сервер на связи</string>
+    <string name="network_server_polling">резервный опрос</string>
+    <string name="network_server_mirror">работает зеркало</string>
+    <string name="network_server_connecting">подключение…</string>
+    <string name="network_server_off">сервер не запущен</string>
     <string name="nav_menu">Меню</string>
     <string name="apps_short">Какие приложения идут через Glyde</string>
 </resources>

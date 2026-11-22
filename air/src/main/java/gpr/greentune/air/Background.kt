@@ -45,7 +45,7 @@ private fun ShaderBackground(energy: Float, pulse: Float, accent: Color, modifie
         }
     } ?: return AirWallpaper(modifier)
     val brush = remember(shader) { ShaderBrush(shader) }
-    val time by rememberShaderTime(30)
+    val time by rememberShaderTime(8)
     val e by animateFloatAsState(energy, tween(1600, easing = FastOutSlowInEasing), label = "e")
     val p by animateFloatAsState(pulse, tween(1500), label = "p")
     val ac by animateColorAsState(accent, tween(1600), label = "ac")

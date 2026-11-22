@@ -15,7 +15,7 @@ NAMES = [
 ]
 MONTHLY = ["Andromeda", "Betelgeuse", "Cassiopeia", "Draco", "Eridanus", "Fornax", "Gemini", "Hydra", "Izar", "Juno", "Kepler", "Lyra"]
 STAGES = {"insider": "insider", "beta": "beta", "dev": "dev", "rc": "beta"}
-WEEK = re.compile(r"^v?(\d{2})\.(\d{1,2})\.(\d)\.(\d+)(?:-(insider|beta|rc|dev)(\d+)?)?$", re.I)
+WEEK = re.compile(r"^v?(\d{2})\.(\d{1,2})\.(\d)\.(\d+)(?:-([A-Za-z][A-Za-z0-9]*))?(?:-(insider|beta|rc|dev)(\d+)?)?$", re.I)
 YMWB = re.compile(r"^v?Y(\d+)\.M(\d+)\.W(\d+)\.B(\d+)(?:-([A-Z][a-z]+))?(?:-(Insider|Beta|Dev|RC))?$", re.I)
 OLD = re.compile(r"^v?(\d+)\.(\d+)(?:\.(\d+))?(?:-(insider|beta|rc|dev)\.?(\d+)?)?$", re.I)
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -36,9 +36,9 @@ def parse(v):
     m = WEEK.match(v)
     if m:
         y, mo, w, b = int(m[1]), int(m[2]), int(m[3]), int(m[4])
-        stage = STAGES.get((m[5] or "").lower(), "release")
-        name = weekly(y, mo, w)
-        return {"scheme": "week", "y": y, "m": mo, "w": w, "b": b, "stage": stage, "n": int(m[6] or 0), "codename": name, "kind": "",
+        stage = STAGES.get((m[6] or "").lower(), "release")
+        name = m[5] or weekly(y, mo, w)
+        return {"scheme": "week", "y": y, "m": mo, "w": w, "b": b, "stage": stage, "n": int(m[7] or 0), "codename": name, "kind": "",
                 "code": 1_000_000_000 + y * 10_000_000 + mo * 100_000 + w * 10_000 + min(b, 9999)}
     m = YMWB.match(v)
     if m:
@@ -69,18 +69,28 @@ def tags():
 def next_name(stage=None):
     now = datetime.datetime.now(MSK)
     y, m, w = now.year % 100, now.month, now.day // 7
-    taken = 0
+    entries = []
     for t in tags():
         try:
-            p = parse(t)
+            entries.append(parse(t))
         except SystemExit:
             continue
-        if p["y"] == y and p["m"] == m and p["w"] == w and p["scheme"] in ("week", "ymwb"):
-            taken = max(taken, p["b"] if p["scheme"] == "week" else taken + 1)
-    name = "%d.%d.%d.%d" % (y, m, w, taken + 1)
+    taken = max((p["b"] for p in entries if p["y"] == y and p["m"] == m and p["w"] == w and p["scheme"] == "week"), default=0)
+    seq = int(os.environ.get("GITHUB_RUN_NUMBER", "0") or 0)
+    used = {p["codename"].lower() for p in entries}
+    available = [name for name in NAMES if name.lower() not in used]
+    if available:
+        idx = max(0, seq - 1) if seq else 0
+        name = available[idx % len(available)]
+        if idx >= len(available):
+            name += str(idx // len(available) + 1)
+    else:
+        idx = max(0, seq - 1)
+        name = NAMES[idx % len(NAMES)] + str(idx // len(NAMES) + 2)
+    version = "%d.%d.%d.%d-%s" % (y, m, w, taken + 1, name)
     if stage and stage.lower() in STAGES:
-        name += "-" + STAGES[stage.lower()]
-    return name
+        version += "-" + STAGES[stage.lower()]
+    return version
 
 
 def short(p):

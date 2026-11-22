@@ -37,41 +37,62 @@ fun AirWallpaper(modifier: Modifier = Modifier) {
     val t = rememberInfiniteTransition(label = "wall")
     val phase by t.animateFloat(
         0f, 6.2832f,
-        infiniteRepeatable(tween(26000, easing = LinearEasing), RepeatMode.Restart),
+        infiniteRepeatable(tween(90000, easing = LinearEasing), RepeatMode.Restart),
         label = "phase"
     )
     Box(modifier.fillMaxSize()) {
         Canvas(Modifier.fillMaxSize()) {
+            val w = size.width
+            val h = size.height
             drawRect(Brush.verticalGradient(listOf(c.wallTop, c.wallBottom)))
-        }
-        val blurMod = if (Build.VERSION.SDK_INT >= 31) Modifier.blur(48.dp) else Modifier
-        Canvas(Modifier.fillMaxSize().then(blurMod)) {
-            val w = size.width
-            val h = size.height
-            val a = if (c.dark) 0.30f else 0.38f
-            val blobs = listOf(
-                Triple(Offset(w * (0.18f + 0.06f * cos(phase)), h * (0.20f + 0.04f * sin(phase))), w * 0.55f, c.tint.copy(alpha = a)),
-                Triple(Offset(w * (0.85f + 0.05f * sin(phase * 2)), h * (0.42f + 0.05f * cos(phase))), w * 0.50f, Color(0xFF7FE3F5).copy(alpha = a * 0.8f)),
-                Triple(Offset(w * (0.35f + 0.07f * sin(phase)), h * (0.86f + 0.03f * cos(phase * 2))), w * 0.65f, c.tint.copy(alpha = a * 0.8f)),
+            val glowCenter = Offset(w * (0.53f + 0.008f * sin(phase)), h * 0.38f)
+            drawCircle(
+                Brush.radialGradient(listOf(c.tint.copy(alpha = if (c.dark) 0.13f else 0.15f), Color.Transparent), glowCenter, w * 0.8f),
+                w * 0.8f,
+                glowCenter
             )
-            for ((center, r, col) in blobs) {
-                drawCircle(Brush.radialGradient(listOf(col, Color.Transparent), center, r), r, center)
+            val horizon = h * 0.61f
+            val shelf = Path().apply {
+                moveTo(-w * 0.12f, horizon + h * 0.08f)
+                cubicTo(w * 0.18f, horizon - h * 0.08f, w * 0.62f, horizon - h * 0.12f, w * 1.12f, horizon + h * 0.01f)
+                lineTo(w * 1.12f, h * 1.12f)
+                lineTo(-w * 0.12f, h * 1.12f)
+                close()
             }
-        }
-        Canvas(Modifier.fillMaxSize()) {
-            val w = size.width
-            val h = size.height
-            val streak = Color.White.copy(alpha = if (c.dark) 0.035f else 0.16f)
-            for (k in 0 until 3) {
-                val p = Path().apply {
-                    moveTo(-w * 0.2f, h * (0.30f + k * 0.12f))
-                    cubicTo(w * 0.3f, h * (0.18f + k * 0.12f), w * 0.6f, h * (0.52f + k * 0.1f), w * 1.2f, h * (0.34f + k * 0.14f))
-                    lineTo(w * 1.2f, h * (0.40f + k * 0.14f))
-                    cubicTo(w * 0.6f, h * (0.58f + k * 0.1f), w * 0.3f, h * (0.24f + k * 0.12f), -w * 0.2f, h * (0.36f + k * 0.12f))
-                    close()
-                }
-                drawPath(p, streak)
+            drawPath(
+                shelf,
+                Brush.verticalGradient(
+                    listOf(
+                        Color.White.copy(alpha = if (c.dark) 0.035f else 0.12f),
+                        c.tint.copy(alpha = if (c.dark) 0.045f else 0.085f),
+                        Color.Transparent
+                    ),
+                    horizon - h * 0.1f,
+                    h
+                )
+            )
+            val edge = Path().apply {
+                moveTo(-w * 0.1f, horizon + h * 0.08f)
+                cubicTo(w * 0.18f, horizon - h * 0.08f, w * 0.62f, horizon - h * 0.12f, w * 1.1f, horizon + h * 0.01f)
             }
+            drawPath(edge, Color.White.copy(alpha = if (c.dark) 0.13f else 0.42f), style = Stroke(1.2.dp.toPx()))
+            drawPath(edge, c.tint.copy(alpha = if (c.dark) 0.15f else 0.20f), style = Stroke(5.dp.toPx()))
+            drawArc(
+                Color.White.copy(alpha = if (c.dark) 0.08f else 0.19f),
+                202f,
+                136f,
+                false,
+                Offset(-w * 0.2f, h * 0.33f),
+                Size(w * 1.4f, h * 0.48f),
+                style = Stroke(1.dp.toPx())
+            )
+            val sheenX = w * (0.22f + 0.56f * ((sin(phase) + 1f) * 0.5f))
+            drawLine(
+                Brush.horizontalGradient(listOf(Color.Transparent, Color.White.copy(alpha = if (c.dark) 0.075f else 0.20f), Color.Transparent), sheenX - w * 0.16f, sheenX + w * 0.16f),
+                Offset(sheenX - w * 0.12f, h * 0.16f),
+                Offset(sheenX + w * 0.12f, h * 0.30f),
+                strokeWidth = 1.1.dp.toPx()
+            )
         }
     }
 }

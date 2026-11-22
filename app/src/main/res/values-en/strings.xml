@@ -141,7 +141,7 @@
     <string name="about_privacy">Privacy policy</string>
     <string name="about_license">License</string>
     <string name="about_telemetry_title">Reports and statistics</string>
-    <string name="about_telemetry">The app sends anonymous crash reports and minimal statistics: app and Android version, device model, ISP network number (ASN) and which strategies worked. IP address, device identifiers, visited sites and the app list are not collected or stored. See the privacy policy for details.</string>
+    <string name="about_telemetry">Glyde sends technical telemetry: a random ID, IP (up to 30 days), country/city, ISP/ASN, device parameters, network type, app version, connection state and supported-service test results. Crash reports help find defects. Browsing history, DNS queries and traffic contents are not collected; installed-app lists are not sent. See the privacy policy for details.</string>
     <string name="about_credits">Components</string>
     <string name="about_disclaimer">The bypass engine is based on byedpi (MIT). The Glyde Sans typeface was made by GREENTUNE for Glyde.</string>
     <string name="donate_title">Support the project</string>
@@ -293,7 +293,19 @@
     <string name="link_mirror">Update mirror</string>
     <string name="link_off">No server connection</string>
     <string name="privacy_title">What data is collected</string>
-    <string name="privacy_text">A random device ID, IP address (kept for 30 days), country and city by IP, ISP and ASN, phone model, Android and Glyde versions, bypass status, chosen strategy, which services open, crash reports. Glyde never collects browsing history or traffic.</string>
+    <string name="privacy_text">Collected: random device ID; IP (up to 30 days), country/city; ISP and ASN; device model, maker, ABI and RAM; Android and Glyde versions; network type; mode and connection state; selected strategy and supported-service test results; crash reports. Browsing history, DNS queries, traffic contents, precise location and installed-app lists are not collected.</string>
+    <string name="network_snapshot_title">Connection snapshot</string>
+    <string name="network_wifi">Wi‑Fi</string>
+    <string name="network_mobile">Mobile network</string>
+    <string name="network_ethernet">Ethernet</string>
+    <string name="network_none">No active network</string>
+    <string name="network_vpn">External VPN</string>
+    <string name="network_other">Network</string>
+    <string name="network_server_live">server online</string>
+    <string name="network_server_polling">fallback polling</string>
+    <string name="network_server_mirror">using a mirror</string>
+    <string name="network_server_connecting">connecting…</string>
+    <string name="network_server_off">server not started</string>
     <string name="nav_menu">Menu</string>
     <string name="apps_short">Choose which apps use Glyde</string>
 </resources>

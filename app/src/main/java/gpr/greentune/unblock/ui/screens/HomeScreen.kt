@@ -380,12 +380,12 @@ private fun TopBar(onHow: () -> Unit, onAbout: () -> Unit, modifier: Modifier = 
                 DpiBadge()
             }
             Row(verticalAlignment = Alignment.CenterVertically) {
-                gpr.greentune.unblock.ui.brand.CosmicMark(gpr.greentune.unblock.BuildConfig.CODENAME, Modifier.size(13.dp))
-                Spacer(Modifier.width(4.dp))
                 Text(
                     versionCaption(), fontSize = 10.5.sp, lineHeight = 12.sp, color = c.subText, maxLines = 1,
                     overflow = TextOverflow.Ellipsis, letterSpacing = 0.3.sp
                 )
+                Spacer(Modifier.width(4.dp))
+                gpr.greentune.unblock.ui.brand.CosmicMark(gpr.greentune.unblock.BuildConfig.CODENAME, Modifier.size(13.dp))
             }
         }
         }
@@ -412,18 +412,18 @@ private fun DpiBadge() {
             .drawBehind {
                 val cr = CornerRadius(6.dp.toPx())
                 drawRoundRect(Color.Black.copy(alpha = 0.35f), topLeft = Offset(0f, 1.5.dp.toPx()), size = size, cornerRadius = cr)
-                drawRoundRect(Brush.verticalGradient(listOf(Color(0xFFFFE07A), Color(0xFFFFA000), Color(0xFFE65100))), cornerRadius = cr)
+                drawRoundRect(Brush.verticalGradient(listOf(Color(0xFF9DE7FF), Color(0xFF1688D4), Color(0xFF07529A))), cornerRadius = cr)
                 drawRoundRect(
                     Brush.verticalGradient(listOf(Color.White.copy(alpha = 0.75f), Color.White.copy(alpha = 0.1f)), 0f, size.height * 0.5f),
                     size = androidx.compose.ui.geometry.Size(size.width, size.height * 0.5f), cornerRadius = cr
                 )
-                drawRoundRect(Color(0xFF5A2300), cornerRadius = cr, style = Stroke(1.2.dp.toPx()))
+                drawRoundRect(Color(0xFF063C70), cornerRadius = cr, style = Stroke(1.2.dp.toPx()))
             }
             .padding(horizontal = 6.dp, vertical = 1.dp)
     ) {
         Text(
             "DPI", fontSize = 12.sp, lineHeight = 14.sp, fontWeight = FontWeight.ExtraBold, color = Color.White, letterSpacing = 1.2.sp,
-            style = androidx.compose.ui.text.TextStyle(shadow = androidx.compose.ui.graphics.Shadow(Color(0xFF6B2A00), Offset(0f, 1.5f), 2f))
+            style = androidx.compose.ui.text.TextStyle(shadow = androidx.compose.ui.graphics.Shadow(Color(0xFF063C70), Offset(0f, 1.5f), 2f))
         )
     }
 }
@@ -794,7 +794,46 @@ private fun Menu(onOpen: (String) -> Unit) {
             }
             Tile(R.drawable.ic_v3_expert, stringResource(R.string.nav_settings), Modifier.weight(1f).staggerIn(3, !lite)) { onOpen(Pages.SETTINGS) }
         }
-        Box(Modifier.staggerIn(4, !lite)) { DonateRow { onOpen(Pages.DONATE) } }
+        Box(Modifier.staggerIn(4, !lite)) { NetworkSnapshot { onOpen(Pages.DIAG) } }
+        Box(Modifier.staggerIn(5, !lite)) { DonateRow { onOpen(Pages.DONATE) } }
+    }
+}
+
+@Composable
+private fun NetworkSnapshot(onClick: () -> Unit) {
+    val c = Air.colors
+    val link by gpr.greentune.unblock.net.Live.link.collectAsStateWithLifecycle()
+    val network = when (gpr.greentune.unblock.net.Device.net()) {
+        "wifi" -> stringResource(R.string.network_wifi)
+        "cell" -> stringResource(R.string.network_mobile)
+        "eth" -> stringResource(R.string.network_ethernet)
+        "none" -> stringResource(R.string.network_none)
+        "vpn" -> stringResource(R.string.network_vpn)
+        else -> stringResource(R.string.network_other)
+    }
+    val server = when (link) {
+        gpr.greentune.unblock.net.LinkState.Live -> stringResource(R.string.network_server_live)
+        gpr.greentune.unblock.net.LinkState.Polling -> stringResource(R.string.network_server_polling)
+        gpr.greentune.unblock.net.LinkState.Mirror -> stringResource(R.string.network_server_mirror)
+        gpr.greentune.unblock.net.LinkState.Connecting -> stringResource(R.string.network_server_connecting)
+        gpr.greentune.unblock.net.LinkState.Off -> stringResource(R.string.network_server_off)
+    }
+    val color = when (link) {
+        gpr.greentune.unblock.net.LinkState.Live, gpr.greentune.unblock.net.LinkState.Polling -> c.ok
+        gpr.greentune.unblock.net.LinkState.Mirror -> c.warn
+        else -> c.subText
+    }
+    Row(
+        Modifier.fillMaxWidth().glass(c, 17.dp).clip(RoundedCornerShape(17.dp)).clickable(onClick = onClick).padding(horizontal = 14.dp, vertical = 11.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Image(painterResource(R.drawable.ic_v3_network), null, Modifier.size(38.dp))
+        Spacer(Modifier.width(12.dp))
+        Column(Modifier.weight(1f)) {
+            Text(stringResource(R.string.network_snapshot_title), fontWeight = FontWeight.SemiBold, color = c.text, fontSize = 14.sp)
+            Text(network + " · " + server, fontSize = 12.sp, color = c.subText, maxLines = 1, overflow = TextOverflow.Ellipsis)
+        }
+        StatusDot(color = color, modifier = Modifier.size(9.dp))
     }
 }
 

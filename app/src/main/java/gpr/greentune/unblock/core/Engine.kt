@@ -44,9 +44,27 @@ object Engine {
             EngineStatus.On -> "on"
             is EngineStatus.Error -> "error"
         }
-        if (status != EngineStatus.Starting) gpr.greentune.unblock.net.Live.status(st, try { currentArgs().joinToString(" ").take(380) } catch (_: Exception) { "" })
+        if (status != EngineStatus.Starting) {
+            val services = if (status == EngineStatus.On) serviceSnapshot() else null
+            gpr.greentune.unblock.net.Live.status(st, try { currentArgs().joinToString(" ").take(380) } catch (_: Exception) { "" }, services)
+        }
         OrbWidget.updateAll(context)
         GtTileService.requestUpdate(context)
+    }
+
+    private fun serviceSnapshot(): org.json.JSONObject {
+        val result = TuneStore.current.value ?: return org.json.JSONObject()
+        return org.json.JSONObject().apply {
+            result.choices.take(60).forEach { choice ->
+                put(
+                    choice.serviceId,
+                    org.json.JSONObject()
+                        .put("ok", choice.ok)
+                        .put("direct", choice.direct)
+                        .put("strategy", choice.strategyId ?: org.json.JSONObject.NULL)
+                )
+            }
+        }
     }
 
     fun needsVpnPermission(context: Context): Boolean =

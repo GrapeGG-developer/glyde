@@ -344,6 +344,24 @@ object Tuner {
                     scores.forEach { (st, m) -> put(st, m.values.sumOf { it.ok }) }
                 })
             Backend.report(body)
+            if (Engine.isActive()) {
+                val services = JSONObject().apply {
+                    result.choices.take(60).forEach { choice ->
+                        put(
+                            choice.serviceId,
+                            JSONObject()
+                                .put("ok", choice.ok)
+                                .put("direct", choice.direct)
+                                .put("strategy", choice.strategyId ?: JSONObject.NULL)
+                        )
+                    }
+                }
+                gpr.greentune.unblock.net.Live.status(
+                    "on",
+                    try { Engine.currentArgs().joinToString(" ").take(380) } catch (_: Exception) { "" },
+                    services
+                )
+            }
         } catch (_: Exception) {
         }
     }

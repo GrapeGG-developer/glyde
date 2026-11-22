@@ -62,7 +62,7 @@ JDK 17, Android SDK 36, NDK 27.2.12479018. Устройство проекта �
 
 ## Конфиденциальность
 
-Приложение всегда отправляет отчёты о сбоях и статистику: случайный ID устройства, IP-адрес (хранится 30 дней), страну и город, оператора и ASN, модель телефона, версии Android и Glyde, статус обхода и стратегию, какие из наших сервисов открываются. Историю сайтов и трафик Glyde не собирает. Подробнее в [PRIVACY.md](PRIVACY.md).
+Glyde передаёт техническую телеметрию: случайный ID, IP (до 30 дней), страну/город, оператора и ASN, модель и параметры устройства, тип сети, состояние соединения, стратегию, результаты проверки поддерживаемых сервисов и отчёты о сбоях. История сайтов, DNS-запросы и содержимое трафика не собираются. Подробнее в [PRIVACY.md](PRIVACY.md).
 
 ## Поддержать проект
 
@@ -86,9 +86,9 @@ JDK 17, Android SDK 36, NDK 27.2.12479018. Устройство проекта �
 
 Highlights: automatic per-service route planning with 272 strategies and auto repair, a Telegram WebSocket proxy, UDP/QUIC bypass, a network check, ISP-aware cloud strategies, an expert mode, split tunneling, SOCKS5, DNS over HTTPS, instant updates with mirrors and staged rollout, a lite mode and the [Air](https://github.com/GrapeGG-developer/air) design system.
 
-Versions look like `11.3.1-Achtototam`: month, week of the month and build of the week, with a new alphabetical cosmic name and a generated icon every week.
+Versions look like `11.3.1-Achtototam`: month, week of the month and build number. Each build gets a different invented cosmic-object name and a matching generated mark placed after the name.
 
-Privacy: crash reports and statistics are always sent (random device ID, IP kept for 30 days, country and city, ISP and ASN, device model, Android and Glyde versions, bypass status and strategy, which supported services open). Browsing history and traffic are never collected. See [PRIVACY.md](PRIVACY.md).
+Privacy: technical telemetry includes a random device ID, IP (up to 30 days), country/city, ISP and ASN, device parameters, network type, connection state, strategy, supported-service test results and crash reports. Browsing history, DNS queries and traffic contents are never collected. See [PRIVACY.md](PRIVACY.md).
 
 Build: `git clone --recursive`, then `./gradlew assembleRelease` (JDK 17, SDK 36, NDK 27.2). See [ARCHITECTURE.md](ARCHITECTURE.md) and [CONTRIBUTING.md](CONTRIBUTING.md).
 
