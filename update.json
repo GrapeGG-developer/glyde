@@ -1,29 +1,29 @@
 {
- "version": "26.11.3.4-Brisgalor",
- "code": 1261130004,
- "codename": "Brisgalor",
- "display": "Glyde 11.3.4-Brisgalor",
+ "version": "26.11.3.5-Celestrae",
+ "code": 1261130005,
+ "codename": "Celestrae",
+ "display": "Glyde 11.3.5-Celestrae",
  "ring": "stable",
- "changelog": "- Фон и сцена главного экрана переработаны в спокойном Aqua/Aero: стеклянный горизонт, точечный блик и почти неподвижная композиция\n- Метка DPI переведена на холодную синюю палитру, мини-объект версии теперь стоит после названия\n- Добавлена компактная карточка состояния сети и связи с сервером с переходом в диагностику\n- Каждая новая сборка получает собственное космическое имя и соответствующий знак\n- Телеметрия точнее отражает параметры сети и результаты тестов сервисов; историю сайтов, DNS-запросы и содержимое трафика Glyde не собирает",
+ "changelog": "- Добавлено управление сетевыми профилями: отдельные результаты подбора по типу сети и оператору либо единый общий профиль\n- Тесты сервисов теперь обновляют карточку устройства сразу после подбора, без передачи адресов проверенных сайтов",
  "assets": {
-  "Glyde-11.3.4-Brisgalor-arm64-v8a.apk": "https://github.com/GrapeGG-developer/glyde/releases/download/26.11.3.4-Brisgalor/Glyde-11.3.4-Brisgalor-arm64-v8a.apk",
-  "Glyde-11.3.4-Brisgalor-armeabi-v7a.apk": "https://github.com/GrapeGG-developer/glyde/releases/download/26.11.3.4-Brisgalor/Glyde-11.3.4-Brisgalor-armeabi-v7a.apk",
-  "Glyde-11.3.4-Brisgalor-universal.apk": "https://github.com/GrapeGG-developer/glyde/releases/download/26.11.3.4-Brisgalor/Glyde-11.3.4-Brisgalor-universal.apk",
-  "Glyde-11.3.4-Brisgalor-x86.apk": "https://github.com/GrapeGG-developer/glyde/releases/download/26.11.3.4-Brisgalor/Glyde-11.3.4-Brisgalor-x86.apk",
-  "Glyde-11.3.4-Brisgalor-x86_64.apk": "https://github.com/GrapeGG-developer/glyde/releases/download/26.11.3.4-Brisgalor/Glyde-11.3.4-Brisgalor-x86_64.apk"
+  "Glyde-11.3.5-Celestrae-arm64-v8a.apk": "https://github.com/GrapeGG-developer/glyde/releases/download/26.11.3.5-Celestrae/Glyde-11.3.5-Celestrae-arm64-v8a.apk",
+  "Glyde-11.3.5-Celestrae-armeabi-v7a.apk": "https://github.com/GrapeGG-developer/glyde/releases/download/26.11.3.5-Celestrae/Glyde-11.3.5-Celestrae-armeabi-v7a.apk",
+  "Glyde-11.3.5-Celestrae-universal.apk": "https://github.com/GrapeGG-developer/glyde/releases/download/26.11.3.5-Celestrae/Glyde-11.3.5-Celestrae-universal.apk",
+  "Glyde-11.3.5-Celestrae-x86.apk": "https://github.com/GrapeGG-developer/glyde/releases/download/26.11.3.5-Celestrae/Glyde-11.3.5-Celestrae-x86.apk",
+  "Glyde-11.3.5-Celestrae-x86_64.apk": "https://github.com/GrapeGG-developer/glyde/releases/download/26.11.3.5-Celestrae/Glyde-11.3.5-Celestrae-x86_64.apk"
  },
  "sizes": {
-  "Glyde-11.3.4-Brisgalor-arm64-v8a.apk": 4793989,
-  "Glyde-11.3.4-Brisgalor-armeabi-v7a.apk": 4770487,
-  "Glyde-11.3.4-Brisgalor-universal.apk": 5384721,
-  "Glyde-11.3.4-Brisgalor-x86.apk": 4808875,
-  "Glyde-11.3.4-Brisgalor-x86_64.apk": 4800728
+  "Glyde-11.3.5-Celestrae-arm64-v8a.apk": 4795457,
+  "Glyde-11.3.5-Celestrae-armeabi-v7a.apk": 4771955,
+  "Glyde-11.3.5-Celestrae-universal.apk": 5386189,
+  "Glyde-11.3.5-Celestrae-x86.apk": 4810343,
+  "Glyde-11.3.5-Celestrae-x86_64.apk": 4802196
  },
  "sums": {
-  "Glyde-11.3.4-Brisgalor-arm64-v8a.apk": "a1900fff741a9918d61824999d0fb63b6a3ff2067c78ea82f542ae684aa79baf",
-  "Glyde-11.3.4-Brisgalor-armeabi-v7a.apk": "4a6b98e3883612e4539eb82895687aca9fdab16c85e0c9c3970945d44589c471",
-  "Glyde-11.3.4-Brisgalor-universal.apk": "56621088d677629f4ac7aac30cddf45efa7fd65d507cb254337bf4bd7fe0a8d5",
-  "Glyde-11.3.4-Brisgalor-x86.apk": "923fc25fc3b25db0930efc95ff6b771feaa136775d1e46ad0e70a53118620e20",
-  "Glyde-11.3.4-Brisgalor-x86_64.apk": "f4ee6a346ec3c2b47ebbcb4e85310521f9a6fc31ab9bd5542ecddf1cd08dc59a"
+  "Glyde-11.3.5-Celestrae-arm64-v8a.apk": "1d905e7df4c0e911349346ea19a6596de00c49c95c6cde79afcb0c5517cdfad5",
+  "Glyde-11.3.5-Celestrae-armeabi-v7a.apk": "293a125a1603ca843fa98259ff9654462fe088e05e3ddfea354e7d5bf4dd0177",
+  "Glyde-11.3.5-Celestrae-universal.apk": "742f01c05ca85106365652750daa9f557db352214ed872123a565482b9103ee4",
+  "Glyde-11.3.5-Celestrae-x86.apk": "6b39b36abf5382428782087cc091f3264e1844a890bda06e9b370d6fb4a762c2",
+  "Glyde-11.3.5-Celestrae-x86_64.apk": "936c8bacfc56f552b58710111292091450b98ec70060771037403ae351898488"
  }
 }
