@@ -62,11 +62,43 @@ object Live {
     @Volatile
     private var blockedUntil = 0L
 
-    val servers: List<String> by lazy {
-        (listOf(BuildConfig.SERVER_URL) + BuildConfig.BACKUP_URLS.split('|', ',', ' '))
+    @Volatile
+    private var remote: List<String> = emptyList()
+
+    val servers: List<String>
+        get() = (remote + listOf(BuildConfig.SERVER_URL) + BuildConfig.BACKUP_URLS.split('|', ',', ' '))
             .map { it.trim().trimEnd('/') }
             .filter { it.startsWith("https://") }
             .distinct()
+
+    private fun parseServers(text: String?): List<String> = try {
+        val arr = JSONObject(text ?: "").optJSONArray("servers") ?: JSONArray()
+        (0 until arr.length()).map { arr.getString(it).trim().trimEnd('/') }.filter { it.startsWith("https://") }
+    } catch (_: Exception) {
+        emptyList()
+    }
+
+    @Volatile
+    private var serversLoaded = false
+
+    private fun loadServers(context: Context) {
+        if (serversLoaded) return
+        serversLoaded = true
+        val sp = context.getSharedPreferences("live", Context.MODE_PRIVATE)
+        remote = parseServers(sp.getString("servers", null))
+        scope.launch {
+            for (m in mirrors) {
+                val text = Http.getText(m.substringBeforeLast('/') + "/servers.json") ?: continue
+                val list = parseServers(text)
+                if (list.isEmpty()) continue
+                if (list != remote) {
+                    remote = list
+                    serverIndex = 0
+                    sp.edit().putString("servers", text).apply()
+                }
+                break
+            }
+        }
     }
 
     val mirrors: List<String> by lazy { BuildConfig.MIRRORS.split('|').map { it.trim() }.filter { it.isNotEmpty() } }
@@ -91,6 +123,7 @@ object Live {
 
     fun start(context: Context) {
         app = context.applicationContext
+        loadServers(context.applicationContext)
         if (sseJob?.isActive == true) return
         sseJob = scope.launch { sseLoop() }
         if (pollJob?.isActive != true) pollJob = scope.launch { pollLoop() }

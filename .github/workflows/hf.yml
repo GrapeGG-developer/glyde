@@ -1,0 +1,28 @@
+name: Backend to Hugging Face
+
+on:
+  push:
+    branches: [main]
+    paths: ['backend/**', 'deploy/hf/**']
+  workflow_dispatch:
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    if: ${{ vars.HF_SPACE != '' }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Push to Space
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+          HF_SPACE: ${{ vars.HF_SPACE }}
+        run: |
+          git clone -q --depth 1 "https://user:${HF_TOKEN}@huggingface.co/spaces/${HF_SPACE}" space
+          find space -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf {} +
+          cp -r backend space/backend
+          cp deploy/hf/Dockerfile deploy/hf/README.md space/
+          cd space
+          git config user.name GREENTUNE
+          git config user.email dev@greentune.app
+          git add -A
+          git diff --cached --quiet || { git commit -qm "Sync ${GITHUB_SHA::7}"; git push -q; }

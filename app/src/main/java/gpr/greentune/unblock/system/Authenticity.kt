@@ -60,7 +60,7 @@ object Authenticity {
     }
 
     private fun fetchSums(tag: String): Map<String, String>? {
-        val base = BuildConfig.SERVER_URL.trimEnd('/')
+        val base = gpr.greentune.unblock.net.Live.base
         try {
             val o = Http.getJson("$base/v3/build?tag=$tag")?.optJSONObject("sums")
             if (o != null && o.length() > 0) return o.keys().asSequence().associateWith { o.getString(it).lowercase() }

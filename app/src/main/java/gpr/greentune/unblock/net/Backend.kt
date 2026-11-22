@@ -9,7 +9,7 @@ import org.json.JSONObject
 import java.net.URLEncoder
 
 object Backend {
-    private val base = BuildConfig.SERVER_URL.trimEnd('/')
+    private val base: String get() = Live.base
     val repo: String = BuildConfig.GITHUB_REPO
     val repoUrl: String get() = "https://github.com/$repo"
 
