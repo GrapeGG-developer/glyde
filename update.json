@@ -1,29 +1,29 @@
 {
- "version": "26.11.3.1",
- "code": 1261130001,
+ "version": "26.11.3.2",
+ "code": 1261130002,
  "codename": "Achtototam",
- "display": "Glyde 11.3.1-Achtototam",
+ "display": "Glyde 11.3.2-Achtototam",
  "ring": "stable",
- "changelog": "Проще и спокойнее.\n\n- Версии теперь выглядят так: 11.3.1-Achtototam — месяц, неделя и сборка. Каждую неделю новое космическое имя по алфавиту и свой уникальный значок; год перенесён в «О приложении»\n- Меню из четырёх разделов: Сервисы, Проверка сети, Лёгкий режим, Настройки\n- Telegram и выбор приложений теперь внутри «Сервисов», «Подобрать заново» — в «Проверке сети», «О приложении» открывается касанием логотипа\n- Лёгкий режим одной кнопкой выключает живой фон, параллакс, размытие и анимации\n- Фон Air переделан: спокойные мягкие полосы света, без рывков и скачков при включении обхода\n- Сфера, окна и переходы стали сдержаннее: без пружинных подскоков, кругов и вращающихся следов\n- Новый звук подключения: мягкий короткий аккорд; тише и чище звук касания",
+ "changelog": "Срочное исправление YouTube.\n\n- YouTube теперь всегда идёт через обход: раньше, если главная страница открывалась без него, сервис ошибочно считался доступным и видео не грузилось\n- После обновления Glyde сам заново подберёт стратегию для YouTube в первые секунды после включения\n- Добавлены 8 новых стратегий для YouTube, они проверяются первыми\n- Если быстрый подбор не нашёл рабочую стратегию, Glyde продолжает перебор по всему списку, пока не найдёт\n- Списки стратегий загружаются с запасных зеркал, если основной сервер недоступен",
  "assets": {
-  "Glyde-11.3.1-Achtototam-arm64-v8a.apk": "https://github.com/GrapeGG-developer/glyde/releases/download/26.11.3.1/Glyde-11.3.1-Achtototam-arm64-v8a.apk",
-  "Glyde-11.3.1-Achtototam-armeabi-v7a.apk": "https://github.com/GrapeGG-developer/glyde/releases/download/26.11.3.1/Glyde-11.3.1-Achtototam-armeabi-v7a.apk",
-  "Glyde-11.3.1-Achtototam-universal.apk": "https://github.com/GrapeGG-developer/glyde/releases/download/26.11.3.1/Glyde-11.3.1-Achtototam-universal.apk",
-  "Glyde-11.3.1-Achtototam-x86.apk": "https://github.com/GrapeGG-developer/glyde/releases/download/26.11.3.1/Glyde-11.3.1-Achtototam-x86.apk",
-  "Glyde-11.3.1-Achtototam-x86_64.apk": "https://github.com/GrapeGG-developer/glyde/releases/download/26.11.3.1/Glyde-11.3.1-Achtototam-x86_64.apk"
+  "Glyde-11.3.2-Achtototam-arm64-v8a.apk": "https://github.com/GrapeGG-developer/glyde/releases/download/26.11.3.2/Glyde-11.3.2-Achtototam-arm64-v8a.apk",
+  "Glyde-11.3.2-Achtototam-armeabi-v7a.apk": "https://github.com/GrapeGG-developer/glyde/releases/download/26.11.3.2/Glyde-11.3.2-Achtototam-armeabi-v7a.apk",
+  "Glyde-11.3.2-Achtototam-universal.apk": "https://github.com/GrapeGG-developer/glyde/releases/download/26.11.3.2/Glyde-11.3.2-Achtototam-universal.apk",
+  "Glyde-11.3.2-Achtototam-x86.apk": "https://github.com/GrapeGG-developer/glyde/releases/download/26.11.3.2/Glyde-11.3.2-Achtototam-x86.apk",
+  "Glyde-11.3.2-Achtototam-x86_64.apk": "https://github.com/GrapeGG-developer/glyde/releases/download/26.11.3.2/Glyde-11.3.2-Achtototam-x86_64.apk"
  },
  "sizes": {
-  "Glyde-11.3.1-Achtototam-arm64-v8a.apk": 4780205,
-  "Glyde-11.3.1-Achtototam-armeabi-v7a.apk": 4756699,
-  "Glyde-11.3.1-Achtototam-universal.apk": 5370933,
-  "Glyde-11.3.1-Achtototam-x86.apk": 4795087,
-  "Glyde-11.3.1-Achtototam-x86_64.apk": 4786940
+  "Glyde-11.3.2-Achtototam-arm64-v8a.apk": 4785201,
+  "Glyde-11.3.2-Achtototam-armeabi-v7a.apk": 4761699,
+  "Glyde-11.3.2-Achtototam-universal.apk": 5375933,
+  "Glyde-11.3.2-Achtototam-x86.apk": 4800087,
+  "Glyde-11.3.2-Achtototam-x86_64.apk": 4791940
  },
  "sums": {
-  "Glyde-11.3.1-Achtototam-arm64-v8a.apk": "b98113352450190f4c89e08c8441c5da61a26bdb992810acb75f0d0c42c6d271",
-  "Glyde-11.3.1-Achtototam-armeabi-v7a.apk": "43396656118b4a016d9726cac9fa53b7b5c1ea1652f45953cc20d3ce980f57cc",
-  "Glyde-11.3.1-Achtototam-universal.apk": "84308d40dc567a6429899e6b814096707e3514cdc6ba8155593c915c20bec1e3",
-  "Glyde-11.3.1-Achtototam-x86.apk": "bc6fcb3b4f55675dbb2337433b3cd5da3905b3d2e4315ec478d40c543e00d7fa",
-  "Glyde-11.3.1-Achtototam-x86_64.apk": "9148466e3f5e810c8d2bf48d99ad2c2d3cb22ed6fe98321db1747ec81deb94a5"
+  "Glyde-11.3.2-Achtototam-arm64-v8a.apk": "99174631ca9cb0390638ec7e0ce49b8a96218b4fbd6d9a1d1739ecd91d7c11d0",
+  "Glyde-11.3.2-Achtototam-armeabi-v7a.apk": "b3b1e1828b5333a102490858a3a00ab6ab8785f01f4861d8008bfc9b6cb65262",
+  "Glyde-11.3.2-Achtototam-universal.apk": "d99a4856685cc17ce5725ba02ee4974375a98c44316be35b42bceb755f71f603",
+  "Glyde-11.3.2-Achtototam-x86.apk": "929a4b6ec3d108fd7c35eb2ce40b9bff5b520f6a6d93ba68f49807f8cf915e89",
+  "Glyde-11.3.2-Achtototam-x86_64.apk": "e292a36bf0a8436a728e6aa0d9a79e65eae75ea127e80c54c113ef0789fd2bdc"
  }
 }
