@@ -1,29 +1,29 @@
 {
- "version": "26.11.3.3",
- "code": 1261130003,
- "codename": "Achtototam",
- "display": "Glyde 11.3.3-Achtototam",
+ "version": "26.11.3.4-Brisgalor",
+ "code": 1261130004,
+ "codename": "Brisgalor",
+ "display": "Glyde 11.3.4-Brisgalor",
  "ring": "stable",
- "changelog": "- Glyde умеет переключаться на новый сервер без обновления приложения: список серверов загружается с зеркал\n- Подготовлен переезд сервера на бесплатный хостинг",
+ "changelog": "- Фон и сцена главного экрана переработаны в спокойном Aqua/Aero: стеклянный горизонт, точечный блик и почти неподвижная композиция\n- Метка DPI переведена на холодную синюю палитру, мини-объект версии теперь стоит после названия\n- Добавлена компактная карточка состояния сети и связи с сервером с переходом в диагностику\n- Каждая новая сборка получает собственное космическое имя и соответствующий знак\n- Телеметрия точнее отражает параметры сети и результаты тестов сервисов; историю сайтов, DNS-запросы и содержимое трафика Glyde не собирает",
  "assets": {
-  "Glyde-11.3.3-Achtototam-arm64-v8a.apk": "https://github.com/GrapeGG-developer/glyde/releases/download/26.11.3.3/Glyde-11.3.3-Achtototam-arm64-v8a.apk",
-  "Glyde-11.3.3-Achtototam-armeabi-v7a.apk": "https://github.com/GrapeGG-developer/glyde/releases/download/26.11.3.3/Glyde-11.3.3-Achtototam-armeabi-v7a.apk",
-  "Glyde-11.3.3-Achtototam-universal.apk": "https://github.com/GrapeGG-developer/glyde/releases/download/26.11.3.3/Glyde-11.3.3-Achtototam-universal.apk",
-  "Glyde-11.3.3-Achtototam-x86.apk": "https://github.com/GrapeGG-developer/glyde/releases/download/26.11.3.3/Glyde-11.3.3-Achtototam-x86.apk",
-  "Glyde-11.3.3-Achtototam-x86_64.apk": "https://github.com/GrapeGG-developer/glyde/releases/download/26.11.3.3/Glyde-11.3.3-Achtototam-x86_64.apk"
+  "Glyde-11.3.4-Brisgalor-arm64-v8a.apk": "https://github.com/GrapeGG-developer/glyde/releases/download/26.11.3.4-Brisgalor/Glyde-11.3.4-Brisgalor-arm64-v8a.apk",
+  "Glyde-11.3.4-Brisgalor-armeabi-v7a.apk": "https://github.com/GrapeGG-developer/glyde/releases/download/26.11.3.4-Brisgalor/Glyde-11.3.4-Brisgalor-armeabi-v7a.apk",
+  "Glyde-11.3.4-Brisgalor-universal.apk": "https://github.com/GrapeGG-developer/glyde/releases/download/26.11.3.4-Brisgalor/Glyde-11.3.4-Brisgalor-universal.apk",
+  "Glyde-11.3.4-Brisgalor-x86.apk": "https://github.com/GrapeGG-developer/glyde/releases/download/26.11.3.4-Brisgalor/Glyde-11.3.4-Brisgalor-x86.apk",
+  "Glyde-11.3.4-Brisgalor-x86_64.apk": "https://github.com/GrapeGG-developer/glyde/releases/download/26.11.3.4-Brisgalor/Glyde-11.3.4-Brisgalor-x86_64.apk"
  },
  "sizes": {
-  "Glyde-11.3.3-Achtototam-arm64-v8a.apk": 4785925,
-  "Glyde-11.3.3-Achtototam-armeabi-v7a.apk": 4762423,
-  "Glyde-11.3.3-Achtototam-universal.apk": 5376657,
-  "Glyde-11.3.3-Achtototam-x86.apk": 4800811,
-  "Glyde-11.3.3-Achtototam-x86_64.apk": 4792664
+  "Glyde-11.3.4-Brisgalor-arm64-v8a.apk": 4793989,
+  "Glyde-11.3.4-Brisgalor-armeabi-v7a.apk": 4770487,
+  "Glyde-11.3.4-Brisgalor-universal.apk": 5384721,
+  "Glyde-11.3.4-Brisgalor-x86.apk": 4808875,
+  "Glyde-11.3.4-Brisgalor-x86_64.apk": 4800728
  },
  "sums": {
-  "Glyde-11.3.3-Achtototam-arm64-v8a.apk": "1ce8c3cd7d3441b9a5359c0411cf179e51ceec99e707d3b4d00136abd94f66b6",
-  "Glyde-11.3.3-Achtototam-armeabi-v7a.apk": "be71232814ac6fee63e094d71a555c1023db16c328879695c7f571c2175a05bd",
-  "Glyde-11.3.3-Achtototam-universal.apk": "f47e2691147073c257e313655b98869199e2bbde3de7bc1904a06e0a5c8734a1",
-  "Glyde-11.3.3-Achtototam-x86.apk": "aab14e0f362b662a867d1b6ed7215df43d547cb8c96e5dd5e479c7bd7e36378e",
-  "Glyde-11.3.3-Achtototam-x86_64.apk": "c7c001fe619da4508a22363e5ed2e97e0e85e9f5ab9782ed9e3f35cdab85d5a5"
+  "Glyde-11.3.4-Brisgalor-arm64-v8a.apk": "a1900fff741a9918d61824999d0fb63b6a3ff2067c78ea82f542ae684aa79baf",
+  "Glyde-11.3.4-Brisgalor-armeabi-v7a.apk": "4a6b98e3883612e4539eb82895687aca9fdab16c85e0c9c3970945d44589c471",
+  "Glyde-11.3.4-Brisgalor-universal.apk": "56621088d677629f4ac7aac30cddf45efa7fd65d507cb254337bf4bd7fe0a8d5",
+  "Glyde-11.3.4-Brisgalor-x86.apk": "923fc25fc3b25db0930efc95ff6b771feaa136775d1e46ad0e70a53118620e20",
+  "Glyde-11.3.4-Brisgalor-x86_64.apk": "f4ee6a346ec3c2b47ebbcb4e85310521f9a6fc31ab9bd5542ecddf1cd08dc59a"
  }
 }
