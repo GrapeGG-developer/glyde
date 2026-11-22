@@ -1,29 +1,29 @@
 {
- "version": "26.11.3.2",
- "code": 1261130002,
+ "version": "26.11.3.3",
+ "code": 1261130003,
  "codename": "Achtototam",
- "display": "Glyde 11.3.2-Achtototam",
+ "display": "Glyde 11.3.3-Achtototam",
  "ring": "stable",
- "changelog": "Срочное исправление YouTube.\n\n- YouTube теперь всегда идёт через обход: раньше, если главная страница открывалась без него, сервис ошибочно считался доступным и видео не грузилось\n- После обновления Glyde сам заново подберёт стратегию для YouTube в первые секунды после включения\n- Добавлены 8 новых стратегий для YouTube, они проверяются первыми\n- Если быстрый подбор не нашёл рабочую стратегию, Glyde продолжает перебор по всему списку, пока не найдёт\n- Списки стратегий загружаются с запасных зеркал, если основной сервер недоступен",
+ "changelog": "- Glyde умеет переключаться на новый сервер без обновления приложения: список серверов загружается с зеркал\n- Подготовлен переезд сервера на бесплатный хостинг",
  "assets": {
-  "Glyde-11.3.2-Achtototam-arm64-v8a.apk": "https://github.com/GrapeGG-developer/glyde/releases/download/26.11.3.2/Glyde-11.3.2-Achtototam-arm64-v8a.apk",
-  "Glyde-11.3.2-Achtototam-armeabi-v7a.apk": "https://github.com/GrapeGG-developer/glyde/releases/download/26.11.3.2/Glyde-11.3.2-Achtototam-armeabi-v7a.apk",
-  "Glyde-11.3.2-Achtototam-universal.apk": "https://github.com/GrapeGG-developer/glyde/releases/download/26.11.3.2/Glyde-11.3.2-Achtototam-universal.apk",
-  "Glyde-11.3.2-Achtototam-x86.apk": "https://github.com/GrapeGG-developer/glyde/releases/download/26.11.3.2/Glyde-11.3.2-Achtototam-x86.apk",
-  "Glyde-11.3.2-Achtototam-x86_64.apk": "https://github.com/GrapeGG-developer/glyde/releases/download/26.11.3.2/Glyde-11.3.2-Achtototam-x86_64.apk"
+  "Glyde-11.3.3-Achtototam-arm64-v8a.apk": "https://github.com/GrapeGG-developer/glyde/releases/download/26.11.3.3/Glyde-11.3.3-Achtototam-arm64-v8a.apk",
+  "Glyde-11.3.3-Achtototam-armeabi-v7a.apk": "https://github.com/GrapeGG-developer/glyde/releases/download/26.11.3.3/Glyde-11.3.3-Achtototam-armeabi-v7a.apk",
+  "Glyde-11.3.3-Achtototam-universal.apk": "https://github.com/GrapeGG-developer/glyde/releases/download/26.11.3.3/Glyde-11.3.3-Achtototam-universal.apk",
+  "Glyde-11.3.3-Achtototam-x86.apk": "https://github.com/GrapeGG-developer/glyde/releases/download/26.11.3.3/Glyde-11.3.3-Achtototam-x86.apk",
+  "Glyde-11.3.3-Achtototam-x86_64.apk": "https://github.com/GrapeGG-developer/glyde/releases/download/26.11.3.3/Glyde-11.3.3-Achtototam-x86_64.apk"
  },
  "sizes": {
-  "Glyde-11.3.2-Achtototam-arm64-v8a.apk": 4785201,
-  "Glyde-11.3.2-Achtototam-armeabi-v7a.apk": 4761699,
-  "Glyde-11.3.2-Achtototam-universal.apk": 5375933,
-  "Glyde-11.3.2-Achtototam-x86.apk": 4800087,
-  "Glyde-11.3.2-Achtototam-x86_64.apk": 4791940
+  "Glyde-11.3.3-Achtototam-arm64-v8a.apk": 4785925,
+  "Glyde-11.3.3-Achtototam-armeabi-v7a.apk": 4762423,
+  "Glyde-11.3.3-Achtototam-universal.apk": 5376657,
+  "Glyde-11.3.3-Achtototam-x86.apk": 4800811,
+  "Glyde-11.3.3-Achtototam-x86_64.apk": 4792664
  },
  "sums": {
-  "Glyde-11.3.2-Achtototam-arm64-v8a.apk": "99174631ca9cb0390638ec7e0ce49b8a96218b4fbd6d9a1d1739ecd91d7c11d0",
-  "Glyde-11.3.2-Achtototam-armeabi-v7a.apk": "b3b1e1828b5333a102490858a3a00ab6ab8785f01f4861d8008bfc9b6cb65262",
-  "Glyde-11.3.2-Achtototam-universal.apk": "d99a4856685cc17ce5725ba02ee4974375a98c44316be35b42bceb755f71f603",
-  "Glyde-11.3.2-Achtototam-x86.apk": "929a4b6ec3d108fd7c35eb2ce40b9bff5b520f6a6d93ba68f49807f8cf915e89",
-  "Glyde-11.3.2-Achtototam-x86_64.apk": "e292a36bf0a8436a728e6aa0d9a79e65eae75ea127e80c54c113ef0789fd2bdc"
+  "Glyde-11.3.3-Achtototam-arm64-v8a.apk": "1ce8c3cd7d3441b9a5359c0411cf179e51ceec99e707d3b4d00136abd94f66b6",
+  "Glyde-11.3.3-Achtototam-armeabi-v7a.apk": "be71232814ac6fee63e094d71a555c1023db16c328879695c7f571c2175a05bd",
+  "Glyde-11.3.3-Achtototam-universal.apk": "f47e2691147073c257e313655b98869199e2bbde3de7bc1904a06e0a5c8734a1",
+  "Glyde-11.3.3-Achtototam-x86.apk": "aab14e0f362b662a867d1b6ed7215df43d547cb8c96e5dd5e479c7bd7e36378e",
+  "Glyde-11.3.3-Achtototam-x86_64.apk": "c7c001fe619da4508a22363e5ed2e97e0e85e9f5ab9782ed9e3f35cdab85d5a5"
  }
 }
